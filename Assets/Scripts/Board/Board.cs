@@ -1,6 +1,7 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Tilemaps;
+using Random = UnityEngine.Random;
 
 public static class TileColorExtensions
 {
@@ -39,6 +40,8 @@ public class Board : SingletonBehaviour<Board>
 {
     public Transform tileParent;
     public GameObject tile;
+    public Transform changeFlagParent;
+    public GameObject changeFlag;
     public int n, m;            // 세로, 가로 크기
     public TileColor[,] board;  // 현재 보드 상태
     public TileColor[,] answer; // 목표 보드 상태
@@ -69,6 +72,7 @@ public class Board : SingletonBehaviour<Board>
 
     public void InitBoard()
     {
+        float scale = 0.2f;
         for (int i = 0; i < n; i++)
         {
             for (int j = 0; j < m; j++)
@@ -79,10 +83,38 @@ public class Board : SingletonBehaviour<Board>
                 tileObjs[i, j] = obj;
 
                 board[i, j] = TileColor.None;
-                answer[i, j] = TileColor.Red;
+                answer[i, j] = TileColor.None;
+
+                // 🎲 Perlin Noise 값
+                float noise = Mathf.PerlinNoise(i * scale, j * scale);
+
+                // 기본은 노이즈 기반
+                if (noise < 0.33f) answer[i, j].AddColor(TileColor.Red);
+                if (noise > 0.33f && noise < 0.66f) answer[i, j].AddColor(TileColor.Green);
+                if (noise > 0.66f) answer[i, j].AddColor(TileColor.Blue);
+
+                // 🎲 인접한 타일 따라가기 (70% 확률)
+                if (i > 0 && Random.value < 0.7f)
+                    answer[i, j] |= answer[i - 1, j];
+                if (j > 0 && Random.value < 0.7f)
+                    answer[i, j] |= answer[i, j - 1];
 
                 DrawBackgroundTile(i, j);
             }
+        }
+
+        TileColor[] flagColor = new TileColor[] { TileColor.Red, TileColor.Green, TileColor.Blue };
+        for (int i = 0; i < 3; i++)
+        {
+            int randI = Random.Range(0, n);
+            int randJ = Random.Range(0, m);
+            board[randI, randJ] = flagColor[i];
+            DrawTile(randI, randJ);
+
+            board[randI, randJ].AddColor(TileColor.Change);
+
+            Vector2 pos = new Vector2(randI, randJ) - new Vector2((n - 1) / 2f, (m - 1) / 2f);
+            Instantiate(changeFlag, pos, Quaternion.identity, changeFlagParent);
         }
     }
 
@@ -116,6 +148,7 @@ public class Board : SingletonBehaviour<Board>
         if ((board[i, j] & (TileColor.Change | color)) != 0) return false;  // 이미 해당 색이 있거나 색 바꾸는 타일임
 
         board[i, j].AddColor(color);  // 색 추가
+        DrawTile(i, j);
 
         return true;
     }
@@ -135,9 +168,16 @@ public class Board : SingletonBehaviour<Board>
     /// </summary>
     public TileColor IsChangeTile(int i, int j)
     {
+        if (i < 0 || i >= n || j < 0 || j >= m)
+            return TileColor.None;
         if (board[i, j].HasFlag(TileColor.Change))
             return board[i, j] & ~TileColor.Change;
         return TileColor.None;
+    }
+
+    public bool IsInBounds(int i, int j)
+    {
+        return 0 <= i && i < n && 0 <= j && j < m;
     }
 
     /// <summary>
