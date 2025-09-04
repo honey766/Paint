@@ -99,7 +99,7 @@ public class Board : SingletonBehaviour<Board>
                 if (j > 0 && Random.value < 0.7f)
                     answer[i, j] |= answer[i, j - 1];
 
-                DrawBackgroundTile(i, j);
+                // DrawBackgroundTile(i, j);
             }
         }
 
