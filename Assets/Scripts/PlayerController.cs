@@ -10,10 +10,11 @@ public class PlayerController : SingletonBehaviour<PlayerController>
     public float moveTimePerTile;
     [Header("플레이어의 색")]
     public Color gray;
-    public Color red, green, blue;
+    public Color red, blue;
 
 
     public TextMeshProUGUI MoveCountText;
+    public ParticleSystem particle;
     private TileColor myColor;
     private int curI, curJ; // 현재 플레이어가 위치한 좌표
     private int destI, destJ; // 최종 이동 장소로서 예약된 좌표 (플레이어 이동 중에는 현재좌표 != 도착좌표)
@@ -25,12 +26,14 @@ public class PlayerController : SingletonBehaviour<PlayerController>
 
     // 캐싱
     private SpriteRenderer spriter;
+    private Transform player;
 
     private void Awake()
     {
         m_IsDestroyOnLoad = true;
         Init();
         spriter = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        player = transform.GetChild(0).transform;
     }
 
     private void Start()
@@ -150,10 +153,17 @@ public class PlayerController : SingletonBehaviour<PlayerController>
             Vector2Int nextPos = moveQueue.Dequeue(); // 큐에서 하나 꺼내기
             Vector2 nextRealPos = Board.Instance.GetTilePos(nextPos.x, nextPos.y);
             transform.DOMove(nextRealPos, moveTime).SetEase(Ease.Linear);
-            if (curI == nextPos.x) // 세로 이동
-                transform.DOScale(new Vector2(0.85f, 1.15f),  moveTimePerTile / 1.2f);
+            if (curI == nextPos.x)
+            {// 세로 이동 
+                player.DOScale(new Vector2(0.85f, 1.15f), moveTimePerTile / 1.2f);
+                particle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+            }
             else
-                transform.DOScale(new Vector2(1.15f, 0.85f),  moveTimePerTile / 1.2f);
+            {
+                player.DOScale(new Vector2(1.15f, 0.85f), moveTimePerTile / 1.2f);
+                particle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90));
+            }
+            particle.Emit(4);
             yield return new WaitForSeconds(moveTime / 2f);
 
             // 타일 색칠 or 플레이어 색 변화
@@ -166,26 +176,27 @@ public class PlayerController : SingletonBehaviour<PlayerController>
             yield return new WaitForSeconds(moveTime / 2f);
         }
 
-        transform.DOScale(1, moveTimePerTile / 1.2f);
+        player.DOScale(1, moveTimePerTile / 1.2f);
         isMoving = false;
     }
 
     private void ChangeColor(TileColor changeColor)
     {
         myColor = changeColor;
+        var main = particle.main;
         switch (changeColor)
         {
             case TileColor.None:
                 spriter.color = gray;
+                main.startColor = gray;
                 break;
-            case TileColor.Red:
-                spriter.color = red;
+            case TileColor.Color1:
+                spriter.color = Board.Instance.colorPallete.color1;
+                main.startColor = Board.Instance.colorPallete.color1;
                 break;
-            case TileColor.Green:
-                spriter.color = green;
-                break;
-            case TileColor.Blue:
-                spriter.color = blue;
+            case TileColor.Color2:
+                spriter.color = Board.Instance.colorPallete.color2;
+                main.startColor = Board.Instance.colorPallete.color2;
                 break;
         }
     }

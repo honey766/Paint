@@ -43,6 +43,7 @@ public static class MyCoroutine
 			onChanged?.Invoke(timer / seconds);
 			yield return null;
 		}
+		onChanged?.Invoke(1);
 	}
 	/// <summary>
 	/// Waits for the specified amount of seconds using unscaled time (ignores Time.timeScale)
@@ -66,5 +67,6 @@ public static class MyCoroutine
 			onChanged?.Invoke(timer / seconds);
 			yield return null;
 		}
+		onChanged?.Invoke(1);
 	}
 }

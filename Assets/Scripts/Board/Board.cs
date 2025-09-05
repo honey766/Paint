@@ -1,6 +1,6 @@
 using System;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
 public static class TileColorExtensions
@@ -29,11 +29,9 @@ public static class TileColorExtensions
 public enum TileColor
 {
     None = 0,
-    Red = 1 << 0,
-    Green = 1 << 1,
-    Blue = 1 << 2,
-    Change = 1 << 3 // 플레이어 색깔을 바꾸는 타일
-    // 필요하면 계속 추가
+    Color1 = 1 << 0,
+    Color2 = 1 << 1,
+    Change = 1 << 2 // 플레이어 색깔을 바꾸는 타일
 }
 
 public class Board : SingletonBehaviour<Board>
@@ -45,15 +43,13 @@ public class Board : SingletonBehaviour<Board>
     public int n, m;            // 세로, 가로 크기
     public TileColor[,] board;  // 현재 보드 상태
     public TileColor[,] answer; // 목표 보드 상태
-    private GameObject[,] tileObjs; // 각 타일
+    private GameObject[,] tileObjs; // 각 타일 오브젝트
+    private SpriteRenderer[,] tileRends; // 각 타일의 스프라이트 렌더러
 
-    [Header("실제 색칠 색")]
+    [Header("색칠 색")]
     public Color gray;
-    public Color red, green, blue, redGreen, redBlue, greenBlue, redGreenBlue;
-
-    [Header("배경 색")]
-    public Color redBack;
-    public Color greenBack, blueBack, redGreenBack, redBlueBack, greenBlueBack, redGreenBlueBack;
+    public ColorPaletteSO colorPallete;
+    public GridBorderDrawer color1Border, color2Border, color12Border;
 
     // 임시로 게임 시작하자마자 보드 생성
     private void Start()
@@ -67,12 +63,17 @@ public class Board : SingletonBehaviour<Board>
         board = new TileColor[n, m];
         answer = new TileColor[n, m];
         tileObjs = new GameObject[n, m];
+        tileRends = new SpriteRenderer[n, m];
         InitBoard();
     }
 
     public void InitBoard()
     {
-        float scale = 0.2f;
+        // Perlin 노이즈의 시작점 (무작위로 설정하여 매번 다른 패턴 생성)
+        float offsetX = Random.Range(0f, 100f);
+        float offsetY = Random.Range(0f, 100f);
+        float perlinScale = 10f; // Perlin 노이즈 스케일 (높을수록 덜 뭉침)
+
         for (int i = 0; i < n; i++)
         {
             for (int j = 0; j < m; j++)
@@ -81,30 +82,33 @@ public class Board : SingletonBehaviour<Board>
                 GameObject obj = Instantiate(tile, pos, Quaternion.identity, tileParent);
                 obj.name = $"Tile[{i},{j}]";
                 tileObjs[i, j] = obj;
+                tileRends[i, j] = obj.GetComponent<SpriteRenderer>();
 
                 board[i, j] = TileColor.None;
                 answer[i, j] = TileColor.None;
 
-                // 🎲 Perlin Noise 값
-                float noise = Mathf.PerlinNoise(i * scale, j * scale);
+                // Perlin 노이즈를 사용하여 answer에 색상 할당
+                float noise1 = Mathf.PerlinNoise(i / perlinScale + offsetX, j / perlinScale + offsetY);
+                float noise2 = Mathf.PerlinNoise(i / perlinScale + offsetX + 10f, j / perlinScale + offsetY + 10f); // 다른 패턴을 위해 오프셋 추가
 
-                // 기본은 노이즈 기반
-                if (noise < 0.33f) answer[i, j].AddColor(TileColor.Red);
-                if (noise > 0.33f && noise < 0.66f) answer[i, j].AddColor(TileColor.Green);
-                if (noise > 0.66f) answer[i, j].AddColor(TileColor.Blue);
+                // noise1 값이 0.4보다 크면 Color1 할당
+                if (noise1 > 0.4f)
+                {
+                    answer[i, j] |= TileColor.Color1;
+                }
 
-                // 🎲 인접한 타일 따라가기 (70% 확률)
-                if (i > 0 && Random.value < 0.7f)
-                    answer[i, j] |= answer[i - 1, j];
-                if (j > 0 && Random.value < 0.7f)
-                    answer[i, j] |= answer[i, j - 1];
-
-                // DrawBackgroundTile(i, j);
+                // noise2 값이 0.5보다 크면 Color2 할당
+                if (noise2 > 0.5f)
+                {
+                    answer[i, j] |= TileColor.Color2;
+                }
             }
         }
 
-        TileColor[] flagColor = new TileColor[] { TileColor.Red, TileColor.Green, TileColor.Blue };
-        for (int i = 0; i < 3; i++)
+        InitTileMats();
+
+        TileColor[] flagColor = new TileColor[] { TileColor.Color1, TileColor.Color2 };
+        for (int i = 0; i < 2; i++)
         {
             int randI = Random.Range(0, n);
             int randJ = Random.Range(0, m);
@@ -116,6 +120,10 @@ public class Board : SingletonBehaviour<Board>
             Vector2 pos = new Vector2(randI, randJ) - new Vector2((n - 1) / 2f, (m - 1) / 2f);
             Instantiate(changeFlag, pos, Quaternion.identity, changeFlagParent);
         }
+
+        color1Border.InitBorder(colorPallete.color1, TileColor.Color1, n, m, answer);
+        color2Border.InitBorder(colorPallete.color2, TileColor.Color2, n, m, answer);
+        color12Border.InitBorder(colorPallete.color12, TileColor.Color1 | TileColor.Color2, n, m, answer);
     }
 
     /// <summary>
@@ -180,37 +188,16 @@ public class Board : SingletonBehaviour<Board>
         return 0 <= i && i < n && 0 <= j && j < m;
     }
 
-    /// <summary>
-    /// 타일 상태에 따라 타일을 그림
-    /// </summary>
-    private void DrawBackgroundTile(int i, int j)
+
+    private void InitTileMats()
     {
-        switch (answer[i, j])
+        for (int i = 0; i < n; i++)
         {
-            case TileColor.None:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = gray;
-                break;
-            case TileColor.Red:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = redBack;
-                break;
-            case TileColor.Green:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = greenBack;
-                break;
-            case TileColor.Blue:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = blueBack;
-                break;
-            case TileColor.Red | TileColor.Green:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = redGreenBack;
-                break;
-            case TileColor.Red | TileColor.Blue:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = redBlueBack;
-                break;
-            case TileColor.Green | TileColor.Blue:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = greenBlueBack;
-                break;
-            case TileColor.Red | TileColor.Green | TileColor.Blue:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = redGreenBlueBack;
-                break;
+            for (int j = 0; j < m; j++)
+            {
+                tileRends[i, j].material.SetColor("_BaseColor", gray);
+                tileRends[i, j].material.SetColor("_AddColor", gray);
+            }
         }
     }
 
@@ -219,33 +206,65 @@ public class Board : SingletonBehaviour<Board>
     /// </summary>
     public void DrawTile(int i, int j)
     {
+        Color curColor = tileRends[i, j].material.GetColor("_AddColor");
+        tileRends[i, j].material.SetColor("_BaseColor", curColor);
+        tileRends[i, j].material.SetFloat("_ratio", 0);
+        tileRends[i, j].material.SetFloat("_randomNoise", Random.Range(0f, 1f));
+
+        // switch (board[i, j])
+        // {
+        //     case TileColor.None:
+        //         tileObjs[i, j].GetComponent<SpriteRenderer>().color = gray;
+        //         break;
+        //     case TileColor.Red:
+        //         tileObjs[i, j].GetComponent<SpriteRenderer>().color = red;
+        //         break;
+        //     case TileColor.Green:
+        //         tileObjs[i, j].GetComponent<SpriteRenderer>().color = green;
+        //         break;
+        //     case TileColor.Blue:
+        //         tileObjs[i, j].GetComponent<SpriteRenderer>().color = blue;
+        //         break;
+        //     case TileColor.Red | TileColor.Green:
+        //         tileObjs[i, j].GetComponent<SpriteRenderer>().color = redGreen;
+        //         break;
+        //     case TileColor.Red | TileColor.Blue:
+        //         tileObjs[i, j].GetComponent<SpriteRenderer>().color = redBlue;
+        //         break;
+        //     case TileColor.Green | TileColor.Blue:
+        //         tileObjs[i, j].GetComponent<SpriteRenderer>().color = greenBlue;
+        //         break;
+        //     case TileColor.Red | TileColor.Green | TileColor.Blue:
+        //         tileObjs[i, j].GetComponent<SpriteRenderer>().color = redGreenBlue;
+        //         break;
+        // }
+
         switch (board[i, j])
         {
             case TileColor.None:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = gray;
+                tileRends[i, j].material.SetColor("_AddColor", gray);
                 break;
-            case TileColor.Red:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = red;
+            case TileColor.Color1:
+                tileRends[i, j].material.SetColor("_AddColor", colorPallete.color1);
                 break;
-            case TileColor.Green:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = green;
+            case TileColor.Color2:
+                tileRends[i, j].material.SetColor("_AddColor", colorPallete.color2);
                 break;
-            case TileColor.Blue:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = blue;
-                break;
-            case TileColor.Red | TileColor.Green:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = redGreen;
-                break;
-            case TileColor.Red | TileColor.Blue:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = redBlue;
-                break;
-            case TileColor.Green | TileColor.Blue:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = greenBlue;
-                break;
-            case TileColor.Red | TileColor.Green | TileColor.Blue:
-                tileObjs[i, j].GetComponent<SpriteRenderer>().color = redGreenBlue;
+            case TileColor.Color1 | TileColor.Color2:
+                tileRends[i, j].material.SetColor("_AddColor", colorPallete.color12);
                 break;
         }
+        StartCoroutine(ColorTileCoroutine(i, j));
     }
 
+    public float paintTime = 1;
+    private IEnumerator ColorTileCoroutine(int i, int j)
+    {
+
+        yield return MyCoroutine.WaitFor(paintTime, //PlayerController.Instance.moveTimePerTile,
+        (t) =>
+        {
+            tileRends[i, j].material.SetFloat("_ratio", t + 0.01f);
+        });
+    }
 }
