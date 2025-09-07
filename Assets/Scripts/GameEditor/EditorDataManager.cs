@@ -182,13 +182,23 @@ public class EditorDataManager : MonoBehaviour
 
     private void AddPaint(Vector2Int pos, bool isColor1)
     {
-        if (paints.ContainsKey(pos))
-            return;
+        bool existPaint = false;
+        EditorPaintInfo paintValue;
+        if (paints.TryGetValue(pos, out paintValue))
+        {
+            if (paintValue.isColor1 == isColor1)
+                return;
+            existPaint = true;
+        }
 
         if (tiles.TryGetValue(pos, out EditorTileInfo tileValue))
         {
+            if (existPaint)
+                Destroy(paintValue.paint);
+
             GameObject paintObj = tileDrawer.AddPaint(pos, isColor1);
             paints[pos] = new EditorPaintInfo(paintObj, isColor1);
+            
             // 페인트 자리는 실제 타일의 색은 상관이 없고 미관상 색칠함
             ChangeTileColor(pos, tileValue, isColor1 ? TileColor.Color1 : TileColor.Color2);
         }

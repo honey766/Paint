@@ -12,60 +12,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83fed35bb4bd84548b0da6262a7d9a29, type: 3}
   m_Name: Board4
   m_EditorClassIdentifier: Assembly-CSharp::BoardSO
-  n: 7
-  m: 8
-  startPos: {x: 2, y: 5}
+  n: 5
+  m: 5
+  startPos: {x: 2, y: 2}
   tileList:
   - pos: {x: 0, y: 0}
-    color: 2
-  - pos: {x: 0, y: 1}
-    color: 2
-  - pos: {x: 0, y: 2}
     color: 1
+  - pos: {x: 0, y: 1}
+    color: 3
+  - pos: {x: 0, y: 2}
+    color: 3
   - pos: {x: 0, y: 3}
-    color: 0
-  - pos: {x: 6, y: 6}
-    color: 2
-  - pos: {x: 5, y: 6}
+    color: 3
+  - pos: {x: 0, y: 4}
     color: 2
   - pos: {x: 1, y: 0}
-    color: 1
+    color: 3
   - pos: {x: 1, y: 1}
-    color: 2
+    color: 1
   - pos: {x: 1, y: 2}
     color: 2
   - pos: {x: 1, y: 3}
-    color: 0
-  - pos: {x: 6, y: 5}
-    color: 0
-  - pos: {x: 4, y: 6}
+    color: 1
+  - pos: {x: 1, y: 4}
+    color: 3
+  - pos: {x: 2, y: 0}
+    color: 3
+  - pos: {x: 2, y: 1}
     color: 2
-  - pos: {x: 2, y: 7}
-    color: 1
-  - pos: {x: 3, y: 7}
-    color: 1
   - pos: {x: 2, y: 2}
     color: 2
   - pos: {x: 2, y: 3}
     color: 2
   - pos: {x: 2, y: 4}
-    color: 0
-  - pos: {x: 2, y: 5}
-    color: 0
-  - pos: {x: 4, y: 7}
-    color: 1
-  - pos: {x: 5, y: 7}
+    color: 3
+  - pos: {x: 3, y: 0}
+    color: 3
+  - pos: {x: 3, y: 1}
     color: 1
   - pos: {x: 3, y: 2}
-    color: 0
+    color: 2
   - pos: {x: 3, y: 3}
-    color: 2
+    color: 1
   - pos: {x: 3, y: 4}
-    color: 2
-  - pos: {x: 3, y: 5}
-    color: 0
-  - pos: {x: 4, y: 0}
     color: 3
+  - pos: {x: 4, y: 0}
+    color: 2
   - pos: {x: 4, y: 1}
     color: 3
   - pos: {x: 4, y: 2}
@@ -73,31 +65,13 @@ MonoBehaviour:
   - pos: {x: 4, y: 3}
     color: 3
   - pos: {x: 4, y: 4}
-    color: 2
-  - pos: {x: 4, y: 5}
-    color: 2
-  - pos: {x: 5, y: 0}
-    color: 3
-  - pos: {x: 5, y: 1}
-    color: 3
-  - pos: {x: 5, y: 2}
-    color: 3
-  - pos: {x: 5, y: 3}
-    color: 3
-  - pos: {x: 5, y: 4}
-    color: 2
-  - pos: {x: 5, y: 5}
-    color: 2
-  - pos: {x: 1, y: 7}
-    color: 1
-  - pos: {x: 0, y: 7}
     color: 1
   paintList:
-  - pos: {x: 0, y: 2}
+  - pos: {x: 0, y: 0}
     isColor1: 1
-  - pos: {x: 1, y: 0}
+  - pos: {x: 4, y: 4}
     isColor1: 1
-  - pos: {x: 5, y: 4}
+  - pos: {x: 0, y: 4}
     isColor1: 0
-  - pos: {x: 4, y: 6}
+  - pos: {x: 4, y: 0}
     isColor1: 0

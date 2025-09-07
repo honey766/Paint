@@ -2952,7 +2952,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EditorDataManager
   tileDrawer: {fileID: 993150251}
-  sourceBoardSO: {fileID: 0}
+  sourceBoardSO: {fileID: 11400000, guid: b4862c5fae5c09b4e88e5f88c4806a1c, type: 2}
 --- !u!114 &993150253
 MonoBehaviour:
   m_ObjectHideFlags: 0

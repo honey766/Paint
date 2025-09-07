@@ -34,5 +34,9 @@ public class EditorInputController : MonoBehaviour
                 editorData.Input(curPos);
             }
         }
+        if (Input.GetMouseButtonUp(0))
+        {
+            Start();
+        }
     }
 }
