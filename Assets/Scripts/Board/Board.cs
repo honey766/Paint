@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
 public static class TileColorExtensions
@@ -40,9 +42,11 @@ public class Board : SingletonBehaviour<Board>
     public GameObject tile;
     public Transform changeFlagParent;
     public GameObject changeFlag;
-    public int n, m;            // 세로, 가로 크기
+
     public TileColor[,] board;  // 현재 보드 상태
     public TileColor[,] answer; // 목표 보드 상태
+    public HashSet<Vector2Int> tileSet; // 타일 위치
+    private int n, m;            // 세로, 가로 크기
     private GameObject[,] tileObjs; // 각 타일 오브젝트
     private SpriteRenderer[,] tileRends; // 각 타일의 스프라이트 렌더러
 
@@ -50,76 +54,78 @@ public class Board : SingletonBehaviour<Board>
     public Color gray;
     public ColorPaletteSO colorPallete;
     public GridBorderDrawer color1Border, color2Border, color12Border;
+    public float paintTime = 0.2f;
 
-    // 임시로 게임 시작하자마자 보드 생성
-    private void Start()
-    {
-        InitBoard(n, m);
-    }
+    private BoardSO boardSO;
 
-    public void InitBoard(int n, int m)
+    public void InitBoard(BoardSO boardSO)
     {
-        this.n = n; this.m = m;
+        this.boardSO = boardSO;
+        this.n = boardSO.n; this.m = boardSO.m;
         board = new TileColor[n, m];
         answer = new TileColor[n, m];
         tileObjs = new GameObject[n, m];
         tileRends = new SpriteRenderer[n, m];
+        tileSet = new HashSet<Vector2Int>();
         InitBoard();
     }
 
     public void InitBoard()
     {
-        // Perlin 노이즈의 시작점 (무작위로 설정하여 매번 다른 패턴 생성)
-        float offsetX = Random.Range(0f, 100f);
-        float offsetY = Random.Range(0f, 100f);
-        float perlinScale = 10f; // Perlin 노이즈 스케일 (높을수록 덜 뭉침)
-
-        for (int i = 0; i < n; i++)
+        foreach (var entry in boardSO.tileList)
         {
-            for (int j = 0; j < m; j++)
-            {
-                Vector2 pos = new Vector2(i, j) - new Vector2((n - 1) / 2f, (m - 1) / 2f);
-                GameObject obj = Instantiate(tile, pos, Quaternion.identity, tileParent);
-                obj.name = $"Tile[{i},{j}]";
-                tileObjs[i, j] = obj;
-                tileRends[i, j] = obj.GetComponent<SpriteRenderer>();
+            Vector2Int grid = entry.pos;
+            Vector2 pos = new Vector2(grid.x, grid.y) - new Vector2((n - 1) / 2f, (m - 1) / 2f);
+            GameObject obj = Instantiate(tile, pos, Quaternion.identity, tileParent);
+            obj.name = $"Tile[{grid.x},{grid.y}]";
+            tileObjs[grid.x, grid.y] = obj;
+            tileRends[grid.x, grid.y] = obj.GetComponent<SpriteRenderer>();
 
-                board[i, j] = TileColor.None;
-                answer[i, j] = TileColor.None;
+            board[grid.x, grid.y] = TileColor.None;
+            answer[grid.x, grid.y] = entry.color;
 
-                // Perlin 노이즈를 사용하여 answer에 색상 할당
-                float noise1 = Mathf.PerlinNoise(i / perlinScale + offsetX, j / perlinScale + offsetY);
-                float noise2 = Mathf.PerlinNoise(i / perlinScale + offsetX + 10f, j / perlinScale + offsetY + 10f); // 다른 패턴을 위해 오프셋 추가
-
-                // noise1 값이 0.4보다 크면 Color1 할당
-                if (noise1 > 0.4f)
-                {
-                    answer[i, j] |= TileColor.Color1;
-                }
-
-                // noise2 값이 0.5보다 크면 Color2 할당
-                if (noise2 > 0.5f)
-                {
-                    answer[i, j] |= TileColor.Color2;
-                }
-            }
+            tileSet.Add(entry.pos);
         }
+        // for (int i = 0; i < n; i++)
+        // {
+        //     for (int j = 0; j < m; j++)
+        //     {
+        //         Vector2 pos = new Vector2(i, j) - new Vector2((n - 1) / 2f, (m - 1) / 2f);
+        //         GameObject obj = Instantiate(tile, pos, Quaternion.identity, tileParent);
+        //         obj.name = $"Tile[{i},{j}]";
+        //         tileObjs[i, j] = obj;
+        //         tileRends[i, j] = obj.GetComponent<SpriteRenderer>();
+
+        //         board[i, j] = TileColor.None;
+        //         answer[i, j] = TileColor.None;
+        //     }
+        // }
 
         InitTileMats();
 
-        TileColor[] flagColor = new TileColor[] { TileColor.Color1, TileColor.Color2 };
-        for (int i = 0; i < 2; i++)
+        foreach (var entry in boardSO.paintList)
         {
-            int randI = Random.Range(0, n);
-            int randJ = Random.Range(0, m);
-            board[randI, randJ] = flagColor[i];
-            DrawTile(randI, randJ);
+            Vector2Int grid = entry.pos;
+            board[grid.x, grid.y] = entry.isColor1 ? TileColor.Color1 : TileColor.Color2;
+            DrawTile(grid.x, grid.y);
 
-            board[randI, randJ].AddColor(TileColor.Change);
+            board[grid.x, grid.y].AddColor(TileColor.Change);
 
-            Vector2 pos = new Vector2(randI, randJ) - new Vector2((n - 1) / 2f, (m - 1) / 2f);
+            Vector2 pos = new Vector2(grid.x, grid.y) - new Vector2((n - 1) / 2f, (m - 1) / 2f);
             Instantiate(changeFlag, pos, Quaternion.identity, changeFlagParent);
         }
+        // for (int i = 0; i < 2; i++)
+        // {
+        //     int randI = Random.Range(0, n);
+        //     int randJ = Random.Range(0, m);
+        //     board[randI, randJ] = flagColor[i];
+        //     DrawTile(randI, randJ);
+
+        //     board[randI, randJ].AddColor(TileColor.Change);
+
+        //     Vector2 pos = new Vector2(randI, randJ) - new Vector2((n - 1) / 2f, (m - 1) / 2f);
+        //     Instantiate(changeFlag, pos, Quaternion.identity, changeFlagParent);
+        // }
 
         color1Border.InitBorder(colorPallete.color1, TileColor.Color1, n, m, answer);
         color2Border.InitBorder(colorPallete.color2, TileColor.Color2, n, m, answer);
@@ -139,10 +145,10 @@ public class Board : SingletonBehaviour<Board>
     /// </summary>
     public bool IsClear()
     {
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < m; j++)
-                if (board[i, j] != answer[i, j])
-                    return false;
+        foreach (Vector2Int pos in tileSet)
+            if ((board[pos.x, pos.y] & TileColor.Change) == 0
+                && board[pos.x, pos.y] != answer[pos.x, pos.y])
+                return false;
         return true;
     }
 
@@ -188,16 +194,12 @@ public class Board : SingletonBehaviour<Board>
         return 0 <= i && i < n && 0 <= j && j < m;
     }
 
-
     private void InitTileMats()
     {
-        for (int i = 0; i < n; i++)
+        foreach (Vector2Int pos in tileSet)
         {
-            for (int j = 0; j < m; j++)
-            {
-                tileRends[i, j].material.SetColor("_BaseColor", gray);
-                tileRends[i, j].material.SetColor("_AddColor", gray);
-            }
+            tileRends[pos.x, pos.y].material.SetColor("_BaseColor", gray);
+            tileRends[pos.x, pos.y].material.SetColor("_AddColor", gray);
         }
     }
 
@@ -257,7 +259,6 @@ public class Board : SingletonBehaviour<Board>
         StartCoroutine(ColorTileCoroutine(i, j));
     }
 
-    public float paintTime = 1;
     private IEnumerator ColorTileCoroutine(int i, int j)
     {
 

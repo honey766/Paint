@@ -13,7 +13,7 @@ public class GridBorderDrawer : MonoBehaviour
 
     private bool[,] isMyColor;
 
-    void Start()
+    void Awake()
     {
         meshRenderer = GetComponent<MeshRenderer>();
         meshFilter = GetComponent<MeshFilter>();

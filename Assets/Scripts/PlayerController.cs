@@ -12,7 +12,6 @@ public class PlayerController : SingletonBehaviour<PlayerController>
     public Color gray;
     public Color red, blue;
 
-
     public TextMeshProUGUI MoveCountText;
     public ParticleSystem particle;
     private TileColor myColor;
@@ -36,11 +35,6 @@ public class PlayerController : SingletonBehaviour<PlayerController>
         player = transform.GetChild(0).transform;
     }
 
-    private void Start()
-    {
-        InitPlayer(1, 2);
-    }
-
 #if UNITY_STANDALONE   // Windows, macOS, Linux
     private void Update()
     {
@@ -62,19 +56,19 @@ public class PlayerController : SingletonBehaviour<PlayerController>
     }
 #endif
 
-    public void InitPlayer(int i, int j)
+    public void InitPlayer(BoardSO boardSO)
     {
         ChangeColor(TileColor.None);
-        curI = destI = i;
-        curJ = destJ = j;
-        transform.position = Board.Instance.GetTilePos(i, j);
+        curI = destI = boardSO.startPos.x;
+        curJ = destJ = boardSO.startPos.y;
+        transform.position = Board.Instance.GetTilePos(boardSO.startPos.x, boardSO.startPos.y);
         SetMoveCount(0);
     }
 
     // (i, j) 좌표로 이동 시도
     public void TryMoveTo(int i, int j)
     {
-        if (!CanMoveTo(i, j)) return;
+        if (!CanMoveTo(i, j) || !GameManager.Instance.isGaming) return;
 
         // 같은 행, 열 중 어디인지에 따라 분기
         if (destI == i) // j 방향(가로 이동)
@@ -102,43 +96,45 @@ public class PlayerController : SingletonBehaviour<PlayerController>
     {
         if (!Board.Instance.IsInBounds(i, j)) return false; // 범위 바깥
         if (destI != i && destJ != j) return false; // 대각선 방향은 이동X
+        if (!Board.Instance.tileSet.Contains(new Vector2Int(i, j))) return false; // 타일이 없으면 이동x
 
         // // 플레이어와 같은 색의 타일은 이동 불가능
         // TileColor playerColor = myColor;
         // TileColor changeColor;
 
-        // // 같은 행, 열 중 어디인지에 따라 분기
-        // if (destI == i) // j 방향(가로 이동)
-        // {
-        //     int step = (j > destJ) ? 1 : -1;
-        //     for (int col = destJ + step; col != j + step; col += step)
-        //     {
-        //         changeColor = Board.Instance.IsChangeTile(i, col);
-        //         if (changeColor != TileColor.None) // 색 바꾸는 타일
-        //             playerColor = changeColor;
-        //         else if (playerColor != TileColor.None && Board.Instance.HasColor(i, col, playerColor))
-        //             return false;
-        //     }
-        // }
-        // else if (destJ == j) // i 방향(세로 이동)
-        // {
-        //     int step = (i > destI) ? 1 : -1;
-        //     for (int row = destI + step; row != i + step; row += step)
-        //     {
-        //         changeColor = Board.Instance.IsChangeTile(row, j);
-        //         if (changeColor != TileColor.None) // 색 바꾸는 타일
-        //             playerColor = changeColor;
-        //         else if (playerColor != TileColor.None && Board.Instance.HasColor(row, j, playerColor))
-        //             return false;
-        //     }
-        // }
+        // 같은 행, 열 중 어디인지에 따라 분기
+        if (destI == i) // j 방향(가로 이동)
+        {
+            int step = (j > destJ) ? 1 : -1;
+            for (int col = destJ + step; col != j + step; col += step)
+            {
+                // changeColor = Board.Instance.IsChangeTile(i, col);
+                // if (changeColor != TileColor.None) // 색 바꾸는 타일
+                //     playerColor = changeColor;
+                // else if (playerColor != TileColor.None && Board.Instance.HasColor(i, col, playerColor))
+                //     return false;
+
+                if (!Board.Instance.tileSet.Contains(new Vector2Int(i, col)))
+                    return false;
+            }
+        }
+        else if (destJ == j) // i 방향(세로 이동)
+        {
+            int step = (i > destI) ? 1 : -1;
+            for (int row = destI + step; row != i + step; row += step)
+            {
+                // changeColor = Board.Instance.IsChangeTile(row, j);
+                // if (changeColor != TileColor.None) // 색 바꾸는 타일
+                //     playerColor = changeColor;
+                // else if (playerColor != TileColor.None && Board.Instance.HasColor(row, j, playerColor))
+                //     return false;
+
+                if (!Board.Instance.tileSet.Contains(new Vector2Int(row, j)))
+                    return false;
+            }
+        }
 
         return true;
-    }
-
-    public void ChangePlayerColor(TileColor color)
-    {
-        myColor = color;
     }
 
     private IEnumerator Move()
@@ -173,6 +169,8 @@ public class PlayerController : SingletonBehaviour<PlayerController>
                 ChangeColor(changeColor);
             else if (myColor != TileColor.None) // 타일 색칠
                 Board.Instance.ColorTile(nextPos.x, nextPos.y, myColor);
+            if (Board.Instance.IsClear())
+                GameManager.Instance.GameClear();
             yield return new WaitForSeconds(moveTime / 2f);
         }
 
