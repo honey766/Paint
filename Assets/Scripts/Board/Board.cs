@@ -146,22 +146,23 @@ public class Board : SingletonBehaviour<Board>
     public bool IsClear()
     {
         foreach (Vector2Int pos in tileSet)
-            if ((board[pos.x, pos.y] & TileColor.Change) == 0
+            if (board[pos.x, pos.y].HasFlag(TileColor.Change)
                 && board[pos.x, pos.y] != answer[pos.x, pos.y])
                 return false;
         return true;
     }
 
     /// <summary>
-    /// (i,j) 타일에 color 색을 추가 시도.
+    /// (i,j) 타일에 color 색을 추가 시도. isAddColor가 false라면 색을 or로 추가하지 않고 =으로 대입함
     /// 이미 해당 색이 있거나 보드 범위 밖이면 false, 성공적으로 색이 추가되면 true 반환.
     /// </summary>
-    public bool ColorTile(int i, int j, TileColor color)
+    public bool ColorTile(int i, int j, TileColor color, bool addColor = true)
     {
         if (i < 0 || i >= n || j < 0 || j >= m) return false;               // 범위 체크
-        if ((board[i, j] & (TileColor.Change | color)) != 0) return false;  // 이미 해당 색이 있거나 색 바꾸는 타일임
+        if (addColor && (board[i, j] & (TileColor.Change | color)) != 0) return false;  // 이미 해당 색이 있거나 색 바꾸는 타일임
 
-        board[i, j].AddColor(color);  // 색 추가
+        if (addColor) board[i, j].AddColor(color);  // 색 추가
+        else board[i, j] = color; // 색 대입
         DrawTile(i, j);
 
         return true;

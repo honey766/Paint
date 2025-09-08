@@ -4,6 +4,20 @@ using UnityEngine;
 using DG.Tweening;
 using TMPro;
 
+public struct PlayerMoveData
+{
+    public Vector2Int moveDir; // 움직인 방향 ((0, 1), (0, -1), (1, 0), (-1, 0))
+    public TileColor prevMyColor; // 현재 타일에 도착하기 전 플레이어의 색
+    public TileColor prevTileColor; // 플레이어가 색칠하기 전 타일색
+
+    public PlayerMoveData(Vector2Int moveDir, TileColor prevMyColor, TileColor prevTileColor)
+    {
+        this.moveDir = moveDir;
+        this.prevMyColor = prevMyColor;
+        this.prevTileColor = prevTileColor;
+    }
+}
+
 public class PlayerController : SingletonBehaviour<PlayerController>
 {
     [Tooltip("타일 한 칸을 건너는 데 걸리는 시간")]
@@ -17,9 +31,11 @@ public class PlayerController : SingletonBehaviour<PlayerController>
     private TileColor myColor;
     private int curI, curJ; // 현재 플레이어가 위치한 좌표
     private int destI, destJ; // 최종 이동 장소로서 예약된 좌표 (플레이어 이동 중에는 현재좌표 != 도착좌표)
-    private Queue<Vector2Int> moveQueue = new Queue<Vector2Int>();
+    private Queue<Vector2Int> moveToQueue = new Queue<Vector2Int>(); // 한 번에 여러 칸 이동하기 위한 큐
     private bool isMoving; // 현재 이동 중인지
     private int moveCount;
+    private LinkedList<PlayerMoveData> moveDataListToRedo = new LinkedList<PlayerMoveData>(); // 되돌리기를 위해 그 동안의 이동 데이터를 기록한 큐
+    private float lastRedoTime = 0f;
 
     private float keyboardNextFireTime = 0f;
 
@@ -53,6 +69,9 @@ public class PlayerController : SingletonBehaviour<PlayerController>
         {
             keyboardNextFireTime = 0f; // 키 뗐을 때 초기화
         }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            StartCoroutine(Redo());
     }
 #endif
 
@@ -61,7 +80,7 @@ public class PlayerController : SingletonBehaviour<PlayerController>
         ChangeColor(TileColor.None);
         curI = destI = boardSO.startPos.x;
         curJ = destJ = boardSO.startPos.y;
-        transform.position = Board.Instance.GetTilePos(boardSO.startPos.x, boardSO.startPos.y);
+        transform.position = Board.Instance.GetTilePos(curI, curJ);
         SetMoveCount(0);
     }
 
@@ -75,13 +94,13 @@ public class PlayerController : SingletonBehaviour<PlayerController>
         {
             int step = (j > destJ) ? 1 : -1;
             for (int col = destJ + step; col != j + step; col += step)
-                moveQueue.Enqueue(new Vector2Int(destI, col));
+                moveToQueue.Enqueue(new Vector2Int(destI, col));
         }
         else if (destJ == j) // i 방향(세로 이동)
         {
             int step = (i > destI) ? 1 : -1;
             for (int row = destI + step; row != i + step; row += step)
-                moveQueue.Enqueue(new Vector2Int(row, destJ));
+                moveToQueue.Enqueue(new Vector2Int(row, destJ));
         }
 
         destI = i;
@@ -142,27 +161,20 @@ public class PlayerController : SingletonBehaviour<PlayerController>
         isMoving = true;
         TileColor changeColor;
 
-        while (moveQueue.Count > 0)
+        while (moveToQueue.Count > 0 && GameManager.Instance.isGaming)
         {
             IncreaseMoveCount();
-            float moveTime = moveTimePerTile * Mathf.Lerp(1, 0.8f, Mathf.InverseLerp(1, 10, moveQueue.Count));
-            Vector2Int nextPos = moveQueue.Dequeue(); // 큐에서 하나 꺼내기
-            Vector2 nextRealPos = Board.Instance.GetTilePos(nextPos.x, nextPos.y);
-            transform.DOMove(nextRealPos, moveTime).SetEase(Ease.Linear);
-            if (curI == nextPos.x)
-            {// 세로 이동 
-                player.DOScale(new Vector2(0.85f, 1.15f), moveTimePerTile / 1.2f);
-                particle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-            }
-            else
-            {
-                player.DOScale(new Vector2(1.15f, 0.85f), moveTimePerTile / 1.2f);
-                particle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90));
-            }
-            particle.Emit(4);
+            float moveTime = moveTimePerTile * Mathf.Lerp(1, 0.8f, Mathf.InverseLerp(1, 10, moveToQueue.Count));
+            Vector2Int nextPos = moveToQueue.Dequeue(); // 큐에서 하나 꺼내기
+            PlayerMoveAnimation(nextPos, moveTime);
             yield return new WaitForSeconds(moveTime / 2f);
 
             // 타일 색칠 or 플레이어 색 변화
+            moveDataListToRedo.AddLast(new PlayerMoveData(nextPos - new Vector2Int(curI, curJ), 
+                                                          myColor, Board.Instance.board[nextPos.x, nextPos.y]));
+            if (moveDataListToRedo.Count >= 1000)
+                moveDataListToRedo.RemoveFirst();
+
             curI = nextPos.x; curJ = nextPos.y;
             changeColor = Board.Instance.IsChangeTile(nextPos.x, nextPos.y);
             if (changeColor != TileColor.None) // 색 바꾸는 타일
@@ -171,11 +183,29 @@ public class PlayerController : SingletonBehaviour<PlayerController>
                 Board.Instance.ColorTile(nextPos.x, nextPos.y, myColor);
             if (Board.Instance.IsClear())
                 GameManager.Instance.GameClear();
+            
             yield return new WaitForSeconds(moveTime / 2f);
         }
 
         player.DOScale(1, moveTimePerTile / 1.2f);
         isMoving = false;
+    }
+
+    private void PlayerMoveAnimation(Vector2Int nextPos, float moveTime)
+    {
+        Vector2 nextRealPos = Board.Instance.GetTilePos(nextPos.x, nextPos.y);
+        transform.DOMove(nextRealPos, moveTime).SetEase(Ease.Linear);        
+        if (curI == nextPos.x)
+        {// 세로 이동 
+            player.DOScale(new Vector2(0.85f, 1.15f), moveTimePerTile / 1.2f);
+            particle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+        }
+        else
+        {
+            player.DOScale(new Vector2(1.15f, 0.85f), moveTimePerTile / 1.2f);
+            particle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90));
+        }
+        particle.Emit(4);
     }
 
     private void ChangeColor(TileColor changeColor)
@@ -209,5 +239,34 @@ public class PlayerController : SingletonBehaviour<PlayerController>
     {
         moveCount++;
         MoveCountText.text = moveCount.ToString();
+    }
+
+    private void DecreaseMoveCount()
+    {
+        moveCount--;
+        MoveCountText.text = moveCount.ToString();
+    }
+
+    private IEnumerator Redo()
+    {
+        if (Time.time < lastRedoTime + moveTimePerTile || moveCount <= 0)
+            yield break;    
+        lastRedoTime = Time.time;
+
+        DecreaseMoveCount();
+        PlayerMoveData moveData = moveDataListToRedo.Last.Value;
+        moveDataListToRedo.RemoveLast();
+        destI -= moveData.moveDir.x;
+        destJ -= moveData.moveDir.y;
+        PlayerMoveAnimation(new Vector2Int(destI, destJ), moveTimePerTile);
+        yield return new WaitForSeconds(moveTimePerTile / 2f);
+
+        if (myColor != moveData.prevMyColor)
+            ChangeColor(moveData.prevMyColor);
+        Board.Instance.ColorTile(curI, curJ, moveData.prevTileColor, false);
+        curI = destI; curJ = destJ;
+
+        yield return new WaitForSeconds(moveTimePerTile / 2f);
+        player.DOScale(1, moveTimePerTile / 1.2f);
     }
 }
