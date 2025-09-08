@@ -796,8 +796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64bfe8e8e1501374a813011e2798a0d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ToggleManager
-  toggles: []
-  toggleNum: 0
+  tool: 0
 --- !u!114 &109311314
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -934,7 +933,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ToggleController
   toggle: {fileID: 0}
-  toggleNum: 6
+  tool: 7
 --- !u!114 &117372062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1062,7 +1061,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ToggleController
   toggle: {fileID: 0}
-  toggleNum: 7
+  tool: 8
 --- !u!114 &123040646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1265,7 +1264,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ToggleController
   toggle: {fileID: 0}
-  toggleNum: 5
+  tool: 6
 --- !u!114 &165465893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2078,7 +2077,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!224 &639604205
 RectTransform:
@@ -2304,7 +2303,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ToggleController
   toggle: {fileID: 0}
-  toggleNum: 4
+  tool: 5
 --- !u!114 &759388052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2808,7 +2807,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ToggleController
   toggle: {fileID: 0}
-  toggleNum: 0
+  tool: 1
 --- !u!114 &992399067
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3170,7 +3169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ToggleController
   toggle: {fileID: 0}
-  toggleNum: 2
+  tool: 3
 --- !u!114 &1087892065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3726,7 +3725,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ToggleController
   toggle: {fileID: 0}
-  toggleNum: 1
+  tool: 2
 --- !u!114 &1290052378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4027,7 +4026,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ToggleController
   toggle: {fileID: 0}
-  toggleNum: 3
+  tool: 4
 --- !u!114 &1423900459
 MonoBehaviour:
   m_ObjectHideFlags: 0

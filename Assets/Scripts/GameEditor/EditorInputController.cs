@@ -7,12 +7,12 @@ public class EditorInputController : MonoBehaviour
     [SerializeField] private EditorDataManager editorData;
     [SerializeField] private TextMeshProUGUI curAxisText;
     private Vector2Int prevInputPos;
-    private int prevToggleNum;
+    private TileEditingTool prevTool;
 
     private void Start()
     {
         prevInputPos = new Vector2Int(-1000, -1000);
-        prevToggleNum = -1;
+        prevTool = TileEditingTool.None;
     }
 
     private void Update()
@@ -27,10 +27,10 @@ public class EditorInputController : MonoBehaviour
 
         if (Input.GetMouseButton(0))
         {
-            if (!(curPos == prevInputPos && ToggleManager.Instance.toggleNum == prevToggleNum))
+            if (!(curPos == prevInputPos && ToggleManager.Instance.tool == prevTool))
             {
                 prevInputPos = curPos;
-                prevToggleNum = ToggleManager.Instance.toggleNum;
+                prevTool = ToggleManager.Instance.tool;
                 editorData.Input(curPos);
             }
         }

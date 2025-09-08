@@ -5,8 +5,8 @@ public class ToggleController : MonoBehaviour
 {
     [HideInInspector]
     public Toggle toggle;
+    public TileEditingTool tool;
     private ToggleManager toggleManager;
-    public int toggleNum;
 
     private void Awake()
     {
@@ -31,7 +31,7 @@ public class ToggleController : MonoBehaviour
             return;
         }
 
-        toggleManager.ToggleGroup(toggleNum);
+        toggleManager.ToggleGroup(tool);
     }
 
     public void ToggleByManager(bool state)

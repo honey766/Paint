@@ -55,30 +55,30 @@ public class EditorDataManager : MonoBehaviour
 
     public void Input(Vector2Int pos)
     {
-        switch (ToggleManager.Instance.toggleNum)
+        switch (ToggleManager.Instance.tool)
         {
-            case 0: // 타일 생성
+            case TileEditingTool.GenerateTile: // 타일 생성
                 AddTile(pos);
                 break;
-            case 1: // Color1 색칠
-                AddTileColor(pos, TileColor.Color1);
+            case TileEditingTool.ChangeTileColor1: // Color1 색칠
+                ChangeTileColor(pos, TileColor.Color1);
                 break;
-            case 2: // Color2 색칠
-                AddTileColor(pos, TileColor.Color2);
+            case TileEditingTool.ChangeTileColor2: // Color2 색칠
+                ChangeTileColor(pos, TileColor.Color2);
                 break;
-            case 3: // Color12 색칠
-                AddTileColor(pos, TileColor.Color1 | TileColor.Color2);
+            case TileEditingTool.ChangeTileColor12: // Color12 색칠
+                ChangeTileColor(pos, TileColor.Color1 | TileColor.Color2);
                 break;
-            case 4: // 타일 삭제
+            case TileEditingTool.DeleteTile: // 타일 삭제
                 DeleteTile(pos);
                 break;
-            case 5: // 시작 위치 설정
+            case TileEditingTool.SetStartPos: // 시작 위치 설정
                 SetStartPos(pos);
                 break;
-            case 6: // Color1 페인트 추가
+            case TileEditingTool.AddColor1Paint: // Color1 페인트 추가
                 AddPaint(pos, true);
                 break;
-            case 7: // Color2 페인트 추가
+            case TileEditingTool.AddColor2Paint: // Color2 페인트 추가
                 AddPaint(pos, false);
                 break;
         }
@@ -130,7 +130,7 @@ public class EditorDataManager : MonoBehaviour
         tiles[pos] = new EditorTileInfo(tileObj, TileColor.None);
     }
 
-    private void AddTileColor(Vector2Int pos, TileColor color)
+    private void ChangeTileColor(Vector2Int pos, TileColor color)
     {
         if (paints.ContainsKey(pos))
             return;
