@@ -137,7 +137,7 @@ public class EditorDataManager : MonoBehaviour
 
         if (tiles.TryGetValue(pos, out EditorTileInfo tileValue))
         {
-            ChangeTileColor(pos, tileValue, tileValue.color | color);
+            ChangeTileColor(pos, tileValue, color);
         }
     }
 
