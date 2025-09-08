@@ -146,7 +146,7 @@ public class Board : SingletonBehaviour<Board>
     public bool IsClear()
     {
         foreach (Vector2Int pos in tileSet)
-            if (board[pos.x, pos.y].HasFlag(TileColor.Change)
+            if (!board[pos.x, pos.y].HasFlag(TileColor.Change)
                 && board[pos.x, pos.y] != answer[pos.x, pos.y])
                 return false;
         return true;

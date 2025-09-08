@@ -718,6 +718,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridMeshBorderDrawer
   lineWidth: 0.05
+  eachBorderOffset: 0
 --- !u!23 &590150155
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -890,6 +891,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridMeshBorderDrawer
   lineWidth: 0.05
+  eachBorderOffset: 0
 --- !u!23 &747207208
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1237,6 +1239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridMeshBorderDrawer
   lineWidth: 0.05
+  eachBorderOffset: 0
 --- !u!23 &1777180777
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1663,7 +1666,7 @@ PrefabInstance:
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: boardSO
       value: 
-      objectReference: {fileID: 11400000, guid: 78227b2da1cce8f4eaf57ae267ed8134, type: 2}
+      objectReference: {fileID: 11400000, guid: b7e33f813f60cb946a6c733871fd2a5a, type: 2}
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: gameClearText
       value: 

@@ -31,10 +31,10 @@ public class PlayerController : SingletonBehaviour<PlayerController>
     private TileColor myColor;
     private int curI, curJ; // 현재 플레이어가 위치한 좌표
     private int destI, destJ; // 최종 이동 장소로서 예약된 좌표 (플레이어 이동 중에는 현재좌표 != 도착좌표)
-    private Queue<Vector2Int> moveToQueue = new Queue<Vector2Int>(); // 한 번에 여러 칸 이동하기 위한 큐
+    private Queue<Vector2Int> moveToQueue = new Queue<Vector2Int>(); // 한 번에 여러 칸 이동하기 위해 다음에 이동할 타일을 나열한 큐
     private bool isMoving; // 현재 이동 중인지
     private int moveCount;
-    private LinkedList<PlayerMoveData> moveDataListToRedo = new LinkedList<PlayerMoveData>(); // 되돌리기를 위해 그 동안의 이동 데이터를 기록한 큐
+    private LinkedList<PlayerMoveData> moveDataListToRedo = new LinkedList<PlayerMoveData>(); // 되돌리기를 위해 그동안의 이동 데이터를 기록한 양방향 리스트
     private float lastRedoTime = 0f;
 
     private float keyboardNextFireTime = 0f;
@@ -70,7 +70,7 @@ public class PlayerController : SingletonBehaviour<PlayerController>
             keyboardNextFireTime = 0f; // 키 뗐을 때 초기화
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space))
             StartCoroutine(Redo());
     }
 #endif
@@ -249,7 +249,7 @@ public class PlayerController : SingletonBehaviour<PlayerController>
 
     private IEnumerator Redo()
     {
-        if (Time.time < lastRedoTime + moveTimePerTile || moveCount <= 0)
+        if (Time.time < lastRedoTime + moveTimePerTile || moveCount <= 0 || !GameManager.Instance.isGaming)
             yield break;    
         lastRedoTime = Time.time;
 

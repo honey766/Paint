@@ -6,6 +6,7 @@ public class GridBorderDrawer : MonoBehaviour
 {
     private Vector2Int gridSize = new Vector2Int(10, 10);
     public float lineWidth = 0.1f; // 선의 두께를 정하는 변수
+    public float eachBorderOffset;
 
     private MeshRenderer meshRenderer;
     private MeshFilter meshFilter;
@@ -40,10 +41,10 @@ public class GridBorderDrawer : MonoBehaviour
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
 
-        Vector3 topOffset = Vector3.down * lineWidth / 2f;
-        Vector3 bottomOffset = Vector3.up * lineWidth / 2f;
-        Vector3 leftOffset = Vector3.right * lineWidth / 2f;
-        Vector3 rightOffset = Vector3.left * lineWidth / 2f;
+        Vector3 topOffset = Vector3.down * (lineWidth / 2f - eachBorderOffset);
+        Vector3 bottomOffset = Vector3.up * (lineWidth / 2f - eachBorderOffset);
+        Vector3 leftOffset = Vector3.right * (lineWidth / 2f - eachBorderOffset);
+        Vector3 rightOffset = Vector3.left * (lineWidth / 2f - eachBorderOffset);
 
         // 1. 각 타일의 변을 기준으로 선분을 생성
         for (int i = 0; i < gridSize.x; i++)
