@@ -58,6 +58,6 @@ MonoBehaviour:
     color: 1
   paintList:
   - pos: {x: 0, y: 0}
-    isColor1: 1
+    color: 1
   - pos: {x: 4, y: 2}
-    isColor1: 0
+    color: 2

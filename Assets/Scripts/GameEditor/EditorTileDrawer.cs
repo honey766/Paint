@@ -5,9 +5,9 @@ public class EditorTileDrawer : MonoBehaviour
     [SerializeField] GameObject startText;
     [SerializeField] GameObject tile;
     [SerializeField] Transform tileParent;
-    [SerializeField] GameObject color1Paint, color2Paint;
+    [SerializeField] GameObject color1Paint, color2Paint, blackPaint;
     [SerializeField] Transform paintParent;
-    [SerializeField] Color gray, color1, color2, color12;
+    [SerializeField] Color white, color1, color2, color12, black;
 
     public GameObject AddTile(Vector2Int pos)
     {
@@ -20,7 +20,7 @@ public class EditorTileDrawer : MonoBehaviour
         switch (tileInfo.color)
         {
             case TileColor.None:
-                spriter.color = gray;
+                spriter.color = white;
                 break;
             case TileColor.Color1:
                 spriter.color = color1;
@@ -30,6 +30,9 @@ public class EditorTileDrawer : MonoBehaviour
                 break;
             case TileColor.Color1 | TileColor.Color2:
                 spriter.color = color12;
+                break;
+            case TileColor.Black:
+                spriter.color = black;
                 break;
         }
     }
@@ -51,11 +54,14 @@ public class EditorTileDrawer : MonoBehaviour
         startText.SetActive(false);
     }
 
-    public GameObject AddPaint(Vector2Int pos, bool isColor1)
+    public GameObject AddPaint(Vector2Int pos, TileColor color)
     {
-        if (isColor1)
+        if (color == TileColor.Color1)
             return Instantiate(color1Paint, (Vector2)pos, Quaternion.identity, paintParent);
-        else
+        else if (color == TileColor.Color2)
             return Instantiate(color2Paint, (Vector2)pos, Quaternion.identity, paintParent);
+        else if (color == TileColor.Black)
+            return Instantiate(blackPaint, (Vector2)pos, Quaternion.identity, paintParent);
+        return null;
     }
 }

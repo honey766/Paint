@@ -19,12 +19,12 @@ public struct TileData
 public struct PaintData
 {
     public Vector2Int pos;
-    public bool isColor1;
+    public TileColor color;
 
-    public PaintData(Vector2Int pos, bool isColor1)
+    public PaintData(Vector2Int pos, TileColor color)
     {
         this.pos = pos;
-        this.isColor1 = isColor1;
+        this.color = color;
     }
 }
 
@@ -45,11 +45,11 @@ public class BoardSO : ScriptableObject
         return dict;
     }
 
-    public Dictionary<Vector2Int, bool> GetPaintDict()
+    public Dictionary<Vector2Int, TileColor> GetPaintDict()
     {
-        var dict = new Dictionary<Vector2Int, bool>();
+        var dict = new Dictionary<Vector2Int, TileColor>();
         foreach (var entry in paintList)
-            dict[entry.pos] = entry.isColor1;
+            dict[entry.pos] = entry.color;
         return dict;
     }
 }

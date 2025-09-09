@@ -92,6 +92,6 @@ MonoBehaviour:
     color: 3
   paintList:
   - pos: {x: 3, y: 3}
-    isColor1: 1
+    color: 1
   - pos: {x: 6, y: 6}
-    isColor1: 0
+    color: 2

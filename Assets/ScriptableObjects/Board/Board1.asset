@@ -28,4 +28,4 @@ MonoBehaviour:
     color: 1
   paintList:
   - pos: {x: 2, y: 0}
-    isColor1: 1
+    color: 1

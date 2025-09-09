@@ -33,7 +33,8 @@ public enum TileColor
     None = 0,
     Color1 = 1 << 0,
     Color2 = 1 << 1,
-    Change = 1 << 2 // 플레이어 색깔을 바꾸는 타일
+    Black = 1 << 2,
+    Change = 1 << 3 // 플레이어 색깔을 바꾸는 타일
 }
 
 public class Board : SingletonBehaviour<Board>
@@ -51,9 +52,10 @@ public class Board : SingletonBehaviour<Board>
     private SpriteRenderer[,] tileRends; // 각 타일의 스프라이트 렌더러
 
     [Header("색칠 색")]
-    public Color gray;
+    public Color white;
+    public Color black;
     public ColorPaletteSO colorPallete;
-    public GridBorderDrawer color1Border, color2Border, color12Border;
+    public GridBorderDrawer color1Border, color2Border, color12Border, blackBorder;
     public float paintTime = 0.2f;
 
     private BoardSO boardSO;
@@ -106,7 +108,7 @@ public class Board : SingletonBehaviour<Board>
         foreach (var entry in boardSO.paintList)
         {
             Vector2Int grid = entry.pos;
-            board[grid.x, grid.y] = entry.isColor1 ? TileColor.Color1 : TileColor.Color2;
+            board[grid.x, grid.y] = entry.color;
             DrawTile(grid.x, grid.y);
 
             board[grid.x, grid.y].AddColor(TileColor.Change);
@@ -130,6 +132,7 @@ public class Board : SingletonBehaviour<Board>
         color1Border.InitBorder(colorPallete.color1, TileColor.Color1, n, m, answer);
         color2Border.InitBorder(colorPallete.color2, TileColor.Color2, n, m, answer);
         color12Border.InitBorder(colorPallete.color12, TileColor.Color1 | TileColor.Color2, n, m, answer);
+        blackBorder.InitBorder(black, TileColor.Black, n, m, answer);
     }
 
     /// <summary>
@@ -161,7 +164,7 @@ public class Board : SingletonBehaviour<Board>
         if (i < 0 || i >= n || j < 0 || j >= m) return false;               // 범위 체크
         if (addColor && (board[i, j] & (TileColor.Change | color)) != 0) return false;  // 이미 해당 색이 있거나 색 바꾸는 타일임
 
-        if (addColor) board[i, j].AddColor(color);  // 색 추가
+        if (color != TileColor.Black && addColor) board[i, j].AddColor(color);  // 색 추가
         else board[i, j] = color; // 색 대입
         DrawTile(i, j);
 
@@ -199,8 +202,8 @@ public class Board : SingletonBehaviour<Board>
     {
         foreach (Vector2Int pos in tileSet)
         {
-            tileRends[pos.x, pos.y].material.SetColor("_BaseColor", gray);
-            tileRends[pos.x, pos.y].material.SetColor("_AddColor", gray);
+            tileRends[pos.x, pos.y].material.SetColor("_BaseColor", white);
+            tileRends[pos.x, pos.y].material.SetColor("_AddColor", white);
         }
     }
 
@@ -245,7 +248,7 @@ public class Board : SingletonBehaviour<Board>
         switch (board[i, j])
         {
             case TileColor.None:
-                tileRends[i, j].material.SetColor("_AddColor", gray);
+                tileRends[i, j].material.SetColor("_AddColor", white);
                 break;
             case TileColor.Color1:
                 tileRends[i, j].material.SetColor("_AddColor", colorPallete.color1);
@@ -255,6 +258,9 @@ public class Board : SingletonBehaviour<Board>
                 break;
             case TileColor.Color1 | TileColor.Color2:
                 tileRends[i, j].material.SetColor("_AddColor", colorPallete.color12);
+                break;
+            case TileColor.Black:
+                tileRends[i, j].material.SetColor("_AddColor", black);
                 break;
         }
         StartCoroutine(ColorTileCoroutine(i, j));

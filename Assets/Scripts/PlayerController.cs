@@ -23,8 +23,8 @@ public class PlayerController : SingletonBehaviour<PlayerController>
     [Tooltip("타일 한 칸을 건너는 데 걸리는 시간")]
     public float moveTimePerTile;
     [Header("플레이어의 색")]
-    public Color gray;
-    public Color red, blue;
+    public Color white;
+    public Color black;
 
     public TextMeshProUGUI MoveCountText;
     public ParticleSystem particle;
@@ -215,8 +215,8 @@ public class PlayerController : SingletonBehaviour<PlayerController>
         switch (changeColor)
         {
             case TileColor.None:
-                spriter.color = gray;
-                main.startColor = gray;
+                spriter.color = white;
+                main.startColor = white;
                 break;
             case TileColor.Color1:
                 spriter.color = Board.Instance.colorPallete.color1;
@@ -225,6 +225,10 @@ public class PlayerController : SingletonBehaviour<PlayerController>
             case TileColor.Color2:
                 spriter.color = Board.Instance.colorPallete.color2;
                 main.startColor = Board.Instance.colorPallete.color2;
+                break;
+            case TileColor.Black:
+                spriter.color = black;
+                main.startColor = black;
                 break;
         }
     }

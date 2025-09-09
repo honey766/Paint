@@ -5,10 +5,10 @@ public enum TileEditingTool
 {
     None,
     GenerateTile,
-    ChangeTileColor1, ChangeTileColor2, ChangeTileColor12,
+    ChangeTileColor1, ChangeTileColor2, ChangeTileColor12, ChangeTileColorBlack,
     DeleteTile,
     SetStartPos,
-    AddColor1Paint, AddColor2Paint
+    AddColor1Paint, AddColor2Paint, AddBlackPaint
 }
 
 public class ToggleManager : SingletonBehaviour<ToggleManager>
@@ -24,7 +24,10 @@ public class ToggleManager : SingletonBehaviour<ToggleManager>
         ToggleController[] toggles = GetComponentsInChildren<ToggleController>();
         foreach (var toggle in toggles)
             toggleMap[toggle.tool] = toggle;
+    }
 
+    private void Start()
+    {
         Setup();
     }
 

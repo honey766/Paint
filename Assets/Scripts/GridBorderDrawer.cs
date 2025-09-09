@@ -8,6 +8,7 @@ public class GridBorderDrawer : MonoBehaviour
     public float lineWidth = 0.1f; // 선의 두께를 정하는 변수
     public float eachBorderOffset;
 
+    private TileColor myColor;
     private MeshRenderer meshRenderer;
     private MeshFilter meshFilter;
     private Mesh mesh;
@@ -24,6 +25,7 @@ public class GridBorderDrawer : MonoBehaviour
 
     public void InitBorder(Color borderColor, TileColor myColor, int n, int m, TileColor[,] answer)
     {
+        this.myColor = myColor;
         meshRenderer.material.color = borderColor;
         gridSize = new Vector2Int(n, m);
         isMyColor = new bool[gridSize.x, gridSize.y];
@@ -40,40 +42,51 @@ public class GridBorderDrawer : MonoBehaviour
     {
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
-
-        Vector3 topOffset = Vector3.down * (lineWidth / 2f - eachBorderOffset);
-        Vector3 bottomOffset = Vector3.up * (lineWidth / 2f - eachBorderOffset);
-        Vector3 leftOffset = Vector3.right * (lineWidth / 2f - eachBorderOffset);
-        Vector3 rightOffset = Vector3.left * (lineWidth / 2f - eachBorderOffset);
+        
+        Vector3 topOffset = Vector3.down * lineWidth / 2f;
+        Vector3 bottomOffset = Vector3.up * lineWidth / 2f;
+        Vector3 leftOffset = Vector3.right * lineWidth / 2f;
+        Vector3 rightOffset = Vector3.left * lineWidth / 2f;
 
         // 1. 각 타일의 변을 기준으로 선분을 생성
-        for (int i = 0; i < gridSize.x; i++)
+        foreach (Vector2Int pos in Board.Instance.tileSet)
         {
-            for (int j = 0; j < gridSize.y; j++)
+            int i = pos.x, j = pos.y;
+            if (isMyColor[i, j])
             {
-                if (isMyColor[i, j])
-                {
-                    Vector3 cornerBL = new Vector3(i - 0.5f, j - 0.5f, 0);
-                    Vector3 cornerBR = new Vector3(i + 0.5f, j - 0.5f, 0);
-                    Vector3 cornerTL = new Vector3(i - 0.5f, j + 0.5f, 0);
-                    Vector3 cornerTR = new Vector3(i + 0.5f, j + 0.5f, 0);
+                Vector3 cornerBL = new Vector3(i - 0.5f, j - 0.5f, 0);
+                Vector3 cornerBR = new Vector3(i + 0.5f, j - 0.5f, 0);
+                Vector3 cornerTL = new Vector3(i - 0.5f, j + 0.5f, 0);
+                Vector3 cornerTR = new Vector3(i + 0.5f, j + 0.5f, 0);
 
-                    if (j + 1 >= gridSize.y || !isMyColor[i, j + 1])
-                    {
+                if (j + 1 >= gridSize.y || !isMyColor[i, j + 1])
+                {
+                    //if (!Board.Instance.tileSet.Contains(new Vector2Int(i, j + 1)))
+                    if (IsNoColor(i, j + 1))
+                        AddLineQuad(vertices, triangles, cornerTL, cornerTR, lineWidth + eachBorderOffset, topOffset + Vector3.up * eachBorderOffset / 2f);
+                    else
                         AddLineQuad(vertices, triangles, cornerTL, cornerTR, lineWidth, topOffset);
-                    }
-                    if (j - 1 < 0 || !isMyColor[i, j - 1])
-                    {
+                }
+                if (j - 1 < 0 || !isMyColor[i, j - 1])
+                {
+                    if (IsNoColor(i, j - 1))
+                        AddLineQuad(vertices, triangles, cornerBL, cornerBR, lineWidth + eachBorderOffset, bottomOffset + Vector3.down * eachBorderOffset / 2f);
+                    else
                         AddLineQuad(vertices, triangles, cornerBL, cornerBR, lineWidth, bottomOffset);
-                    }
-                    if (i - 1 < 0 || !isMyColor[i - 1, j])
-                    {
+                }
+                if (i - 1 < 0 || !isMyColor[i - 1, j])
+                {
+                    if (IsNoColor(i - 1, j))
+                        AddLineQuad(vertices, triangles, cornerBL, cornerTL, lineWidth + eachBorderOffset, leftOffset + Vector3.left * eachBorderOffset / 2f);
+                    else
                         AddLineQuad(vertices, triangles, cornerBL, cornerTL, lineWidth, leftOffset);
-                    }
-                    if (i + 1 >= gridSize.x || !isMyColor[i + 1, j])
-                    {
+                }
+                if (i + 1 >= gridSize.x || !isMyColor[i + 1, j])
+                {
+                    if (IsNoColor(i + 1, j))
+                        AddLineQuad(vertices, triangles, cornerBR, cornerTR, lineWidth + eachBorderOffset, rightOffset + Vector3.right * eachBorderOffset / 2f);
+                    else
                         AddLineQuad(vertices, triangles, cornerBR, cornerTR, lineWidth, rightOffset);
-                    }
                 }
             }
         }
@@ -146,7 +159,7 @@ public class GridBorderDrawer : MonoBehaviour
     private void AddCornerQuad(List<Vector3> vertices, List<int> triangles, Vector3 center, float rotationDegrees)
     {
         int vertIndex = vertices.Count;
-        
+
         // 회전을 위해 쿼터니언을 사용
         Quaternion rotation = Quaternion.Euler(0, 0, rotationDegrees);
 
@@ -160,9 +173,16 @@ public class GridBorderDrawer : MonoBehaviour
         triangles.Add(vertIndex + 0);
         triangles.Add(vertIndex + 1);
         triangles.Add(vertIndex + 2);
-        
+
         triangles.Add(vertIndex + 0);
         triangles.Add(vertIndex + 2);
         triangles.Add(vertIndex + 3);
+    }
+
+    private bool IsNoColor(int i, int j)
+    {
+        if (0 <= i && i < gridSize.x && 0 <= j && j < gridSize.y)
+            return Board.Instance.answer[i, j] == TileColor.None;
+        return true;
     }
 }

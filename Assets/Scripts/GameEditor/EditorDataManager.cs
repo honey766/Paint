@@ -18,12 +18,12 @@ public struct EditorTileInfo
 public struct EditorPaintInfo
 {
     public GameObject paint;
-    public bool isColor1;
+    public TileColor color;
 
-    public EditorPaintInfo(GameObject paint, bool isColor1)
+    public EditorPaintInfo(GameObject paint, TileColor color)
     {
         this.paint = paint;
-        this.isColor1 = isColor1;
+        this.color = color;
     }
 }
 
@@ -69,6 +69,9 @@ public class EditorDataManager : MonoBehaviour
             case TileEditingTool.ChangeTileColor12: // Color12 색칠
                 ChangeTileColor(pos, TileColor.Color1 | TileColor.Color2);
                 break;
+            case TileEditingTool.ChangeTileColorBlack: // Black 색칠
+                ChangeTileColor(pos, TileColor.Black);
+                break;
             case TileEditingTool.DeleteTile: // 타일 삭제
                 DeleteTile(pos);
                 break;
@@ -76,10 +79,13 @@ public class EditorDataManager : MonoBehaviour
                 SetStartPos(pos);
                 break;
             case TileEditingTool.AddColor1Paint: // Color1 페인트 추가
-                AddPaint(pos, true);
+                AddPaint(pos, TileColor.Color1);
                 break;
             case TileEditingTool.AddColor2Paint: // Color2 페인트 추가
-                AddPaint(pos, false);
+                AddPaint(pos, TileColor.Color2);
+                break;
+            case TileEditingTool.AddBlackPaint: // Black 페인트 추가
+                AddPaint(pos, TileColor.Black);
                 break;
         }
     }
@@ -180,13 +186,13 @@ public class EditorDataManager : MonoBehaviour
         }
     }
 
-    private void AddPaint(Vector2Int pos, bool isColor1)
+    private void AddPaint(Vector2Int pos, TileColor color)
     {
         bool existPaint = false;
         EditorPaintInfo paintValue;
         if (paints.TryGetValue(pos, out paintValue))
         {
-            if (paintValue.isColor1 == isColor1)
+            if (paintValue.color == color)
                 return;
             existPaint = true;
         }
@@ -196,11 +202,11 @@ public class EditorDataManager : MonoBehaviour
             if (existPaint)
                 Destroy(paintValue.paint);
 
-            GameObject paintObj = tileDrawer.AddPaint(pos, isColor1);
-            paints[pos] = new EditorPaintInfo(paintObj, isColor1);
+            GameObject paintObj = tileDrawer.AddPaint(pos, color);
+            paints[pos] = new EditorPaintInfo(paintObj, color);
             
             // 페인트 자리는 실제 타일의 색은 상관이 없고 미관상 색칠함
-            ChangeTileColor(pos, tileValue, isColor1 ? TileColor.Color1 : TileColor.Color2);
+            ChangeTileColor(pos, tileValue, color);
         }
     }
 
@@ -234,7 +240,7 @@ public class EditorDataManager : MonoBehaviour
         foreach (var entry in paints)
         {
             Vector2Int pos = entry.Key - new Vector2Int(minX, minY);
-            paintList.Add(new PaintData(pos, entry.Value.isColor1));
+            paintList.Add(new PaintData(pos, entry.Value.color));
         }
 
         BoardSO board = new BoardSO();
@@ -255,7 +261,7 @@ public class EditorDataManager : MonoBehaviour
         }
         foreach (var entry in sourceBoardSO.paintList)
         {
-            AddPaint(entry.pos, entry.isColor1);
+            AddPaint(entry.pos, entry.color);
         }
         SetStartPos(sourceBoardSO.startPos);
     }
