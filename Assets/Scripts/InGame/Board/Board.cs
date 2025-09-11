@@ -54,15 +54,16 @@ public class Board : SingletonBehaviour<Board>
     [Header("색칠 색")]
     public Color white;
     public Color black;
-    public ColorPaletteSO colorPallete;
     public GridBorderDrawer color1Border, color2Border, color12Border, blackBorder;
     public float paintTime = 0.2f;
 
     private BoardSO boardSO;
+    private ColorPaletteSO colorPaletteSO;
 
     public void InitBoard(BoardSO boardSO)
     {
         this.boardSO = boardSO;
+        this.colorPaletteSO = PersistentDataManager.Instance.colorPaletteSO;
         this.n = boardSO.n; this.m = boardSO.m;
         board = new TileColor[n, m];
         answer = new TileColor[n, m];
@@ -129,9 +130,9 @@ public class Board : SingletonBehaviour<Board>
         //     Instantiate(changeFlag, pos, Quaternion.identity, changeFlagParent);
         // }
 
-        color1Border.InitBorder(colorPallete.color1, TileColor.Color1, n, m, answer);
-        color2Border.InitBorder(colorPallete.color2, TileColor.Color2, n, m, answer);
-        color12Border.InitBorder(colorPallete.color12, TileColor.Color1 | TileColor.Color2, n, m, answer);
+        color1Border.InitBorder(colorPaletteSO.color1, TileColor.Color1, n, m, answer);
+        color2Border.InitBorder(colorPaletteSO.color2, TileColor.Color2, n, m, answer);
+        color12Border.InitBorder(colorPaletteSO.color12, TileColor.Color1 | TileColor.Color2, n, m, answer);
         blackBorder.InitBorder(black, TileColor.Black, n, m, answer);
     }
 
@@ -164,6 +165,7 @@ public class Board : SingletonBehaviour<Board>
         if (i < 0 || i >= n || j < 0 || j >= m) return false;               // 범위 체크
         if (addColor && (board[i, j] & (TileColor.Change | color)) != 0) return false;  // 이미 해당 색이 있거나 색 바꾸는 타일임
 
+        if (board[i, j].HasFlag(TileColor.Black) && addColor) return true;
         if (color != TileColor.Black && addColor) board[i, j].AddColor(color);  // 색 추가
         else board[i, j] = color; // 색 대입
         DrawTile(i, j);
@@ -251,13 +253,13 @@ public class Board : SingletonBehaviour<Board>
                 tileRends[i, j].material.SetColor("_AddColor", white);
                 break;
             case TileColor.Color1:
-                tileRends[i, j].material.SetColor("_AddColor", colorPallete.color1);
+                tileRends[i, j].material.SetColor("_AddColor", colorPaletteSO.color1);
                 break;
             case TileColor.Color2:
-                tileRends[i, j].material.SetColor("_AddColor", colorPallete.color2);
+                tileRends[i, j].material.SetColor("_AddColor", colorPaletteSO.color2);
                 break;
             case TileColor.Color1 | TileColor.Color2:
-                tileRends[i, j].material.SetColor("_AddColor", colorPallete.color12);
+                tileRends[i, j].material.SetColor("_AddColor", colorPaletteSO.color12);
                 break;
             case TileColor.Black:
                 tileRends[i, j].material.SetColor("_AddColor", black);

@@ -95,12 +95,13 @@ public class EditorDataManager : MonoBehaviour
         if (!CanSave()) return;
 
         string name = (sourceBoardSO == null ? "Board1" : sourceBoardSO.name) 
-                      +" (Assets/ScriptableObjects/Board에 저장해 주세요)";
-        string path = EditorUtility.SaveFilePanelInProject("Save Board Data", name, "asset", "Save board data to an asset file.");
+                      +" (Assets/Resources/ScriptableObjects/Board/Stage{N}에 저장해 주세요)";
+	string path = "Assets/Resources/ScriptableObjects/Board/";
+	string fullPath = EditorUtility.SaveFilePanelInProject("Save Board Data", name, "asset", "Save board data to an asset file.", path);
         if (!string.IsNullOrEmpty(path))
         {
             BoardSO boardData = GetBoardSOData();
-            AssetDatabase.CreateAsset(boardData, path);
+            AssetDatabase.CreateAsset(boardData, fullPath);
             AssetDatabase.SaveAssets();
             Debug.Log("Board Data saved.");
         }

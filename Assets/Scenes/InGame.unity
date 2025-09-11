@@ -1907,7 +1907,7 @@ PrefabInstance:
     - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: colorPallete
       value: 
-      objectReference: {fileID: 11400000, guid: a5a2a4f9f398c954198f6fe416bae737, type: 2}
+      objectReference: {fileID: 11400000, guid: 5c511dbc8ff7c6e4fbf00ce49df9504e, type: 2}
     - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: color12Border
       value: 

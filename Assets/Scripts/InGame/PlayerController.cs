@@ -219,12 +219,12 @@ public class PlayerController : SingletonBehaviour<PlayerController>
                 main.startColor = white;
                 break;
             case TileColor.Color1:
-                spriter.color = Board.Instance.colorPallete.color1;
-                main.startColor = Board.Instance.colorPallete.color1;
+                spriter.color = PersistentDataManager.Instance.colorPaletteSO.color1;
+                main.startColor = PersistentDataManager.Instance.colorPaletteSO.color1;
                 break;
             case TileColor.Color2:
-                spriter.color = Board.Instance.colorPallete.color2;
-                main.startColor = Board.Instance.colorPallete.color2;
+                spriter.color = PersistentDataManager.Instance.colorPaletteSO.color2;
+                main.startColor = PersistentDataManager.Instance.colorPaletteSO.color2;
                 break;
             case TileColor.Black:
                 spriter.color = black;
