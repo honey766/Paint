@@ -165,12 +165,13 @@ public class Board : SingletonBehaviour<Board>
     }
 
     /// <summary>
-    /// board와 answer가 같은지 검사
+    /// board와 answer가 같은지 검사. 알고리즘은 임시 알고리즘
     /// </summary>
     public bool IsClear()
     {
         foreach (Vector2Int pos in tileSet)
             if (!board[pos.x, pos.y].HasFlag(TileColor.Change)
+                && answer[pos.x, pos.y] == (TileColor.Color1 | TileColor.Color2)
                 && board[pos.x, pos.y] != answer[pos.x, pos.y])
                 return false;
         return true;
