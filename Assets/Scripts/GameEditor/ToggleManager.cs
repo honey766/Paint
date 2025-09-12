@@ -8,7 +8,7 @@ public enum TileEditingTool
     ChangeTileColor1, ChangeTileColor2, ChangeTileColor12, ChangeTileColorBlack,
     DeleteTile,
     SetStartPos,
-    AddColor1Paint, AddColor2Paint, AddBlackPaint
+    AddColor1Paint, AddColor2Paint, AddBlackPaint, AddReversePaint
 }
 
 public class ToggleManager : SingletonBehaviour<ToggleManager>

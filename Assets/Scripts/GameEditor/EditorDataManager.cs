@@ -87,6 +87,9 @@ public class EditorDataManager : MonoBehaviour
             case TileEditingTool.AddBlackPaint: // Black 페인트 추가
                 AddPaint(pos, TileColor.Black);
                 break;
+            case TileEditingTool.AddReversePaint:
+                AddPaint(pos, TileColor.Reverse);
+                break;
         }
     }
 
@@ -94,10 +97,11 @@ public class EditorDataManager : MonoBehaviour
     {
         if (!CanSave()) return;
 
-        string name = (sourceBoardSO == null ? "Board1" : sourceBoardSO.name) 
+        string name = (sourceBoardSO == null ? "Stage1Board1" : sourceBoardSO.name) 
                       +" (Assets/Resources/ScriptableObjects/Board/Stage{N}에 저장해 주세요)";
-	string path = "Assets/Resources/ScriptableObjects/Board/";
-	string fullPath = EditorUtility.SaveFilePanelInProject("Save Board Data", name, "asset", "Save board data to an asset file.", path);
+	    string path = "Assets/Resources/ScriptableObjects/Board/";
+	    string fullPath = EditorUtility.SaveFilePanelInProject(
+                          "Save Board Data", name, "asset", "Save board data to an asset file.", path);
         if (!string.IsNullOrEmpty(path))
         {
             BoardSO boardData = GetBoardSOData();

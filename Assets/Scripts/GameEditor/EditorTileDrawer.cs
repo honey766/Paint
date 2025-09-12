@@ -5,7 +5,7 @@ public class EditorTileDrawer : MonoBehaviour
     [SerializeField] GameObject startText;
     [SerializeField] GameObject tile;
     [SerializeField] Transform tileParent;
-    [SerializeField] GameObject color1Paint, color2Paint, blackPaint;
+    [SerializeField] GameObject color1Paint, color2Paint, blackPaint, reversePaint;
     [SerializeField] Transform paintParent;
     [SerializeField] Color white, color1, color2, color12, black;
 
@@ -62,6 +62,8 @@ public class EditorTileDrawer : MonoBehaviour
             return Instantiate(color2Paint, (Vector2)pos, Quaternion.identity, paintParent);
         else if (color == TileColor.Black)
             return Instantiate(blackPaint, (Vector2)pos, Quaternion.identity, paintParent);
+        else if (color == TileColor.Reverse)
+            return Instantiate(reversePaint, (Vector2)pos, Quaternion.identity, paintParent);
         return null;
     }
 }

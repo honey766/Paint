@@ -210,21 +210,29 @@ public class PlayerController : SingletonBehaviour<PlayerController>
 
     private void ChangeColor(TileColor changeColor)
     {
-        myColor = changeColor;
+        if (changeColor == TileColor.Reverse) myColor = (myColor == TileColor.Color1) ? TileColor.Color2 : TileColor.Color1;
+        else myColor = changeColor;
         var main = particle.main;
-        switch (changeColor)
+
+        ColorPaletteSO colorPalette;
+        if (GameManager.Instance.startGameDirectlyAtInGameScene)
+            colorPalette = Board.Instance.colorPaletteSO;
+        else
+            colorPalette = PersistentDataManager.Instance.colorPaletteSO;
+
+        switch (myColor)
         {
             case TileColor.None:
                 spriter.color = white;
                 main.startColor = white;
                 break;
             case TileColor.Color1:
-                spriter.color = PersistentDataManager.Instance.colorPaletteSO.color1;
-                main.startColor = PersistentDataManager.Instance.colorPaletteSO.color1;
+                spriter.color = colorPalette.color1;
+                main.startColor = colorPalette.color1;
                 break;
             case TileColor.Color2:
-                spriter.color = PersistentDataManager.Instance.colorPaletteSO.color2;
-                main.startColor = PersistentDataManager.Instance.colorPaletteSO.color2;
+                spriter.color = colorPalette.color2;
+                main.startColor = colorPalette.color2;
                 break;
             case TileColor.Black:
                 spriter.color = black;

@@ -34,15 +34,16 @@ public enum TileColor
     Color1 = 1 << 0,
     Color2 = 1 << 1,
     Black = 1 << 2,
-    Change = 1 << 3 // 플레이어 색깔을 바꾸는 타일
+    Reverse = 1 << 3, // 플레이어의 색깔을 Color1 <-> Color2로 전환시키는 페인트
+    Change = 1 << 4 // 플레이어 색깔을 바꾸는 타일
 }
 
 public class Board : SingletonBehaviour<Board>
 {
     public Transform tileParent;
     public GameObject tile;
-    public Transform changeFlagParent;
-    public GameObject changeFlag;
+    public Transform paintParent;
+    public GameObject paint, reversePaint;
 
     public TileColor[,] board;  // 현재 보드 상태
     public TileColor[,] answer; // 목표 보드 상태
@@ -58,12 +59,17 @@ public class Board : SingletonBehaviour<Board>
     public float paintTime = 0.2f;
 
     private BoardSO boardSO;
-    private ColorPaletteSO colorPaletteSO;
+
+    [Header("InGame씬에서 바로 실행하기 (GameManager에서 설정)")]
+    public ColorPaletteSO colorPaletteSO;
 
     public void InitBoard(BoardSO boardSO)
     {
         this.boardSO = boardSO;
-        this.colorPaletteSO = PersistentDataManager.Instance.colorPaletteSO;
+        if (!GameManager.Instance.startGameDirectlyAtInGameScene)
+        {
+            this.colorPaletteSO = PersistentDataManager.Instance.colorPaletteSO;
+        }
         this.n = boardSO.n; this.m = boardSO.m;
         board = new TileColor[n, m];
         answer = new TileColor[n, m];
@@ -115,7 +121,7 @@ public class Board : SingletonBehaviour<Board>
             board[grid.x, grid.y].AddColor(TileColor.Change);
 
             Vector2 pos = new Vector2(grid.x, grid.y) - new Vector2((n - 1) / 2f, (m - 1) / 2f);
-            Instantiate(changeFlag, pos, Quaternion.identity, changeFlagParent);
+            InstantiatePaint(pos, entry.color);
         }
         // for (int i = 0; i < 2; i++)
         // {
@@ -134,6 +140,20 @@ public class Board : SingletonBehaviour<Board>
         color2Border.InitBorder(colorPaletteSO.color2, TileColor.Color2, n, m, answer);
         color12Border.InitBorder(colorPaletteSO.color12, TileColor.Color1 | TileColor.Color2, n, m, answer);
         blackBorder.InitBorder(black, TileColor.Black, n, m, answer);
+    }
+
+    private void InstantiatePaint(Vector2 pos, TileColor color)
+    {
+        if (color == TileColor.Reverse)
+        {
+            GameObject obj = Instantiate(reversePaint, pos, Quaternion.identity, paintParent);
+            obj.transform.GetChild(0).GetComponent<SpriteRenderer>().color = colorPaletteSO.color1;
+            obj.transform.GetChild(1).GetComponent<SpriteRenderer>().color = colorPaletteSO.color2;
+        }
+        else
+        {
+            Instantiate(paint, pos, Quaternion.identity, paintParent);
+        }
     }
 
     /// <summary>
@@ -263,6 +283,9 @@ public class Board : SingletonBehaviour<Board>
                 break;
             case TileColor.Black:
                 tileRends[i, j].material.SetColor("_AddColor", black);
+                break;
+            case TileColor.Reverse:
+                tileRends[i, j].material.SetColor("_AddColor", (colorPaletteSO.color12 + 2 * Color.white) / 3f);
                 break;
         }
         StartCoroutine(ColorTileCoroutine(i, j));

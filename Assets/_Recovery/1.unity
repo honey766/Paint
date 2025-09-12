@@ -482,7 +482,7 @@ GameObject:
   m_Component:
   - component: {fileID: 464462509}
   m_Layer: 0
-  m_Name: Paints
+  m_Name: Flags
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1803,7 +1803,7 @@ PrefabInstance:
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: boardSO
       value: 
-      objectReference: {fileID: 11400000, guid: a706e58d9a7fa7c4c80ce8245db2dc6e, type: 2}
+      objectReference: {fileID: 11400000, guid: a8d1e973157c5ec4e98b6ee6202cf05e, type: 2}
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: gameClearText
       value: 
@@ -1861,10 +1861,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
-      propertyPath: paint
-      value: 
-      objectReference: {fileID: 8272001791060735548, guid: 7f4e610646b840a44a084efc5e8bdd7a, type: 3}
-    - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: black.a
       value: 1
       objectReference: {fileID: 0}
@@ -1905,10 +1901,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2040676734}
     - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
-      propertyPath: paintParent
-      value: 
-      objectReference: {fileID: 464462509}
-    - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: color1Border
       value: 
       objectReference: {fileID: 747207207}
@@ -1921,17 +1913,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 5c511dbc8ff7c6e4fbf00ce49df9504e, type: 2}
     - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
-      propertyPath: reversePaint
-      value: 
-      objectReference: {fileID: 7345673020350407220, guid: 43ec45d823000c44ebe01dca8a12c3b7, type: 3}
-    - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: color12Border
       value: 
       objectReference: {fileID: 1777180776}
-    - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
-      propertyPath: colorPaletteSO
-      value: 
-      objectReference: {fileID: 11400000, guid: a5a2a4f9f398c954198f6fe416bae737, type: 2}
     - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: changeFlagParent
       value: 

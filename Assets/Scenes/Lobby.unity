@@ -763,7 +763,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PersistentDataManager
   stage: 1
   board: 1
-  colorPaletteSO: {fileID: 11400000, guid: 5c511dbc8ff7c6e4fbf00ce49df9504e, type: 2}
+  colorPaletteSO: {fileID: 11400000, guid: a5a2a4f9f398c954198f6fe416bae737, type: 2}
 --- !u!4 &871772422
 Transform:
   m_ObjectHideFlags: 0
@@ -1468,7 +1468,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageButton
   stage: 1
-  board: 1
+  board: 9
 --- !u!114 &1293557541
 MonoBehaviour:
   m_ObjectHideFlags: 0
