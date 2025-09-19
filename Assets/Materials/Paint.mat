@@ -65,7 +65,7 @@ Material:
     - _randomNoise: 0
     - _ratio: 0
     m_Colors:
-    - _AddColor: {r: 1, g: 0, b: 0, a: 1}
+    - _AddColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

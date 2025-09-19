@@ -8,12 +8,13 @@ public class GridBorderDrawer : MonoBehaviour
     public float lineWidth = 0.1f; // 선의 두께를 정하는 변수
     public float eachBorderOffset;
 
-    private TileColor myColor;
+    private TileType myColor;
     private MeshRenderer meshRenderer;
     private MeshFilter meshFilter;
     private Mesh mesh;
 
     private bool[,] isMyColor;
+    private TileType[,] answer;
 
     void Awake()
     {
@@ -23,8 +24,16 @@ public class GridBorderDrawer : MonoBehaviour
         meshFilter.mesh = mesh;
     }
 
-    public void InitBorder(Color borderColor, TileColor myColor, int n, int m, TileColor[,] answer)
+    public void InitBorder(Color borderColor, TileType myColor, int n, int m, Dictionary<Vector2Int, TileType> target)
     {
+        answer = new TileType[n, m];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < m; j++)
+                if (target.TryGetValue(new Vector2Int(i, j), out TileType type))
+                    answer[i, j] = type;
+                else
+                    answer[i, j] = TileType.None;
+                
         this.myColor = myColor;
         meshRenderer.material.color = borderColor;
         gridSize = new Vector2Int(n, m);
@@ -49,7 +58,7 @@ public class GridBorderDrawer : MonoBehaviour
         Vector3 rightOffset = Vector3.left * lineWidth / 2f;
 
         // 1. 각 타일의 변을 기준으로 선분을 생성
-        foreach (Vector2Int pos in Board.Instance.tileSet)
+        foreach (Vector2Int pos in Board.Instance.target.Keys)
         {
             int i = pos.x, j = pos.y;
             if (isMyColor[i, j])
@@ -182,7 +191,7 @@ public class GridBorderDrawer : MonoBehaviour
     private bool IsNoColor(int i, int j)
     {
         if (0 <= i && i < gridSize.x && 0 <= j && j < gridSize.y)
-            return Board.Instance.answer[i, j] == TileColor.None;
+            return answer[i, j] == TileType.None;
         return true;
     }
 }

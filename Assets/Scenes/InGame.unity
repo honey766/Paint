@@ -1803,7 +1803,7 @@ PrefabInstance:
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: boardSO
       value: 
-      objectReference: {fileID: 11400000, guid: a706e58d9a7fa7c4c80ce8245db2dc6e, type: 2}
+      objectReference: {fileID: 11400000, guid: 732cb2754735fbe4c9b6a362dbed724f, type: 2}
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: gameClearText
       value: 
@@ -1936,6 +1936,10 @@ PrefabInstance:
       propertyPath: changeFlagParent
       value: 
       objectReference: {fileID: 464462509}
+    - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
+      propertyPath: tileFactoryConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: f5614454373b8bf458ec08b48e5adf88, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

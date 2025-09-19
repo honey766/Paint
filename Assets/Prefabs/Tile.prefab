@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5839738889382196197}
   - component: {fileID: 8492525586301938690}
   - component: {fileID: 549828326403050809}
+  - component: {fileID: 8324793263350878440}
   m_Layer: 3
   m_Name: Tile
   m_TagString: Untagged
@@ -135,5 +136,17 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.64, y: 0.64}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &8324793263350878440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027016407075962624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2aeff0eecf54c034b9e214c512f0c129, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NormalTile

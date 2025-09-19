@@ -3,27 +3,29 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-public struct EditorTileInfo
+public class EditorTileInfo
 {
     public GameObject tile;
-    public TileColor color;
+    public SpriteRenderer spriter;
+    public TileType type;
 
-    public EditorTileInfo(GameObject tile, TileColor color)
+    public EditorTileInfo(GameObject tile, TileType type)
     {
         this.tile = tile;
-        this.color = color;
+        this.spriter = tile.GetComponent<SpriteRenderer>();
+        this.type = type;
     }
 }
 
-public struct EditorPaintInfo
+public class EditorTargetInfo
 {
-    public GameObject paint;
-    public TileColor color;
+    public GameObject target;
+    public TileType type;
 
-    public EditorPaintInfo(GameObject paint, TileColor color)
+    public EditorTargetInfo(GameObject target, TileType type)
     {
-        this.paint = paint;
-        this.color = color;
+        this.target = target;
+        this.type = type;
     }
 }
 
@@ -34,12 +36,15 @@ public class EditorDataManager : MonoBehaviour
     [SerializeField] private BoardSO sourceBoardSO;
     private Vector2Int startPos;
     private Dictionary<Vector2Int, EditorTileInfo> tiles;
-    private Dictionary<Vector2Int, EditorPaintInfo> paints;
+    private Dictionary<Vector2Int, GameObject> specialTileObjects;
+    private Dictionary<Vector2Int, EditorTargetInfo> targets;
 
     private void Start()
     {
         tiles = new Dictionary<Vector2Int, EditorTileInfo>();
-        paints = new Dictionary<Vector2Int, EditorPaintInfo>();
+        specialTileObjects = new Dictionary<Vector2Int, GameObject>();
+        targets = new Dictionary<Vector2Int, EditorTargetInfo>();
+
         if (sourceBoardSO != null)
         {
             LoadBoardSO();
@@ -61,16 +66,16 @@ public class EditorDataManager : MonoBehaviour
                 AddTile(pos);
                 break;
             case TileEditingTool.ChangeTileColor1: // Color1 색칠
-                ChangeTileColor(pos, TileColor.Color1);
+                ChangeTileColor(pos, TileType.Color1);
                 break;
             case TileEditingTool.ChangeTileColor2: // Color2 색칠
-                ChangeTileColor(pos, TileColor.Color2);
+                ChangeTileColor(pos, TileType.Color2);
                 break;
             case TileEditingTool.ChangeTileColor12: // Color12 색칠
-                ChangeTileColor(pos, TileColor.Color1 | TileColor.Color2);
+                ChangeTileColor(pos, TileType.Color12);
                 break;
             case TileEditingTool.ChangeTileColorBlack: // Black 색칠
-                ChangeTileColor(pos, TileColor.Black);
+                ChangeTileColor(pos, TileType.Black);
                 break;
             case TileEditingTool.DeleteTile: // 타일 삭제
                 DeleteTile(pos);
@@ -78,17 +83,17 @@ public class EditorDataManager : MonoBehaviour
             case TileEditingTool.SetStartPos: // 시작 위치 설정
                 SetStartPos(pos);
                 break;
+            case TileEditingTool.AddTarget: // target영역 추가
+                AddTarget(pos, TileType.Color12);
+                break;
             case TileEditingTool.AddColor1Paint: // Color1 페인트 추가
-                AddPaint(pos, TileColor.Color1);
+                AddObject(pos, TileType.Color1Paint);
                 break;
             case TileEditingTool.AddColor2Paint: // Color2 페인트 추가
-                AddPaint(pos, TileColor.Color2);
-                break;
-            case TileEditingTool.AddBlackPaint: // Black 페인트 추가
-                AddPaint(pos, TileColor.Black);
+                AddObject(pos, TileType.Color2Paint);
                 break;
             case TileEditingTool.AddReversePaint:
-                AddPaint(pos, TileColor.Reverse);
+                AddObject(pos, TileType.ReversePaint);
                 break;
         }
     }
@@ -107,7 +112,7 @@ public class EditorDataManager : MonoBehaviour
             BoardSO boardData = GetBoardSOData();
             AssetDatabase.CreateAsset(boardData, fullPath);
             AssetDatabase.SaveAssets();
-            Debug.Log("Board Data saved.");
+            Logger.Log("Board Data saved.");
         }
     }
 
@@ -115,17 +120,12 @@ public class EditorDataManager : MonoBehaviour
     {
         if (startPos == new Vector2Int(100000, 100000))
         {
-            Debug.LogWarning("플레이어가 시작할 위치를 선택해 주세요");
+            Logger.LogWarning("플레이어가 시작할 위치를 선택해 주세요");
             return false;
         }
         if (tiles.Count == 0)
         {
-            Debug.LogWarning("타일을 생성해 주세요");
-            return false;
-        }
-        if (paints.Count == 0)
-        {
-            Debug.LogWarning("페인트가 지정되어 있지 않아 저장할 수 없습니다.");
+            Logger.LogWarning("타일을 생성해 주세요");
             return false;
         }
 
@@ -138,48 +138,60 @@ public class EditorDataManager : MonoBehaviour
             return;
 
         GameObject tileObj = tileDrawer.AddTile(pos);
-        tiles[pos] = new EditorTileInfo(tileObj, TileColor.None);
+        tiles[pos] = new EditorTileInfo(tileObj, TileType.White);
     }
 
-    private void ChangeTileColor(Vector2Int pos, TileColor color)
+    private void ChangeTileColor(Vector2Int pos, TileType color)
     {
-        if (paints.ContainsKey(pos))
-            return;
-
-        if (tiles.TryGetValue(pos, out EditorTileInfo tileValue))
+        if (tiles.TryGetValue(pos, out EditorTileInfo tileInfo))
         {
-            ChangeTileColor(pos, tileValue, color);
+            if (!tileInfo.type.IsSpecialTile())
+                ChangeTileColor(pos, tileInfo, color);
         }
     }
 
     private void DeleteTile(Vector2Int pos)
     {
-        // 페인트 먼저 삭제
-        if (paints.TryGetValue(pos, out EditorPaintInfo paintValue))
+        if (!tiles.TryGetValue(pos, out EditorTileInfo tileInfo))
+            return;
+
+        // 타겟 위치라면 타겟 삭제
+        if (targets.TryGetValue(pos, out EditorTargetInfo targetInfo))
         {
-            tileDrawer.DeleteTile(paintValue.paint);
-            paints.Remove(pos);
+            tileDrawer.DeleteTile(targetInfo.target);
+            targets.Remove(pos);
+            tileDrawer.UpdateTarget(pos, targets);
         }
-        // 타일
-        else if (tiles.TryGetValue(pos, out EditorTileInfo tileValue))
+        // 타일이 색칠되어 있지 않다면 타일 삭제
+        else if (tileInfo.type == TileType.White)
         {
-            // 타일이 색칠되어 있지 않다면 타일 삭제
-            if (tileValue.color == TileColor.None)
+            tileDrawer.DeleteTile(tileInfo.tile);
+            tiles.Remove(pos);
+            if (startPos == pos)
             {
-                tileDrawer.DeleteTile(tileValue.tile);
-                tiles.Remove(pos);
-                if (startPos == pos)
-                {
-                    tileDrawer.DeleteStartText();
-                    startPos = new Vector2Int(100000, 100000);
-                }
-            }
-            // 타일에 색칠되어 있다면 색깔 삭제
-            else
-            {
-                ChangeTileColor(pos, tileValue, TileColor.None);
+                tileDrawer.DeleteStartText();
+                startPos = new Vector2Int(100000, 100000);
             }
         }
+        else
+        {
+            Logger.Log($"type : {tileInfo.type}");
+            // 특수타일이라면 특수타일 오브젝트 삭제 후 White로 바꿈
+            if (tileInfo.type.IsSpecialTile())
+            {
+                tileDrawer.DeleteTile(specialTileObjects[pos]);
+                specialTileObjects.Remove(pos);
+                Logger.Log($"deleted {pos}");
+            }
+            ChangeTileColor(pos, tileInfo, TileType.White);
+        }
+    }
+
+    private void ChangeTileColor(Vector2Int pos, EditorTileInfo tileInfo, TileType color)
+    {
+        tileInfo.type = color;
+        tileDrawer.ChangeTileColor(tileInfo);
+        tiles[pos] = tileInfo;
     }
 
     private void SetStartPos(Vector2Int pos)
@@ -191,35 +203,38 @@ public class EditorDataManager : MonoBehaviour
         }
     }
 
-    private void AddPaint(Vector2Int pos, TileColor color)
+    private void AddTarget(Vector2Int pos, TileType color)
     {
-        bool existPaint = false;
-        EditorPaintInfo paintValue;
-        if (paints.TryGetValue(pos, out paintValue))
-        {
-            if (paintValue.color == color)
-                return;
-            existPaint = true;
-        }
+        if (targets.ContainsKey(pos) || !tiles.ContainsKey(pos))
+            return;
 
-        if (tiles.TryGetValue(pos, out EditorTileInfo tileValue))
-        {
-            if (existPaint)
-                Destroy(paintValue.paint);
-
-            GameObject paintObj = tileDrawer.AddPaint(pos, color);
-            paints[pos] = new EditorPaintInfo(paintObj, color);
-            
-            // 페인트 자리는 실제 타일의 색은 상관이 없고 미관상 색칠함
-            ChangeTileColor(pos, tileValue, color);
-        }
+        GameObject targetObj = tileDrawer.AddTarget(pos, color, targets);
+        targets[pos] = new EditorTargetInfo(targetObj, color);
     }
 
-    private void ChangeTileColor(Vector2Int pos, EditorTileInfo tileValue, TileColor color)
+    private void AddObject(Vector2Int pos, TileType type)
     {
-        tileValue.color = color;
-        tileDrawer.ChangeTileColor(tileValue);
-        tiles[pos] = tileValue;
+        if (!tiles.TryGetValue(pos, out EditorTileInfo tileInfo))
+            return;
+
+        if (tileInfo.type.IsSpecialTile())
+            Destroy(specialTileObjects[pos]);
+
+        tileInfo.type = type;
+        tiles[pos] = tileInfo;
+
+        GameObject tileObj = tileDrawer.AddObject(pos, type);
+        specialTileObjects[pos] = tileObj;
+
+        // 특수타일별 추가 처리
+        switch (type)
+        {
+            case TileType.Color1Paint:
+            case TileType.Color2Paint:
+            case TileType.ReversePaint:
+                tileDrawer.ChangeTileColor(tileInfo);
+                break;
+        }
     }
 
     private BoardSO GetBoardSOData()
@@ -227,8 +242,8 @@ public class EditorDataManager : MonoBehaviour
         int minX, maxX, minY, maxY;
         minX = minY = 100000000;
         maxX = maxY = -100000000;
-        List<TileData> tileList = new List<TileData>();
-        List<PaintData> paintList = new List<PaintData>();
+        List<BoardSOTileData> boardTileList = new List<BoardSOTileData>();
+        List<BoardSOTileData> targetTileList = new List<BoardSOTileData>();
 
         foreach (var pos in tiles.Keys)
         {
@@ -240,33 +255,35 @@ public class EditorDataManager : MonoBehaviour
         foreach (var entry in tiles)
         {
             Vector2Int pos = entry.Key - new Vector2Int(minX, minY);
-            tileList.Add(new TileData(pos, entry.Value.color));
+            boardTileList.Add(new BoardSOTileData(pos, entry.Value.type));
         }
-        foreach (var entry in paints)
+        foreach (var entry in targets)
         {
             Vector2Int pos = entry.Key - new Vector2Int(minX, minY);
-            paintList.Add(new PaintData(pos, entry.Value.color));
+            targetTileList.Add(new BoardSOTileData(pos, entry.Value.type));
         }
 
         BoardSO board = new BoardSO();
         board.n = maxX - minX + 1;
         board.m = maxY - minY + 1;
         board.startPos = startPos - new Vector2Int(minX, minY);
-        board.tileList = tileList;
-        board.paintList = paintList;
+        board.boardTileList = boardTileList;
+        board.targetTileList = targetTileList;
         return board;
     }
 
     private void LoadBoardSO()
     {
-        foreach (var entry in sourceBoardSO.tileList)
+        foreach (var entry in sourceBoardSO.boardTileList)
         {
             AddTile(entry.pos);
-            ChangeTileColor(entry.pos, tiles[entry.pos], entry.color);
+            ChangeTileColor(entry.pos, tiles[entry.pos], entry.type);
+            if (entry.type.IsSpecialTile())
+                AddObject(entry.pos, entry.type);
         }
-        foreach (var entry in sourceBoardSO.paintList)
+        foreach (var entry in sourceBoardSO.targetTileList)
         {
-            AddPaint(entry.pos, entry.color);
+            AddTarget(entry.pos, TileType.Color12);
         }
         SetStartPos(sourceBoardSO.startPos);
     }

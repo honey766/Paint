@@ -1,5 +1,5 @@
-using System.Runtime.Serialization.Formatters;
 using UnityEngine;
+using System.Text.RegularExpressions;
 
 public class TileClickEvent : MonoBehaviour
 {
@@ -25,14 +25,16 @@ public class TileClickEvent : MonoBehaviour
                 Logger.Log("Click" + hit.collider.gameObject.name);
 
                 // 타일의 좌표 알아내기
-                string name = lastTile.name; // "Tile[2,3]"
-                string inside = name.Substring(5, name.Length - 6); // "2,3"
-                string[] parts = inside.Split(',');
-                int i = int.Parse(parts[0]);
-                int j = int.Parse(parts[1]);
+                string name = lastTile.name; // "Color2Paint(5,5)"
+                Match match = Regex.Match(name, @"\((\d+),(\d+)\)");
+                if (match.Success)
+                {
+                    int i = int.Parse(match.Groups[1].Value);
+                    int j = int.Parse(match.Groups[2].Value);
 
-                // 해당 좌표로 플레이어 이동 시도
-                PlayerController.Instance.TryMoveTo(i, j);
+                    // 해당 좌표로 플레이어 이동 시도
+                    PlayerController.Instance.TryMoveTo(i, j);
+                }
             }
         }
     }
