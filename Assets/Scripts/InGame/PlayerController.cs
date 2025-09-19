@@ -29,6 +29,7 @@ public class PlayerController : SingletonBehaviour<PlayerController>
     public TextMeshProUGUI MoveCountText;
     public ParticleSystem particle;
     public TileType myColor { get; private set; }
+    public Vector2Int movingDirection { get; private set; }
     private int curI, curJ; // 현재 플레이어가 위치한 좌표
     private int destI, destJ; // 최종 이동 장소로서 예약된 좌표 (플레이어 이동 중에는 현재좌표 != 도착좌표)
     private Queue<Vector2Int> moveToQueue = new Queue<Vector2Int>(); // 한 번에 여러 칸 이동하기 위해 다음에 이동할 타일을 나열한 큐
@@ -159,6 +160,7 @@ public class PlayerController : SingletonBehaviour<PlayerController>
             IncreaseMoveCount();
             float moveTime = moveTimePerTile * Mathf.Lerp(1, 0.8f, Mathf.InverseLerp(1, 10, moveToQueue.Count));
             Vector2Int nextPos = moveToQueue.Dequeue(); // 큐에서 하나 꺼내기
+            movingDirection = nextPos - new Vector2Int(curI, curJ);
             PlayerMoveAnimation(nextPos, moveTime);
             Board.Instance.board[nextPos].OnPlayerEnter(this, moveTime);
             yield return new WaitForSeconds(moveTime / 2f);

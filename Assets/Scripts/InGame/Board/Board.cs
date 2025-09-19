@@ -85,6 +85,7 @@ public class Board : SingletonBehaviour<Board>
     /// </summary>
     public bool IsGameClear()
     {
+        int matchingTileWithTargetCount = 0;
         foreach (var entry in board)
         {
             if (entry.Value.Type == TileType.Color12)
@@ -93,15 +94,40 @@ public class Board : SingletonBehaviour<Board>
                 if (target.TryGetValue(entry.Key, out TileType targetTileType))
                     if (targetTileType == TileType.Color12)
                         isOkay = true;
-                if (!isOkay)
-                    return false;
+
+                if (isOkay) matchingTileWithTargetCount++;
+                else return false;
             }
         }
-        return true;
+        return matchingTileWithTargetCount == target.Count;
     }
 
     public bool IsInBounds(int i, int j)
     {
         return 0 <= i && i < n && 0 <= j && j < m;
+    }
+
+    public Color GetColorByType(TileType type)
+    {
+        switch (type)
+        {
+            case TileType.White:
+                return white;
+            case TileType.Color1:
+            case TileType.Color1Paint:
+                return colorPaletteSO.color1;
+            case TileType.Color2:
+            case TileType.Color2Paint:
+                return colorPaletteSO.color2;
+            case TileType.Color12:
+                return colorPaletteSO.color12;
+            case TileType.Black:
+                return black;
+            case TileType.ReversePaint:
+                return (colorPaletteSO.color12 + 2 * Color.white) / 3f;
+            default:
+                Logger.LogWarning($"No color defined for tile type: {type}");
+                return white;
+        }
     }
 }

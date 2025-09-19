@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using System;
+using UnityEngine.UI;
 
 public class EditorTileInfo
 {
@@ -37,12 +39,16 @@ public class EditorDataManager : MonoBehaviour
     private Vector2Int startPos;
     private Dictionary<Vector2Int, EditorTileInfo> tiles;
     private Dictionary<Vector2Int, GameObject> specialTileObjects;
+    private Dictionary<Vector2Int, int> extraIntTileDatas;
+    private Dictionary<Vector2Int, float> extraFloatTileDatas;
     private Dictionary<Vector2Int, EditorTargetInfo> targets;
 
     private void Start()
     {
         tiles = new Dictionary<Vector2Int, EditorTileInfo>();
         specialTileObjects = new Dictionary<Vector2Int, GameObject>();
+        extraIntTileDatas = new Dictionary<Vector2Int, int>();
+        extraFloatTileDatas = new Dictionary<Vector2Int, float>();
         targets = new Dictionary<Vector2Int, EditorTargetInfo>();
 
         if (sourceBoardSO != null)
@@ -94,6 +100,9 @@ public class EditorDataManager : MonoBehaviour
                 break;
             case TileEditingTool.AddReversePaint:
                 AddObject(pos, TileType.ReversePaint);
+                break;
+            case TileEditingTool.AddPaintBeam:
+                AddObject(pos, TileType.PaintBeam);
                 break;
         }
     }
@@ -175,13 +184,13 @@ public class EditorDataManager : MonoBehaviour
         }
         else
         {
-            Logger.Log($"type : {tileInfo.type}");
             // 특수타일이라면 특수타일 오브젝트 삭제 후 White로 바꿈
             if (tileInfo.type.IsSpecialTile())
             {
+                DeleteExtraData(pos, tileInfo.type);
+
                 tileDrawer.DeleteTile(specialTileObjects[pos]);
                 specialTileObjects.Remove(pos);
-                Logger.Log($"deleted {pos}");
             }
             ChangeTileColor(pos, tileInfo, TileType.White);
         }
@@ -216,12 +225,22 @@ public class EditorDataManager : MonoBehaviour
     {
         if (!tiles.TryGetValue(pos, out EditorTileInfo tileInfo))
             return;
+        if (!CanParseInputField(type))
+            return;
 
         if (tileInfo.type.IsSpecialTile())
-            Destroy(specialTileObjects[pos]);
+        {
+            DeleteExtraData(pos, tileInfo.type);
+            if (specialTileObjects.TryGetValue(pos, out GameObject obj))
+                Destroy(obj);
+        }
 
+        Logger.Log($"Created {type} at {pos}");
+
+        AddObjectExtraData(pos, type);
         tileInfo.type = type;
         tiles[pos] = tileInfo;
+        
 
         GameObject tileObj = tileDrawer.AddObject(pos, type);
         specialTileObjects[pos] = tileObj;
@@ -234,7 +253,40 @@ public class EditorDataManager : MonoBehaviour
             case TileType.ReversePaint:
                 tileDrawer.ChangeTileColor(tileInfo);
                 break;
+            case TileType.PaintBeam:
+                tileDrawer.SetTextOfObject(tileObj, extraIntTileDatas[pos].ToString());
+                break;
         }
+    }
+
+    private bool CanParseInputField(TileType type)
+    {
+        string str = ToggleManager.Instance.inputField.text;
+        bool success = true;
+        if (type.NeedsIntData())
+            if ((success = int.TryParse(str, out int intValue)) == false)
+                Logger.LogWarning($"inputField를 int형으로 변환할 수 없습니다. : {str}");
+        else if (type.NeedsFloatData())
+            if ((success = float.TryParse(str, out float floatValue)) == false)
+                Logger.LogWarning($"inputField를 float형으로 변환할 수 없습니다. : {str}");
+        return success;
+    }
+
+    private void AddObjectExtraData(Vector2Int pos, TileType type)
+    {
+        string str = ToggleManager.Instance.inputField.text;
+        if (type.NeedsIntData())
+            if (int.TryParse(str, out int intValue))
+                extraIntTileDatas[pos] = intValue;
+        else if (type.NeedsFloatData())
+            if (float.TryParse(str, out float floatValue))
+                extraFloatTileDatas[pos] = floatValue;
+    }
+
+    private void DeleteExtraData(Vector2Int pos, TileType type)
+    {
+        if (type.NeedsIntData()) extraIntTileDatas.Remove(pos);
+        else if (type.NeedsFloatData()) extraFloatTileDatas.Remove(pos);
     }
 
     private BoardSO GetBoardSOData()
@@ -255,7 +307,12 @@ public class EditorDataManager : MonoBehaviour
         foreach (var entry in tiles)
         {
             Vector2Int pos = entry.Key - new Vector2Int(minX, minY);
-            boardTileList.Add(new BoardSOTileData(pos, entry.Value.type));
+            if (entry.Value.type.NeedsIntData())
+                boardTileList.Add(new BoardSOIntTileData(pos, entry.Value.type, extraIntTileDatas[pos]));
+            else if (entry.Value.type.NeedsFloatData())
+                boardTileList.Add(new BoardSOFloatTileData(pos, entry.Value.type, extraFloatTileDatas[pos])); 
+            else
+                boardTileList.Add(new BoardSOTileData(pos, entry.Value.type));
         }
         foreach (var entry in targets)
         {
@@ -278,6 +335,8 @@ public class EditorDataManager : MonoBehaviour
         {
             AddTile(entry.pos);
             ChangeTileColor(entry.pos, tiles[entry.pos], entry.type);
+            if (entry.type.NeedsIntData() && entry is BoardSOIntTileData intTileData)
+                ToggleManager.Instance.inputField.text = intTileData.intValue.ToString();
             if (entry.type.IsSpecialTile())
                 AddObject(entry.pos, entry.type);
         }

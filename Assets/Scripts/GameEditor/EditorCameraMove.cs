@@ -1,8 +1,11 @@
+using TMPro;
 using UnityEngine;
 
 public class EditorCameraMove : MonoBehaviour
 {
     public Vector2 initPos = Vector2.zero;
+    public Transform dropdown;
+    public TMP_InputField inputField;
 
     [Header("이동속도")]
     public float curSpeed = 0f;
@@ -21,7 +24,7 @@ public class EditorCameraMove : MonoBehaviour
 
     [Header("마우스 드래그")]
     public float dragSpeed = 2f;
-    
+
     private Camera cam;
     private Vector3 lastMousePosition;
     private bool isDraggingWheel, isDraggingRight;
@@ -35,9 +38,9 @@ public class EditorCameraMove : MonoBehaviour
         transform.position = new Vector3(initPos.x, initPos.y, -10);
     }
 
-
     void Update()
     {
+        if (IsInputLock()) return;
         HandleKeyboardMovement();
         HandleMouseDrag();
         HandleMouseScroll();
@@ -53,13 +56,15 @@ public class EditorCameraMove : MonoBehaviour
         float ver = Input.GetAxisRaw("Vertical");
         transform.position += new Vector3(hor, ver, 0f) * curSpeed * Time.deltaTime;
 
-        if (hor != 0f || ver != 0f) {
+        if (hor != 0f || ver != 0f)
+        {
             if (holdTime == 0 && prevHoldTime < 0.5f && releaseTime < 0.1f) // 더블클릭
                 holdTime = 5f;
             holdTime += Time.deltaTime;
             releaseTime = 0;
         }
-        else {
+        else
+        {
             if (holdTime > 0f)
                 prevHoldTime = holdTime;
             holdTime = 0f;
@@ -113,7 +118,8 @@ public class EditorCameraMove : MonoBehaviour
     private void HandleMouseScroll()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (IsMouseOverGameWindow() && scroll != 0) {
+        if (IsMouseOverGameWindow() && scroll != 0)
+        {
             float speedModifier = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 3.0f : 1.0f;
             cam.orthographicSize -= scroll * zoomSpeed * speedModifier;
             cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, minScale, maxScale);
@@ -126,5 +132,10 @@ public class EditorCameraMove : MonoBehaviour
     {
         Vector3 mousePos = Input.mousePosition;
         return mousePos.x >= 0 && mousePos.x <= Screen.width && mousePos.y >= 0 && mousePos.y <= Screen.height;
+    }
+
+    private bool IsInputLock()
+    {
+        return dropdown.childCount > 3 || inputField.isFocused;
     }
 }

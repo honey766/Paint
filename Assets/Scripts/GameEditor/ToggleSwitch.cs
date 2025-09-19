@@ -36,6 +36,7 @@ public class ToggleController : MonoBehaviour
 
     public void ToggleByManager(bool state)
     {
-        toggle.isOn = state;
+        if (gameObject.activeInHierarchy)
+            toggle.isOn = state;
     }
 }

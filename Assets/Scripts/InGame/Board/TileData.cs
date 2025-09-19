@@ -58,6 +58,17 @@ public static class TileTypeExtensions
     {
         return shouldDrawTileSet.Contains(tile);
     }
+
+    // 타일 생성 시에 Int데이터가 추가적으로 필요한 타입인지 검사
+    public static bool NeedsIntData(this TileType tile)
+    {
+        return tile == TileType.PaintBeam;
+    }
+
+    public static bool NeedsFloatData(this TileType tile)
+    {
+        return false;
+    }
 }
 #endregion
 
@@ -119,7 +130,7 @@ public abstract class TileData : MonoBehaviour
     public TileType Type { get; protected set; }
 
     protected SpriteRenderer spriter;
-    protected float paintTime = 0.2f;
+    protected float paintTime = 0.25f;
 
     public abstract void OnPlayerEnter(PlayerController player, float moveTime);
 
@@ -144,12 +155,12 @@ public abstract class TileData : MonoBehaviour
         }
     }
 
-    protected void WaitAndDrawTile(float waitTime)
+    public void WaitAndDrawTile(float waitTime)
     {
         Invoke(nameof(DrawTile), waitTime);
     }
 
-    protected void DrawTile()
+    public void DrawTile()
     {
         // 필수 컴포넌트 검증
         if (spriter == null)
@@ -170,49 +181,17 @@ public abstract class TileData : MonoBehaviour
         spriter.material.SetFloat("_ratio", 0);
         spriter.material.SetFloat("_randomNoise", Random.Range(0f, 1.2f));
 
-        SetTileColor();
+        spriter.material.SetColor("_AddColor", Board.Instance.GetColorByType(Type));
 
         if (gameObject.activeInHierarchy)
             StartCoroutine(DrawTileCoroutine());
-    }
-
-    private void SetTileColor()
-    {
-        ColorPaletteSO colorPaletteSO = Board.Instance.colorPaletteSO;
-
-        switch (Type)
-        {
-            case TileType.White:
-                spriter.material.SetColor("_AddColor", Board.Instance.white);
-                break;
-            case TileType.Color1:
-            case TileType.Color1Paint:
-                spriter.material.SetColor("_AddColor", colorPaletteSO.color1);
-                break;
-            case TileType.Color2:
-            case TileType.Color2Paint:
-                spriter.material.SetColor("_AddColor", colorPaletteSO.color2);
-                break;
-            case TileType.Color12:
-                spriter.material.SetColor("_AddColor", colorPaletteSO.color12);
-                break;
-            case TileType.Black:
-                spriter.material.SetColor("_AddColor", Board.Instance.black);
-                break;
-            case TileType.ReversePaint:
-                spriter.material.SetColor("_AddColor", (colorPaletteSO.color12 + 2 * Color.white) / 3f);
-                break;
-            default:
-                Logger.LogWarning($"No color defined for tile type: {Type}");
-                break;
-        }
     }
 
     protected IEnumerator DrawTileCoroutine()
     {
         if (spriter != null)
         {
-            yield return MyCoroutine.WaitFor(paintTime * Random.Range(0.9f, 1.02f), (t) =>
+            yield return MyCoroutine.WaitFor(paintTime * Random.Range(0.85f, 1f), (t) =>
             {
                 spriter.material.SetFloat("_ratio", t + 0.01f);
             });

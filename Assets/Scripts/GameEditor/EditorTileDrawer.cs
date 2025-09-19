@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class EditorTileDrawer : MonoBehaviour
@@ -8,12 +9,12 @@ public class EditorTileDrawer : MonoBehaviour
     [SerializeField] Transform tileParent;
     [SerializeField] GameObject target;
     [SerializeField] Transform targetParent;
-    [SerializeField] GameObject color1Paint, color2Paint, reversePaint;
+    [SerializeField] GameObject color1Paint, color2Paint, reversePaint, paintBeam;
     [SerializeField] Transform objectParent;
     [SerializeField] Color white, color1, color2, color12, black;
 
-    private Vector2Int[] directions = { 
-        Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left 
+    private Vector2Int[] directions = {
+        Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left
     };
 
     public GameObject AddTile(Vector2Int pos)
@@ -111,7 +112,20 @@ public class EditorTileDrawer : MonoBehaviour
                 return Instantiate(color2Paint, (Vector2)pos, Quaternion.identity, objectParent);
             case TileType.ReversePaint:
                 return Instantiate(reversePaint, (Vector2)pos, Quaternion.identity, objectParent);
+            case TileType.PaintBeam:
+                return Instantiate(paintBeam, (Vector2)pos, Quaternion.identity, objectParent);
         }
         return null;
+    }
+
+    public void SetTextOfObject(GameObject obj, string str)
+    {
+        TextMeshProUGUI text = obj.GetComponentInChildren<TextMeshProUGUI>();
+        if (text == null)
+        {
+            Logger.LogWarning($"[EditorTileDrawer] {obj}에 TextMeshProUGUI가 없어 실행에 실패했습니다.");
+            return;
+        }
+        text.text = str;
     }
 }
