@@ -26,6 +26,7 @@ public class CharacterSwiper : MonoBehaviour
     [Header("Core Components")]
     public ScrollRect scrollRect;
     public RectTransform content;
+    public RectTransform viewport;
     public GameObject characterCardPrefab; 
 
     [Header("Card Effect Settings")]
@@ -81,11 +82,11 @@ public class CharacterSwiper : MonoBehaviour
 
     private void UpdateCardTransforms()
     {
-        float centerX = -content.anchoredPosition.x; // 뷰포트의 중심 X좌표
+        float centerX = viewport.position.x; //-content.anchoredPosition.x; // 뷰포트의 중심 X좌표
 
         for (int i = 0; i < cardRects.Count; i++)
         {
-            float cardCenterX = cardRects[i].anchoredPosition.x + content.anchoredPosition.x;
+            float cardCenterX = cardRects[i].position.x; //cardRects[i].anchoredPosition.x + content.anchoredPosition.x;
             float distance = Mathf.Abs(cardCenterX - centerX);
 
             // 거리에 따라 스케일과 Y축 회전값 계산
@@ -116,26 +117,35 @@ public class CharacterSwiper : MonoBehaviour
 
     private void SnapToClosest()
     {
-        float centerX = -content.anchoredPosition.x;
+        scrollRect.StopMovement();
+        scrollRect.velocity = Vector2.zero;
+        float centerX = viewport.position.x; //-content.anchoredPosition.x;
         float minDistance = float.MaxValue;
         int nearestIndex = 0;
 
         for (int i = 0; i < cardRects.Count; i++)
         {
-            float distance = Mathf.Abs(cardRects[i].anchoredPosition.x - centerX);
+            float distance = Mathf.Abs(cardRects[i].position.x - centerX); //Mathf.Abs(cardRects[i].anchoredPosition.x - centerX);
             if (distance < minDistance)
             {
                 minDistance = distance;
                 nearestIndex = i;
             }
         }
+        float offset = centerX - cardRects[nearestIndex].position.x;
+        Vector2 targetPos = new Vector2(content.anchoredPosition.x + offset, content.anchoredPosition.y);
 
-        // 가장 가까운 카드의 위치로 Content 패널을 스르륵 이동시킴
-        Vector2 targetPos = new Vector2(-cardRects[nearestIndex].anchoredPosition.x, content.anchoredPosition.y);
         isSnapping = true;
         content.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
         {
             isSnapping = false;
         });
+        // 가장 가까운 카드의 위치로 Content 패널을 스르륵 이동시킴
+        /*Vector2 targetPos = new Vector2(-cardRects[nearestIndex].anchoredPosition.x, content.anchoredPosition.y);
+        isSnapping = true;
+        content.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
+        {
+            isSnapping = false;
+        });*/
     }
 }
