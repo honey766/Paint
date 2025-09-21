@@ -24,7 +24,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         {
             stage = PersistentDataManager.Instance.stage;
             board = PersistentDataManager.Instance.board;
-            boardSO = Resources.Load<BoardSO>($"ScriptableObjects/Board/Stage{stage}/Stage{stage}Board{board}");
+            boardSO = Resources.Load<BoardSO>($"ScriptableObjects/Board/Stage{stage}/Stage{stage}-{board}");
         }
 
         Board.Instance.InitBoard(boardSO);

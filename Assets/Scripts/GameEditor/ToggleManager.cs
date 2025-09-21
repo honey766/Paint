@@ -12,7 +12,7 @@ public enum TileEditingTool
     SetStartPos,
     AddTarget,
     AddColor1Paint, AddColor2Paint, AddReversePaint,
-    AddPaintBeam,
+    AddSpray,
     Temp1, Temp2
 }
 
@@ -79,7 +79,7 @@ public class ToggleManager : SingletonBehaviour<ToggleManager>
         switch (index)
         {
             case 0:
-                ToggleGroup(TileEditingTool.AddPaintBeam);
+                ToggleGroup(TileEditingTool.AddSpray);
                 inputField.gameObject.SetActive(true);
                 break;
             case 1:
@@ -110,9 +110,9 @@ public class ToggleManager : SingletonBehaviour<ToggleManager>
         }
     }
 
-    public void PaintBeamToggleOnValueChanged(bool isOn)
+    public void SprayToggleOnValueChanged(bool isOn)
     {
-        ToggleGroup(TileEditingTool.AddPaintBeam);
+        ToggleGroup(TileEditingTool.AddSpray);
         inputField.interactable = !isOn;
         if (isOn) inputField.text = "-1";
     }

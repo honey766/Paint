@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 5747679810587045274}
   - component: {fileID: 3911596711879590675}
   m_Layer: 0
-  m_Name: PaintBeamTile
+  m_Name: SprayTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

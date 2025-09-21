@@ -9,7 +9,7 @@ public enum TileType
     White, Color1, Color2, Color12, Black,
     Color1Paint, Color2Paint, // 플레이어 색깔을 바꾸는 타일
     ReversePaint, // 플레이어의 색깔이 Color1 또는 Color2일 때 둘 중 다른 색으로 전환시키는 페인트
-    PaintBeam // 플레이어가 진입한 방향으로 n칸을 플레이어의 색으로 색칠하는 특수타일
+    Spray // 플레이어가 진입한 방향으로 n칸을 플레이어의 색으로 색칠하는 특수타일
 }
 #endregion
 
@@ -62,7 +62,7 @@ public static class TileTypeExtensions
     // 타일 생성 시에 Int데이터가 추가적으로 필요한 타입인지 검사
     public static bool NeedsIntData(this TileType tile)
     {
-        return tile == TileType.PaintBeam;
+        return tile == TileType.Spray;
     }
 
     public static bool NeedsFloatData(this TileType tile)

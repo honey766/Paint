@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class PaintBeamTile : TileData
+public class SprayTile : TileData
 {
     private const float myTileColorChangeTime = 0.5f;
     private const float colorOneTileSpeed = 0.08f;
@@ -14,7 +14,7 @@ public class PaintBeamTile : TileData
         Color color = Board.Instance.GetColorByType(player.myColor);
         Vector2Int direction = player.movingDirection;
         StartCoroutine(MyTileColorChange(color));
-        StartCoroutine(ColorTileBeam(direction));
+        StartCoroutine(DoSprayTile(direction));
     }
 
     public override void Initialize(BoardSOTileData boardSOTileData)
@@ -29,7 +29,7 @@ public class PaintBeamTile : TileData
         }
         else
         {
-            Logger.LogError("PaintBeamTile에 잘못된 데이터 타입이 전달되었습니다.");
+            Logger.LogError("SprayTile에 잘못된 데이터 타입이 전달되었습니다.");
         }
     }
 
@@ -42,7 +42,7 @@ public class PaintBeamTile : TileData
         });
     }
 
-    private IEnumerator ColorTileBeam(Vector2Int direction)
+    private IEnumerator DoSprayTile(Vector2Int direction)
     {
         Vector2Int curPos = pos;
         for (int i = 0; i < paintCount; i++)

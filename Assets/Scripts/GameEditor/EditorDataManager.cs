@@ -101,8 +101,8 @@ public class EditorDataManager : MonoBehaviour
             case TileEditingTool.AddReversePaint:
                 AddObject(pos, TileType.ReversePaint);
                 break;
-            case TileEditingTool.AddPaintBeam:
-                AddObject(pos, TileType.PaintBeam);
+            case TileEditingTool.AddSpray:
+                AddObject(pos, TileType.Spray);
                 break;
         }
     }
@@ -253,7 +253,7 @@ public class EditorDataManager : MonoBehaviour
             case TileType.ReversePaint:
                 tileDrawer.ChangeTileColor(tileInfo);
                 break;
-            case TileType.PaintBeam:
+            case TileType.Spray:
                 tileDrawer.SetTextOfObject(tileObj, extraIntTileDatas[pos].ToString());
                 break;
         }
