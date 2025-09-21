@@ -14,4 +14,13 @@ public class NormalTile : TileData
         Type = type;
         WaitAndDrawTile(waitTime);
     }
+
+    public void AddTileColor(TileType type, float waitTime)
+    {
+        if (type == TileType.None || type.IsSpecialTile())
+            return;
+
+        Type = Type.AddColorToNormalTile(type);
+        WaitAndDrawTile(waitTime);
+    }
 }

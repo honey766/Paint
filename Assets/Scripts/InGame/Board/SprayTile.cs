@@ -3,18 +3,18 @@ using UnityEngine;
 
 public class SprayTile : TileData
 {
-    private const float myTileColorChangeTime = 0.5f;
-    private const float colorOneTileSpeed = 0.08f;
-    private int paintCount;
-    private Vector2Int pos;
-    private WaitForSeconds waitColorOneTile;
+    protected const float myTileColorChangeTime = 0.5f;
+    protected const float colorOneTileSpeed = 0.08f;
+    protected int paintCount;
+    protected Vector2Int pos;
+    protected WaitForSeconds waitColorOneTile;
 
     public override void OnPlayerEnter(PlayerController player, float moveTime)
     {
         Color color = Board.Instance.GetColorByType(player.myColor);
-        Vector2Int direction = player.movingDirection;
         StartCoroutine(MyTileColorChange(color));
-        StartCoroutine(DoSprayTile(direction));
+        if (player.myColor == TileType.Color1 || player.myColor == TileType.Color2)
+            StartCoroutine(DoSprayTile(player.movingDirection, player.myColor));
     }
 
     public override void Initialize(BoardSOTileData boardSOTileData)
@@ -24,7 +24,7 @@ public class SprayTile : TileData
         if (boardSOTileData is BoardSOIntTileData intTileData)
         {
             pos = intTileData.pos;
-            paintCount = intTileData.intValue < 0 ? 1000000000 : intTileData.intValue;
+            paintCount = intTileData.intValue < 0 ? 1_000_000_000 : intTileData.intValue;
             waitColorOneTile = new WaitForSeconds(colorOneTileSpeed);
         }
         else
@@ -33,7 +33,7 @@ public class SprayTile : TileData
         }
     }
 
-    private IEnumerator MyTileColorChange(Color color)
+    protected IEnumerator MyTileColorChange(Color color)
     {
         spriter.color = color;
         yield return MyCoroutine.WaitFor(myTileColorChangeTime, (t) =>
@@ -42,7 +42,7 @@ public class SprayTile : TileData
         });
     }
 
-    private IEnumerator DoSprayTile(Vector2Int direction)
+    protected IEnumerator DoSprayTile(Vector2Int direction, TileType colorType)
     {
         Vector2Int curPos = pos;
         for (int i = 0; i < paintCount; i++)
@@ -51,9 +51,13 @@ public class SprayTile : TileData
             // 타일이 없으면 즉시 종료
             if (!Board.Instance.board.TryGetValue(curPos, out TileData tileData))
                 break;
+            if (Board.Instance.CheckGameClear())
+                break;
 
-            if (tileData is NormalTile)
-                tileData.OnPlayerEnter(PlayerController.Instance, 0);
+            if (tileData is NormalTile normalTile)
+                normalTile.AddTileColor(colorType, 0);
+            else if (tileData is DirectedSprayTile directedSprayTile)
+                directedSprayTile.OnColorEnter(colorType);
 
             yield return waitColorOneTile;
         }

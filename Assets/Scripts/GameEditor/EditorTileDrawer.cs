@@ -9,7 +9,7 @@ public class EditorTileDrawer : MonoBehaviour
     [SerializeField] Transform tileParent;
     [SerializeField] GameObject target;
     [SerializeField] Transform targetParent;
-    [SerializeField] GameObject color1Paint, color2Paint, reversePaint, spray;
+    [SerializeField] GameObject color1Paint, color2Paint, reversePaint, spray, directedSpray;
     [SerializeField] Transform objectParent;
     [SerializeField] Color white, color1, color2, color12, black;
 
@@ -114,6 +114,8 @@ public class EditorTileDrawer : MonoBehaviour
                 return Instantiate(reversePaint, (Vector2)pos, Quaternion.identity, objectParent);
             case TileType.Spray:
                 return Instantiate(spray, (Vector2)pos, Quaternion.identity, objectParent);
+            case TileType.DirectedSpray:
+                return Instantiate(directedSpray, (Vector2)pos, Quaternion.identity, objectParent);
         }
         return null;
     }
@@ -127,5 +129,29 @@ public class EditorTileDrawer : MonoBehaviour
             return;
         }
         text.text = str;
+    }
+
+    public void SetDirectedSpray(GameObject obj, int encodedValue)
+    {
+        EditorDataFormat.DecodeDirectedSpray(encodedValue,
+                out int paintCount, out Vector2Int direction, out bool doPaintReverse);
+        Transform triangle = obj.transform.GetChild(1);
+        SpriteRenderer spriterTriangle = triangle.GetChild(0).GetComponent<SpriteRenderer>();
+        SpriteRenderer spriterOutline = triangle.GetChild(1).GetComponent<SpriteRenderer>();
+
+        SetTextOfObject(obj, paintCount.ToString());
+
+        triangle.rotation = CustomTools.GetRotationByDirection(direction);
+
+        if (doPaintReverse)
+        {
+            spriterTriangle.color = new Color(0.5f, 0.25f, 0.67f, 0.5f);
+            spriterOutline.color = new Color(0.6f, 0.45f, 0.7f, 0.9f);
+        }
+        else
+        {
+            spriterTriangle.color = new Color(0.7f, 0.7f, 0.7f, 0.5f);
+            spriterOutline.color = new Color(0.7f, 0.7f, 0.7f, 0.9f);
+        }
     }
 }

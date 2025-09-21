@@ -167,8 +167,7 @@ public class PlayerController : SingletonBehaviour<PlayerController>
 
             // 타일 색칠 or 플레이어 색 변화
             curI = nextPos.x; curJ = nextPos.y;
-            if (Board.Instance.IsGameClear())
-                GameManager.Instance.GameClear();
+            Board.Instance.CheckGameClear();
             
             yield return new WaitForSeconds(moveTime / 2f);
         }
