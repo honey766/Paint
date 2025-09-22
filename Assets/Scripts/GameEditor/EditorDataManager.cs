@@ -33,6 +33,8 @@ public class EditorTargetInfo
 
 public class EditorDataManager : MonoBehaviour
 {
+    public EditorDropdownController dropdownController;
+
     [SerializeField] private EditorTileDrawer tileDrawer;
     [Header("기존의 BoardSO를 불러오려면 등록해 주세요")]
     [SerializeField] private BoardSO sourceBoardSO;
@@ -104,6 +106,9 @@ public class EditorDataManager : MonoBehaviour
             case TileEditingTool.AddSpray:
                 AddObject(pos, TileType.Spray);
                 break;
+            case TileEditingTool.AddDirectedSpray:
+                AddObject(pos, TileType.DirectedSpray);
+                break;
         }
     }
 
@@ -111,7 +116,7 @@ public class EditorDataManager : MonoBehaviour
     {
         if (!CanSave()) return;
 
-        string name = (sourceBoardSO == null ? "Stage1Board1" : sourceBoardSO.name) 
+        string name = (sourceBoardSO == null ? "Stage1-1" : sourceBoardSO.name) 
                       +" (Assets/Resources/ScriptableObjects/Board/Stage{N}에 저장해 주세요)";
 	    string path = "Assets/Resources/ScriptableObjects/Board/";
 	    string fullPath = EditorUtility.SaveFilePanelInProject(
@@ -256,12 +261,15 @@ public class EditorDataManager : MonoBehaviour
             case TileType.Spray:
                 tileDrawer.SetTextOfObject(tileObj, extraIntTileDatas[pos].ToString());
                 break;
+            case TileType.DirectedSpray:
+                tileDrawer.SetDirectedSpray(tileObj, extraIntTileDatas[pos]);
+                break;
         }
     }
 
     private bool CanParseInputField(TileType type)
     {
-        string str = ToggleManager.Instance.inputField.text;
+        string str = dropdownController.inputField.text;
         bool success = true;
         if (type.NeedsIntData())
             if ((success = int.TryParse(str, out int intValue)) == false)
@@ -274,13 +282,29 @@ public class EditorDataManager : MonoBehaviour
 
     private void AddObjectExtraData(Vector2Int pos, TileType type)
     {
-        string str = ToggleManager.Instance.inputField.text;
+        string str = dropdownController.inputField.text;
         if (type.NeedsIntData())
+        {
             if (int.TryParse(str, out int intValue))
-                extraIntTileDatas[pos] = intValue;
+            {
+                if (type == TileType.DirectedSpray)
+                {
+                    extraIntTileDatas[pos] = EditorDataFormat.EncodeDirectedSpray(
+                        intValue,
+                        dropdownController.directedSprayDirection,
+                        dropdownController.directedSprayDoPaintReverse);
+                }
+                else
+                {
+                    extraIntTileDatas[pos] = intValue;
+                }
+            }
+        }
         else if (type.NeedsFloatData())
+        {
             if (float.TryParse(str, out float floatValue))
                 extraFloatTileDatas[pos] = floatValue;
+        }
     }
 
     private void DeleteExtraData(Vector2Int pos, TileType type)
@@ -308,9 +332,9 @@ public class EditorDataManager : MonoBehaviour
         {
             Vector2Int pos = entry.Key - new Vector2Int(minX, minY);
             if (entry.Value.type.NeedsIntData())
-                boardTileList.Add(new BoardSOIntTileData(pos, entry.Value.type, extraIntTileDatas[pos]));
+                boardTileList.Add(new BoardSOIntTileData(pos, entry.Value.type, extraIntTileDatas[entry.Key]));
             else if (entry.Value.type.NeedsFloatData())
-                boardTileList.Add(new BoardSOFloatTileData(pos, entry.Value.type, extraFloatTileDatas[pos])); 
+                boardTileList.Add(new BoardSOFloatTileData(pos, entry.Value.type, extraFloatTileDatas[entry.Key])); 
             else
                 boardTileList.Add(new BoardSOTileData(pos, entry.Value.type));
         }
@@ -336,7 +360,7 @@ public class EditorDataManager : MonoBehaviour
             AddTile(entry.pos);
             ChangeTileColor(entry.pos, tiles[entry.pos], entry.type);
             if (entry.type.NeedsIntData() && entry is BoardSOIntTileData intTileData)
-                ToggleManager.Instance.inputField.text = intTileData.intValue.ToString();
+                dropdownController.inputField.text = intTileData.intValue.ToString();
             if (entry.type.IsSpecialTile())
                 AddObject(entry.pos, entry.type);
         }

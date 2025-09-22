@@ -9,7 +9,8 @@ public enum TileType
     White, Color1, Color2, Color12, Black,
     Color1Paint, Color2Paint, // 플레이어 색깔을 바꾸는 타일
     ReversePaint, // 플레이어의 색깔이 Color1 또는 Color2일 때 둘 중 다른 색으로 전환시키는 페인트
-    Spray // 플레이어가 진입한 방향으로 n칸을 플레이어의 색으로 색칠하는 특수타일
+    Spray, // 플레이어가 진입한 방향으로 n칸을 플레이어의 색으로 색칠하는 특수타일
+    DirectedSpray // 특정 방향으로만 색칠하는 Spray
 }
 #endregion
 
@@ -46,6 +47,16 @@ public static class TileTypeExtensions
     }
 
     /// <summary>
+    /// Color1 <-> Color2 중 자신과 다른 Color을 반환. 둘 중 하나의 타입이 아니라면 TileType.None 반환
+    /// </summary>
+    public static TileType GetOppositeColor(this TileType tile)
+    {
+        if (tile == TileType.Color1) return TileType.Color2;
+        if (tile == TileType.Color2) return TileType.Color1;
+        return TileType.None;
+    }
+
+    /// <summary>
     /// 단순한 타일이 아닌 특수타일인지 검사
     /// </summary>
     public static bool IsSpecialTile(this TileType tile)
@@ -62,7 +73,7 @@ public static class TileTypeExtensions
     // 타일 생성 시에 Int데이터가 추가적으로 필요한 타입인지 검사
     public static bool NeedsIntData(this TileType tile)
     {
-        return tile == TileType.Spray;
+        return tile == TileType.Spray || tile == TileType.DirectedSpray;
     }
 
     public static bool NeedsFloatData(this TileType tile)
@@ -85,6 +96,7 @@ public static class TileFactory
         _tilePrefabDict = new Dictionary<TileType, GameObject>();
         foreach (TileTypeMapping mapping in config.tileMappings)
         {
+            Logger.Log($"TileFactory Initialized: {mapping.type}");
             _tilePrefabDict[mapping.type] = mapping.prefab;
         }
     }

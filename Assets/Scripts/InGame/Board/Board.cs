@@ -80,10 +80,15 @@ public class Board : SingletonBehaviour<Board>
         return new Vector2(i, j) - new Vector2((n - 1) / 2f, (m - 1) / 2f);
     }
 
-    /// <summary>
-    /// board의 target위치와 target이 같은지 검사
-    /// </summary>
-    public bool IsGameClear()
+    public bool CheckGameClear()
+    {
+        bool isGameClear = IsGameClear();
+        if (isGameClear) GameManager.Instance.GameClear();
+        return isGameClear;
+    }
+
+    // board의 target위치와 target이 같은지 검사
+    private bool IsGameClear()
     {
         int matchingTileWithTargetCount = 0;
         foreach (var entry in board)

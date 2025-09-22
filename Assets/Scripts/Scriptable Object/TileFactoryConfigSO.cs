@@ -5,7 +5,7 @@ using UnityEngine;
 public class TileTypeMapping
 {
     public TileType type;
-    public GameObject prefab; // 이 프리팹은 NormalTile, PaintTile 등의 스크립트를 이미 가지고 있어야 합니다.
+    public GameObject prefab; // 이 프리팹은 NormalTile, PaintTile 등의 스크립트를 이미 가지고 있어야 함
 }
 
 [CreateAssetMenu(fileName = "TileFactoryConfig", menuName = "ScriptableObjects/TileFactoryConfig")]
