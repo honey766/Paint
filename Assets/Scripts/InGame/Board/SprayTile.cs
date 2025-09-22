@@ -58,6 +58,8 @@ public class SprayTile : TileData
                 normalTile.AddTileColor(colorType, 0);
             else if (tileData is DirectedSprayTile directedSprayTile)
                 directedSprayTile.OnColorEnter(colorType);
+            else if (tileData is ReversePaintTile)
+                colorType = colorType.GetOppositeColor();
 
             yield return waitColorOneTile;
         }
