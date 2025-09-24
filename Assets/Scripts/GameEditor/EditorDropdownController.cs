@@ -18,6 +18,9 @@ public class EditorDropdownController : MonoBehaviour
     private Image directedSprayTriangleImage;
     public Vector2Int directedSprayDirection { get; private set; }
     public bool directedSprayDoPaintReverse { get; private set; }
+    [Header("Mirror")]
+    [SerializeField] private Transform mirrorImage;
+    private bool isMirrorBottomLeftToTopRight;
 
     private ToggleManager toggle;
 
@@ -45,7 +48,17 @@ public class EditorDropdownController : MonoBehaviour
                 inputField.gameObject.SetActive(true);
                 break;
             case 2:
-                toggle.ToggleGroup(TileEditingTool.Temp2);
+                toggle.ToggleGroup(TileEditingTool.AddIce);
+                inputField.gameObject.SetActive(false);
+                break;
+            case 3:
+                toggle.ToggleGroup(TileEditingTool.AddMirror);
+                inputField.gameObject.SetActive(true);
+                inputField.text = "1";
+                inputField.interactable = false;
+                break;
+            case 4:
+                toggle.ToggleGroup(TileEditingTool.AddStamp);
                 inputField.gameObject.SetActive(false);
                 break;
         }
@@ -54,9 +67,11 @@ public class EditorDropdownController : MonoBehaviour
 
     public void DropdownObjectsInitAndSetActive(int index)
     {
+        if (index != 3)
+            inputField.interactable = true;
         InitSpray();
         InitDirectedSpray();
-        inputField.interactable = true;
+        InitMirror(); 
 
         for (int i = 0; i < objectsControlledByDropdown.Length; i++)
         {
@@ -84,6 +99,10 @@ public class EditorDropdownController : MonoBehaviour
         directedSprayTriangleImage.color = new Color(0.5f, 0.5f, 0.5f, 1f);
         directedSprayDirection = Vector2Int.up;
         directedSprayDoPaintReverse = false;
+    }
+    private void InitMirror()
+    {
+        isMirrorBottomLeftToTopRight = true;
     }
 
     public void SprayInfiniteToggleOnValueChanged(bool isOn)
@@ -125,5 +144,14 @@ public class EditorDropdownController : MonoBehaviour
         toggle.ToggleGroup(TileEditingTool.AddDirectedSpray);
         directedSprayDoPaintReverse = isOn;
         directedSprayTriangleImage.color = isOn ? new Color(0.85f, 0.63f, 0.85f, 1f) : new Color(0.5f, 0.5f, 0.5f, 1f);
+    }
+
+    public void MirrorButton()
+    {
+        toggle.ToggleGroup(TileEditingTool.AddMirror);
+        isMirrorBottomLeftToTopRight = !isMirrorBottomLeftToTopRight;
+        inputField.text = isMirrorBottomLeftToTopRight ? "1" : "0";
+        mirrorImage.rotation = isMirrorBottomLeftToTopRight ?
+                               Quaternion.identity : Quaternion.Euler(new Vector3(0, 0, 90));
     }
 }

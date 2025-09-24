@@ -18,20 +18,21 @@ public struct PlayerMoveData
     }
 }
 
-public class PlayerController : SingletonBehaviour<PlayerController>
+public class PlayerController : BlockData
 {
-    [Tooltip("타일 한 칸을 건너는 데 걸리는 시간")]
-    public float moveTimePerTile;
+    public override TileType Type { get; protected set; } = TileType.Player;
+    public override bool HasMutableColor { get; protected set; } = true;
+    public override bool HasColor { get; protected set; } = true;
+    public override TileType Color { get; protected set; } = TileType.White;
+
     [Header("플레이어의 색")]
     public Color white;
     public Color black;
 
     public TextMeshProUGUI MoveCountText;
     public ParticleSystem particle;
-    public TileType myColor { get; private set; }
     public Vector2Int movingDirection { get; private set; }
-    private int curI, curJ; // 현재 플레이어가 위치한 좌표
-    private int destI, destJ; // 최종 이동 장소로서 예약된 좌표 (플레이어 이동 중에는 현재좌표 != 도착좌표)
+    public Vector2Int destPos; // 최종 이동 장소로서 예약된 좌표 (플레이어 이동 중에는 현재좌표 != 도착좌표)
     private Queue<Vector2Int> moveToQueue = new Queue<Vector2Int>(); // 한 번에 여러 칸 이동하기 위해 다음에 이동할 타일을 나열한 큐
     private bool isMoving; // 현재 이동 중인지
     private int moveCount;
@@ -43,14 +44,43 @@ public class PlayerController : SingletonBehaviour<PlayerController>
     // 캐싱
     private SpriteRenderer spriter;
     private Transform player;
+    private Coroutine inputMoveCoroutine;
+    private WaitForSeconds halfMoveWaitForSeconds;
 
-    private void Awake()
+    protected static PlayerController m_Instance;
+    public static PlayerController Instance { get { return m_Instance; } }
+
+    protected override void Awake()
     {
-        m_IsDestroyOnLoad = true;
+        base.Awake();
         Init();
+    }
+
+    protected virtual void Init()
+    {
+        if (m_Instance == null)
+            m_Instance = this;
+        else
+            Destroy(gameObject);
+
         spriter = transform.GetChild(0).GetComponent<SpriteRenderer>();
         player = transform.GetChild(0).transform;
+        halfMoveWaitForSeconds = new WaitForSeconds(moveTime / 2f);
     }
+
+    //삭제 시 실행되는 함수
+    protected virtual void OnDestroy()
+    {
+        Dispose();
+    }
+
+    //삭제 시 추가로 처리해 주어야할 작업을 여기서 처리
+    protected virtual void Dispose()
+    {
+        m_Instance = null;
+    }
+
+    
 
 #if UNITY_STANDALONE   // Windows, macOS, Linux
     private void Update()
@@ -62,8 +92,8 @@ public class PlayerController : SingletonBehaviour<PlayerController>
         {
             if (Time.time >= keyboardNextFireTime)
             {
-                TryMoveTo(destI + (int)dir.x, destJ + (int)dir.y);
-                keyboardNextFireTime = Time.time + moveTimePerTile;
+                TryMoveTo(destPos.x + (int)dir.x, destPos.y + (int)dir.y);
+                keyboardNextFireTime = Time.time + moveTime;
             }
         }
         else
@@ -78,44 +108,52 @@ public class PlayerController : SingletonBehaviour<PlayerController>
 
     public void InitPlayer(BoardSO boardSO)
     {
-        ChangeColor(TileType.None);
-        curI = destI = boardSO.startPos.x;
-        curJ = destJ = boardSO.startPos.y;
-        transform.position = Board.Instance.GetTilePos(curI, curJ);
+        ApplyColorChange(TileType.White);
+        curPos.x = destPos.x = boardSO.startPos.x;
+        curPos.y = destPos.y = boardSO.startPos.y;
+        transform.position = Board.Instance.GetTilePos(curPos.x, curPos.y);
         SetMoveCount(0);
     }
 
     // (i, j) 좌표로 이동 시도
     public void TryMoveTo(int i, int j)
     {
-        if (!CanMoveTo(i, j) || !GameManager.Instance.isGaming) return;
+        if (!CanMoveTo(i, j) || !GameManager.Instance.isGaming || slidingDirection != Vector2Int.zero)
+            return;
 
         // 같은 행, 열 중 어디인지에 따라 분기
-        if (destI == i) // j 방향(가로 이동)
+        if (destPos.x == i) // j 방향(가로 이동)
         {
-            int step = (j > destJ) ? 1 : -1;
-            for (int col = destJ + step; col != j + step; col += step)
-                moveToQueue.Enqueue(new Vector2Int(destI, col));
+            int step = (j > destPos.y) ? 1 : -1;
+            for (int col = destPos.y + step; col != j + step; col += step)
+                moveToQueue.Enqueue(new Vector2Int(destPos.x, col));
         }
-        else if (destJ == j) // i 방향(세로 이동)
+        else if (destPos.y == j) // i 방향(세로 이동)
         {
-            int step = (i > destI) ? 1 : -1;
-            for (int row = destI + step; row != i + step; row += step)
-                moveToQueue.Enqueue(new Vector2Int(row, destJ));
+            int step = (i > destPos.x) ? 1 : -1;
+            for (int row = destPos.x + step; row != i + step; row += step)
+                moveToQueue.Enqueue(new Vector2Int(row, destPos.y));
         }
 
-        destI = i;
-        destJ = j;
+        destPos.x = i;
+        destPos.y = j;
 
         // 이동 중이 아니라면 이동 시작
-        if (!isMoving) StartCoroutine(Move());
+        if (!isMoving) inputMoveCoroutine = StartCoroutine(Move());
     }
 
-    // 플레이어가 (destI, destJ) => (i, j)로 갈 수 있는지 검사
+    public void ClearMoveQueue()
+    {
+        moveToQueue.Clear();
+        if (inputMoveCoroutine != null)
+            StopCoroutine(inputMoveCoroutine);
+        inputMoveCoroutine = null;
+    }
+
+    // 플레이어가 (destPos.x, destPos.y) => (i, j)로 갈 수 있는지 검사
     private bool CanMoveTo(int i, int j)
     {
-        if (!Board.Instance.IsInBounds(i, j)) return false; // 범위 바깥
-        if (destI != i && destJ != j) return false; // 대각선 방향은 이동X
+        if (destPos.x != i && destPos.y != j) return false; // 대각선 방향은 이동X
         if (!Board.Instance.board.ContainsKey(new Vector2Int(i, j))) return false; // 타일이 없으면 이동x
 
         // // 플레이어와 같은 색의 타일은 이동 불가능
@@ -123,19 +161,19 @@ public class PlayerController : SingletonBehaviour<PlayerController>
         // TileColor changeColor;
 
         // 같은 행, 열 중 어디인지에 따라 분기
-        if (destI == i) // j 방향(가로 이동)
+        if (destPos.x == i) // j 방향(가로 이동)
         {
-            int step = (j > destJ) ? 1 : -1;
-            for (int col = destJ + step; col != j + step; col += step)
+            int step = (j > destPos.y) ? 1 : -1;
+            for (int col = destPos.y + step; col != j + step; col += step)
             {
                 if (!Board.Instance.board.ContainsKey(new Vector2Int(i, col)))
                     return false;
             }
         }
-        else if (destJ == j) // i 방향(세로 이동)
+        else if (destPos.y == j) // i 방향(세로 이동)
         {
-            int step = (i > destI) ? 1 : -1;
-            for (int row = destI + step; row != i + step; row += step)
+            int step = (i > destPos.x) ? 1 : -1;
+            for (int row = destPos.x + step; row != i + step; row += step)
             {
                 // changeColor = Board.Instance.IsChangeTile(row, j);
                 // if (changeColor != TileColor.None) // 색 바꾸는 타일
@@ -157,45 +195,74 @@ public class PlayerController : SingletonBehaviour<PlayerController>
 
         while (moveToQueue.Count > 0 && GameManager.Instance.isGaming)
         {
-            IncreaseMoveCount();
-            float moveTime = moveTimePerTile * Mathf.Lerp(1, 0.8f, Mathf.InverseLerp(1, 10, moveToQueue.Count));
             Vector2Int nextPos = moveToQueue.Dequeue(); // 큐에서 하나 꺼내기
-            movingDirection = nextPos - new Vector2Int(curI, curJ);
-            PlayerMoveAnimation(nextPos, moveTime);
-            Board.Instance.board[nextPos].OnPlayerEnter(this, moveTime);
-            yield return new WaitForSeconds(moveTime / 2f);
+            movingDirection = nextPos - curPos;
+            if (!BlockMoveController.Instance.CanMove(curPos, movingDirection))
+            {
+                destPos = curPos;
+                break;
+            }
 
-            // 타일 색칠 or 플레이어 색 변화
-            curI = nextPos.x; curJ = nextPos.y;
+            IncreaseMoveCount();
+            curPos = nextPos;
+            BlockMoveController.Instance.MoveBlocks(this, nextPos - movingDirection, movingDirection);
+            PlayerMoveAnimation(nextPos, movingDirection, moveTime);
+            Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, movingDirection, Color, moveTime);
+            yield return halfMoveWaitForSeconds;
+
             Board.Instance.CheckGameClear();
-            
-            yield return new WaitForSeconds(moveTime / 2f);
+            yield return halfMoveWaitForSeconds;
         }
+        if (slidingDirection == Vector2Int.zero)
+        {
+            player.DOScale(1, moveTime / 1.2f);
+            isMoving = false;
+        }
+    }
 
-        player.DOScale(1, moveTimePerTile / 1.2f);
+    protected override IEnumerator StartMoveCoroutine(Vector2Int curPos, Vector2Int slidingDirection)
+    {
+        while (BlockMoveController.Instance.CanMove(curPos, slidingDirection))
+        {
+            BlockMoveController.Instance.MoveBlocks(this, curPos, slidingDirection);
+            curPos += slidingDirection;
+            destPos = this.curPos = curPos;
+            PlayerMoveAnimation(curPos, slidingDirection, moveTime);
+            Board.Instance.board[curPos].OnBlockEnter(this, curPos, movingDirection, Color, moveTime);
+            yield return halfMoveWaitForSeconds;
+
+            if (Board.Instance.CheckGameClear())
+                break;
+
+            yield return halfMoveWaitForSeconds;
+        }
+        this.slidingDirection = Vector2Int.zero;
+        player.DOScale(1, moveTime / 1.2f);
         isMoving = false;
     }
 
-    private void PlayerMoveAnimation(Vector2Int nextPos, float moveTime)
+    private void PlayerMoveAnimation(Vector2Int nextPos, Vector2Int direction, float moveTime)
     {
         Vector2 nextRealPos = Board.Instance.GetTilePos(nextPos.x, nextPos.y);
-        transform.DOMove(nextRealPos, moveTime).SetEase(Ease.Linear);        
-        if (curI == nextPos.x)
-        {// 세로 이동 
-            player.DOScale(new Vector2(0.85f, 1.15f), moveTimePerTile / 1.2f);
+        transform.DOMove(nextRealPos, moveTime).SetEase(Ease.Linear);
+        PlayerScaleAnimation(direction, moveTime);
+        if (curPos.x == nextPos.x) // 세로 이동
             particle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-        }
         else
-        {
-            player.DOScale(new Vector2(1.15f, 0.85f), moveTimePerTile / 1.2f);
             particle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90));
-        }
         particle.Emit(4);
     }
 
-    public void ChangeColor(TileType changeColor)
+    private void PlayerScaleAnimation(Vector2Int moveDirection, float moveTime)
     {
-        myColor = changeColor;
+        if (moveDirection == Vector2Int.zero) player.DOScale(1, moveTime / 1.2f); // 이동 중지
+        else if (moveDirection.x == 0) player.DOScale(new Vector2(0.85f, 1.15f), moveTime / 1.2f); // 세로 이동
+        else player.DOScale(new Vector2(1.15f, 0.85f), moveTime / 1.2f); // 가로 이동
+    }
+
+    protected override void ApplyColorChange(TileType changeColor)
+    {
+        Color = changeColor;
         var main = particle.main;
 
         ColorPaletteSO colorPalette;
@@ -204,9 +271,9 @@ public class PlayerController : SingletonBehaviour<PlayerController>
         else
             colorPalette = PersistentDataManager.Instance.colorPaletteSO;
 
-        switch (myColor)
+        switch (Color)
         {
-            case TileType.None:
+            case TileType.White:
                 spriter.color = white;
                 main.startColor = white;
                 break;
@@ -256,15 +323,15 @@ public class PlayerController : SingletonBehaviour<PlayerController>
     //     DecreaseMoveCount();
     //     PlayerMoveData moveData = moveDataListToRedo.Last.Value;
     //     moveDataListToRedo.RemoveLast();
-    //     destI -= moveData.moveDir.x;
-    //     destJ -= moveData.moveDir.y;
-    //     PlayerMoveAnimation(new Vector2Int(destI, destJ), moveTimePerTile);
+    //     destPos.x -= moveData.moveDir.x;
+    //     destPos.y -= moveData.moveDir.y;
+    //     PlayerMoveAnimation(new Vector2Int(destPos.x, destPos.y), moveTimePerTile);
     //     yield return new WaitForSeconds(moveTimePerTile / 2f);
 
     //     if (myColor != moveData.prevMyColor)
     //         ChangeColor(moveData.prevMyColor);
     //     Board.Instance.ColorTile(curI, curJ, moveData.prevTileColor, false);
-    //     curI = destI; curJ = destJ;
+    //     curI = destPos.x; curJ = destPos.y;
 
     //     yield return new WaitForSeconds(moveTimePerTile / 2f);
     //     player.DOScale(1, moveTimePerTile / 1.2f);

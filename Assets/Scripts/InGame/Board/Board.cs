@@ -6,13 +6,10 @@ using Random = UnityEngine.Random;
 
 public class Board : SingletonBehaviour<Board>
 {
-    public Transform tileParent;
-
-    // public TileType[,] board;  // 현재 보드 상태
-    // public TileType[,] answer; // 목표 보드 상태
-    // public HashSet<Vector2Int> tileSet; // 타일 위치
+    public Transform tileParent, blockParent;
 
     public Dictionary<Vector2Int, TileData> board; // 보드 상태
+    public Dictionary<Vector2Int, BlockData> blocks; // 블록 위치와 상태
     public Dictionary<Vector2Int, TileType> target; // 목표 보드
     private int n, m; // 세로, 가로 크기
 
@@ -30,6 +27,7 @@ public class Board : SingletonBehaviour<Board>
 
     protected override void Init()
     {
+        m_IsDestroyOnLoad = true;
         base.Init();
         TileFactory.Initialize(tileFactoryConfig);
     }
@@ -39,6 +37,7 @@ public class Board : SingletonBehaviour<Board>
         this.boardSO = boardSO;
         InitProperties();
         InitBoard();
+        BlockMoveController.Instance.InitBoard();
     }
 
     private void InitProperties()
@@ -50,6 +49,7 @@ public class Board : SingletonBehaviour<Board>
         this.n = boardSO.n;
         this.m = boardSO.m;
         board = new Dictionary<Vector2Int, TileData>();
+        blocks = new Dictionary<Vector2Int, BlockData>();
         target = new Dictionary<Vector2Int, TileType>();
     }
 
@@ -57,10 +57,15 @@ public class Board : SingletonBehaviour<Board>
     {
         foreach (var entry in boardSO.boardTileList)
         {
-            board[entry.pos] = TileFactory.CreateTile(entry);
+            if (!entry.type.IsBlock())
+                board[entry.pos] = TileFactory.CreateTile<TileData>(entry);
         }
-
-
+        foreach (var entry in boardSO.boardTileList)
+        {
+            if (entry.type.IsBlock())
+                blocks[entry.pos] = TileFactory.CreateTile<BlockData>(entry);
+        }
+        blocks[boardSO.startPos] = PlayerController.Instance;
         foreach (var entry in boardSO.targetTileList)
         {
             target[entry.pos] = entry.type;
@@ -107,10 +112,10 @@ public class Board : SingletonBehaviour<Board>
         return matchingTileWithTargetCount == target.Count;
     }
 
-    public bool IsInBounds(int i, int j)
-    {
-        return 0 <= i && i < n && 0 <= j && j < m;
-    }
+    // public bool IsInBounds(int i, int j)
+    // {
+    //     return 0 <= i && i < n && 0 <= j && j < m;
+    // }
 
     public Color GetColorByType(TileType type)
     {

@@ -11,7 +11,9 @@ public enum TileEditingTool
     AddTarget,
     AddColor1Paint, AddColor2Paint, AddReversePaint,
     AddSpray, AddDirectedSpray,
-    Temp2
+    AddIce,
+    AddMirror,
+    AddStamp
 }
 
 public class ToggleManager : SingletonBehaviour<ToggleManager>

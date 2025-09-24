@@ -1,9 +1,14 @@
+using UnityEngine;
+
 public class NormalTile : TileData
 {
-    public override void OnPlayerEnter(PlayerController player, float moveTime)
+    public override void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)
     {
-        Type = Type.AddColorToNormalTile(player.myColor);
-        WaitAndDrawTile(moveTime / 2f);
+        if (block.HasColor)
+        {
+            Type = Type.AddColorToNormalTile(color);
+            WaitAndDrawTile(moveTime / 2f);
+        }
     }
 
     public void SetTileColor(TileType type, float waitTime)

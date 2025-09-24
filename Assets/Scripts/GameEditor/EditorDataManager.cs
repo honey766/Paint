@@ -4,6 +4,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using System;
 using UnityEngine.UI;
+using Unity.Mathematics;
 
 public class EditorTileInfo
 {
@@ -43,6 +44,9 @@ public class EditorDataManager : MonoBehaviour
     private Dictionary<Vector2Int, GameObject> specialTileObjects;
     private Dictionary<Vector2Int, int> extraIntTileDatas;
     private Dictionary<Vector2Int, float> extraFloatTileDatas;
+    private Dictionary<Vector2Int, EditorTileInfo> blocks;
+    private Dictionary<Vector2Int, int> extraIntBlockDatas;
+    private Dictionary<Vector2Int, float> extraFloatBlockDatas;
     private Dictionary<Vector2Int, EditorTargetInfo> targets;
 
     private void Start()
@@ -51,6 +55,9 @@ public class EditorDataManager : MonoBehaviour
         specialTileObjects = new Dictionary<Vector2Int, GameObject>();
         extraIntTileDatas = new Dictionary<Vector2Int, int>();
         extraFloatTileDatas = new Dictionary<Vector2Int, float>();
+        blocks = new Dictionary<Vector2Int, EditorTileInfo>();
+        extraIntBlockDatas = new Dictionary<Vector2Int, int>();
+        extraFloatBlockDatas = new Dictionary<Vector2Int, float>();
         targets = new Dictionary<Vector2Int, EditorTargetInfo>();
 
         if (sourceBoardSO != null)
@@ -109,6 +116,15 @@ public class EditorDataManager : MonoBehaviour
             case TileEditingTool.AddDirectedSpray:
                 AddObject(pos, TileType.DirectedSpray);
                 break;
+            case TileEditingTool.AddIce:
+                AddObject(pos, TileType.Ice);
+                break;
+            case TileEditingTool.AddMirror:
+                AddObject(pos, TileType.Mirror);
+                break;
+            case TileEditingTool.AddStamp:
+                AddObject(pos, TileType.Stamp);
+                break;
         }
     }
 
@@ -142,6 +158,11 @@ public class EditorDataManager : MonoBehaviour
             Logger.LogWarning("타일을 생성해 주세요");
             return false;
         }
+        if (targets.Count == 0)
+        {
+            Logger.LogWarning("클리어 목표(보라색 테두리)를 설정해 주세요");
+            return false;
+        }
 
         return true;
     }
@@ -169,8 +190,15 @@ public class EditorDataManager : MonoBehaviour
         if (!tiles.TryGetValue(pos, out EditorTileInfo tileInfo))
             return;
 
+        // 블록 삭제
+        if (blocks.TryGetValue(pos, out EditorTileInfo blockInfo))
+        {
+            tileDrawer.DeleteTile(blockInfo.tile);
+            blocks.Remove(pos);
+            DeleteExtraData(pos, blockInfo.type);
+        }
         // 타겟 위치라면 타겟 삭제
-        if (targets.TryGetValue(pos, out EditorTargetInfo targetInfo))
+        else if (targets.TryGetValue(pos, out EditorTargetInfo targetInfo))
         {
             tileDrawer.DeleteTile(targetInfo.target);
             targets.Remove(pos);
@@ -226,14 +254,19 @@ public class EditorDataManager : MonoBehaviour
         targets[pos] = new EditorTargetInfo(targetObj, color);
     }
 
-    private void AddObject(Vector2Int pos, TileType type)
+    private void AddObject(Vector2Int pos, TileType type, bool isLoadingSourceBoardSO = false)
     {
-        if (!tiles.TryGetValue(pos, out EditorTileInfo tileInfo))
+        if (!tiles.TryGetValue(pos, out EditorTileInfo tileInfo) && !isLoadingSourceBoardSO)
             return;
         if (!CanParseInputField(type))
             return;
 
-        if (tileInfo.type.IsSpecialTile())
+        if (type.IsBlock() && blocks.TryGetValue(pos, out EditorTileInfo blockInfo))
+        {
+            DeleteExtraData(pos, tileInfo.type);
+            Destroy(blockInfo.tile);
+        }
+        else if (!type.IsBlock() && tileInfo.type.IsSpecialTile())
         {
             DeleteExtraData(pos, tileInfo.type);
             if (specialTileObjects.TryGetValue(pos, out GameObject obj))
@@ -243,12 +276,21 @@ public class EditorDataManager : MonoBehaviour
         Logger.Log($"Created {type} at {pos}");
 
         AddObjectExtraData(pos, type);
-        tileInfo.type = type;
-        tiles[pos] = tileInfo;
-        
-
-        GameObject tileObj = tileDrawer.AddObject(pos, type);
-        specialTileObjects[pos] = tileObj;
+        GameObject tileObj = null, blockObj = null;
+        if (type.IsBlock())
+        {
+            Logger.Log($"in block {type}");
+            blockObj = tileDrawer.AddObject(pos, type);
+            blocks[pos] = new EditorTileInfo(blockObj, type);
+        }
+        else
+        {
+            Logger.Log($"in tile {type}");
+            tileInfo.type = type;
+            tiles[pos] = tileInfo;
+            tileObj = tileDrawer.AddObject(pos, type);
+            specialTileObjects[pos] = tileObj;
+        }
 
         // 특수타일별 추가 처리
         switch (type)
@@ -263,6 +305,9 @@ public class EditorDataManager : MonoBehaviour
                 break;
             case TileType.DirectedSpray:
                 tileDrawer.SetDirectedSpray(tileObj, extraIntTileDatas[pos]);
+                break;
+            case TileType.Mirror:
+                tileDrawer.SetMirror(blockObj, extraIntBlockDatas[pos]);
                 break;
         }
     }
@@ -286,31 +331,59 @@ public class EditorDataManager : MonoBehaviour
         if (type.NeedsIntData())
         {
             if (int.TryParse(str, out int intValue))
-            {
-                if (type == TileType.DirectedSpray)
-                {
-                    extraIntTileDatas[pos] = EditorDataFormat.EncodeDirectedSpray(
-                        intValue,
-                        dropdownController.directedSprayDirection,
-                        dropdownController.directedSprayDoPaintReverse);
-                }
-                else
-                {
-                    extraIntTileDatas[pos] = intValue;
-                }
-            }
+                AddObjectExtraIntData(pos, type, intValue);
         }
         else if (type.NeedsFloatData())
         {
             if (float.TryParse(str, out float floatValue))
-                extraFloatTileDatas[pos] = floatValue;
+                AddObjectExtraFloatData(pos, type, floatValue);
+        }
+    }
+    private void AddObjectExtraIntData(Vector2Int pos, TileType type, int intValue)
+    {
+        if (type.IsBlock())
+        {
+            extraIntBlockDatas[pos] = intValue;
+        }
+        else
+        {
+            if (type == TileType.DirectedSpray)
+            {
+                extraIntTileDatas[pos] = EditorDataFormat.EncodeDirectedSpray(
+                    intValue,
+                    dropdownController.directedSprayDirection,
+                    dropdownController.directedSprayDoPaintReverse);
+            }
+            else
+            {
+                extraIntTileDatas[pos] = intValue;
+            }
+        }
+    }
+    private void AddObjectExtraFloatData(Vector2Int pos, TileType type, float floatValue)
+    {
+        if (type.IsBlock())
+        {
+            extraFloatBlockDatas[pos] = floatValue;
+        }
+        else
+        {
+            extraFloatTileDatas[pos] = floatValue;
         }
     }
 
     private void DeleteExtraData(Vector2Int pos, TileType type)
     {
-        if (type.NeedsIntData()) extraIntTileDatas.Remove(pos);
-        else if (type.NeedsFloatData()) extraFloatTileDatas.Remove(pos);
+        if (type.NeedsIntData())
+        {
+            if (type.IsBlock()) extraIntBlockDatas.Remove(pos);
+            else extraIntTileDatas.Remove(pos);
+        }
+        else if (type.NeedsFloatData())
+        {
+            if (type.IsBlock()) extraFloatBlockDatas.Remove(pos);
+            else extraFloatTileDatas.Remove(pos);
+        }
     }
 
     private BoardSO GetBoardSOData()
@@ -330,11 +403,23 @@ public class EditorDataManager : MonoBehaviour
         }
         foreach (var entry in tiles)
         {
+            Logger.Log($"save tile : {entry.Key}, {entry.Value.type}");
             Vector2Int pos = entry.Key - new Vector2Int(minX, minY);
             if (entry.Value.type.NeedsIntData())
                 boardTileList.Add(new BoardSOIntTileData(pos, entry.Value.type, extraIntTileDatas[entry.Key]));
             else if (entry.Value.type.NeedsFloatData())
                 boardTileList.Add(new BoardSOFloatTileData(pos, entry.Value.type, extraFloatTileDatas[entry.Key])); 
+            else
+                boardTileList.Add(new BoardSOTileData(pos, entry.Value.type));
+        }
+        foreach (var entry in blocks)
+        {
+            Logger.Log($"save block : {entry.Key}, {entry.Value.type}");
+            Vector2Int pos = entry.Key - new Vector2Int(minX, minY);
+            if (entry.Value.type.NeedsIntData())
+                boardTileList.Add(new BoardSOIntTileData(pos, entry.Value.type, extraIntBlockDatas[entry.Key]));
+            else if (entry.Value.type.NeedsFloatData())
+                boardTileList.Add(new BoardSOFloatTileData(pos, entry.Value.type, extraFloatBlockDatas[entry.Key])); 
             else
                 boardTileList.Add(new BoardSOTileData(pos, entry.Value.type));
         }
@@ -357,12 +442,17 @@ public class EditorDataManager : MonoBehaviour
     {
         foreach (var entry in sourceBoardSO.boardTileList)
         {
-            AddTile(entry.pos);
-            ChangeTileColor(entry.pos, tiles[entry.pos], entry.type);
+            if (!entry.type.IsBlock())
+            {
+                AddTile(entry.pos);
+                ChangeTileColor(entry.pos, tiles[entry.pos], entry.type);
+            }
             if (entry.type.NeedsIntData() && entry is BoardSOIntTileData intTileData)
                 dropdownController.inputField.text = intTileData.intValue.ToString();
+            else if (entry.type.NeedsFloatData() && entry is BoardSOFloatTileData floatTileData)
+                dropdownController.inputField.text = floatTileData.floatValue.ToString();
             if (entry.type.IsSpecialTile())
-                AddObject(entry.pos, entry.type);
+                AddObject(entry.pos, entry.type, true);
         }
         foreach (var entry in sourceBoardSO.targetTileList)
         {

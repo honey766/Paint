@@ -9,7 +9,9 @@ public class EditorTileDrawer : MonoBehaviour
     [SerializeField] Transform tileParent;
     [SerializeField] GameObject target;
     [SerializeField] Transform targetParent;
-    [SerializeField] GameObject color1Paint, color2Paint, reversePaint, spray, directedSpray;
+    [SerializeField]
+    GameObject color1Paint, color2Paint, reversePaint, spray, directedSpray,
+                                ice, mirror, stamp;
     [SerializeField] Transform objectParent;
     [SerializeField] Color white, color1, color2, color12, black;
 
@@ -116,6 +118,12 @@ public class EditorTileDrawer : MonoBehaviour
                 return Instantiate(spray, (Vector2)pos, Quaternion.identity, objectParent);
             case TileType.DirectedSpray:
                 return Instantiate(directedSpray, (Vector2)pos, Quaternion.identity, objectParent);
+            case TileType.Ice:
+                return Instantiate(ice, (Vector2)pos, Quaternion.identity, objectParent);
+            case TileType.Mirror:
+                return Instantiate(mirror, (Vector2)pos, Quaternion.identity, objectParent);
+            case TileType.Stamp:
+                return Instantiate(stamp, (Vector2)pos, Quaternion.identity, objectParent);
         }
         return null;
     }
@@ -153,5 +161,13 @@ public class EditorTileDrawer : MonoBehaviour
             spriterTriangle.color = new Color(0.7f, 0.7f, 0.7f, 0.5f);
             spriterOutline.color = new Color(0.7f, 0.7f, 0.7f, 0.9f);
         }
+    }
+
+    public void SetMirror(GameObject obj, int encodedValue)
+    {
+        if (encodedValue == 0) // isBottomLeftToTopRight == false
+            obj.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90));
+        else
+            obj.transform.rotation = Quaternion.identity;
     }
 }
