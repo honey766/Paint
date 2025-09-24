@@ -59,7 +59,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8199aeba0af6a8a43830d34b2b1f81e3, type: 2}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -150,5 +150,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c52bb8c279eb1c542b34efef38c1e2db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MirrorBlock
-  isSliding: 0
+  slidingDirection: {x: 0, y: 0}
   isBottomLeftToTopRight: 0
