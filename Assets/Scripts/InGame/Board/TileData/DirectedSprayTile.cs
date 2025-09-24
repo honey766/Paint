@@ -5,13 +5,15 @@ public class DirectedSprayTile : SprayTile
     private Vector2Int direction;
     private bool doPaintReverse;
 
-    public override void OnPlayerEnter(PlayerController player, float moveTime)
+    public override void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)
     {
-        TileType colorType = doPaintReverse ? player.myColor.GetOppositeColor() : player.myColor;
-        Color color = Board.Instance.GetColorByType(colorType);
-        StartCoroutine(MyTileColorChange(color));
+        if (!block.HasColor)
+            return;
+        TileType colorType = doPaintReverse ? color.GetOppositeColor() : color;
+        Color c = Board.Instance.GetColorByType(colorType);
+        StartCoroutine(MyTileColorChange(c));
         if (colorType == TileType.Color1 || colorType == TileType.Color2)
-            StartCoroutine(DoSprayTile(direction, colorType));
+            StartCoroutine(DoSprayTile(this.direction, colorType));
     }
 
     public void OnColorEnter(TileType colorType)
@@ -39,7 +41,7 @@ public class DirectedSprayTile : SprayTile
         }
         else
         {
-            Logger.LogError("DirectedSprayTile에 잘못된 데이터 타입이 전달되었습니다.");
+            Logger.LogError($"DirectedSprayTile에 잘못된 데이터 타입이 전달되었습니다. : {boardSOTileData}");
         }
     }
 

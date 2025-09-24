@@ -9,12 +9,14 @@ public class SprayTile : TileData
     protected Vector2Int pos;
     protected WaitForSeconds waitColorOneTile;
 
-    public override void OnPlayerEnter(PlayerController player, float moveTime)
+    public override void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)
     {
-        Color color = Board.Instance.GetColorByType(player.myColor);
-        StartCoroutine(MyTileColorChange(color));
-        if (player.myColor == TileType.Color1 || player.myColor == TileType.Color2)
-            StartCoroutine(DoSprayTile(player.movingDirection, player.myColor));
+        if (!block.HasColor)
+            return;
+        Color c = Board.Instance.GetColorByType(color);
+        StartCoroutine(MyTileColorChange(c));
+        if (color == TileType.Color1 || color == TileType.Color2)
+            StartCoroutine(DoSprayTile(direction, color));
     }
 
     public override void Initialize(BoardSOTileData boardSOTileData)
@@ -29,7 +31,7 @@ public class SprayTile : TileData
         }
         else
         {
-            Logger.LogError("SprayTile에 잘못된 데이터 타입이 전달되었습니다.");
+            Logger.LogError($"SprayTile에 잘못된 데이터 타입이 전달되었습니다. : {boardSOTileData}");
         }
     }
 
@@ -51,9 +53,7 @@ public class SprayTile : TileData
             // 타일이 없으면 즉시 종료
             if (!Board.Instance.board.TryGetValue(curPos, out TileData tileData))
                 break;
-            if (Board.Instance.CheckGameClear())
-                break;
-
+            
             if (tileData is NormalTile normalTile)
                 normalTile.AddTileColor(colorType, 0);
             else if (tileData is DirectedSprayTile directedSprayTile)
@@ -61,7 +61,33 @@ public class SprayTile : TileData
             else if (tileData is ReversePaintTile)
                 colorType = colorType.GetOppositeColor();
 
+            if (Board.Instance.blocks.TryGetValue(curPos, out BlockData blockData))
+            {
+                if (blockData is MirrorBlock mirrorBlock)
+                    ChangeDirectionDueToMirror(ref direction, mirrorBlock.isBottomLeftToTopRight);
+            }
+
+            if (Board.Instance.CheckGameClear())
+                break;
             yield return waitColorOneTile;
+        }
+    }
+
+    private void ChangeDirectionDueToMirror(ref Vector2Int direction, bool isBottomLeftToTopRight)
+    {
+        if (isBottomLeftToTopRight) // 대각선 (/ 모양)
+        {
+            if (direction == Vector2Int.up) direction = Vector2Int.right;
+            else if (direction == Vector2Int.right) direction = Vector2Int.up;
+            else if (direction == Vector2Int.down) direction = Vector2Int.left;
+            else if (direction == Vector2Int.left) direction = Vector2Int.down;
+        }
+        else // 대각선 (\ 모양)
+        {
+            if (direction == Vector2Int.up) direction = Vector2Int.left;
+            else if (direction == Vector2Int.left) direction = Vector2Int.up;
+            else if (direction == Vector2Int.down) direction = Vector2Int.right;
+            else if (direction == Vector2Int.right) direction = Vector2Int.down;
         }
     }
 }

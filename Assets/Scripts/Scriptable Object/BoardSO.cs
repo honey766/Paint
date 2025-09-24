@@ -34,7 +34,6 @@ public class BoardSOFloatTileData : BoardSOTileData
     }
 }
 
-
 [CreateAssetMenu(fileName = "Board", menuName = "ScriptableObjects/Board")]
 public class BoardSO : ScriptableObject
 {

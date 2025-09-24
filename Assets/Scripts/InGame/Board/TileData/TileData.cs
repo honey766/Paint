@@ -10,7 +10,13 @@ public enum TileType
     Color1Paint, Color2Paint, // 플레이어 색깔을 바꾸는 타일
     ReversePaint, // 플레이어의 색깔이 Color1 또는 Color2일 때 둘 중 다른 색으로 전환시키는 페인트
     Spray, // 플레이어가 진입한 방향으로 n칸을 플레이어의 색으로 색칠하는 특수타일
-    DirectedSpray // 특정 방향으로만 색칠하는 Spray
+    DirectedSpray, // 특정 방향으로만 색칠하는 Spray
+    Ice, // 플레이어나 블록이 진입하면 해당 방향으로 타일 끝까지 미끄러짐
+
+    ////// Block //////
+    Player = 10000,
+    Mirror, // Spray가 만나면 Spray의 방향이 꺾임
+    Stamp // 플레이어와 동일한 로직을 수행
 }
 #endregion
 
@@ -19,9 +25,13 @@ public enum TileType
 // TileType의 함수 익스텐션
 public static class TileTypeExtensions
 {
-    private static HashSet<TileType> shouldDrawTileSet = new HashSet<TileType>{
+    private static HashSet<TileType> shouldDrawTileSet = new HashSet<TileType> {
         TileType.White, TileType.Color1, TileType.Color2, TileType.Color12, TileType.Black,
         TileType.Color1Paint, TileType.Color2Paint, TileType.ReversePaint
+    };
+
+    private static HashSet<TileType> blockSet = new HashSet<TileType> {
+        TileType.Player, TileType.Mirror, TileType.Stamp
     };
 
     /// <summary>
@@ -70,10 +80,17 @@ public static class TileTypeExtensions
         return shouldDrawTileSet.Contains(tile);
     }
 
+    // 타일 위에 올라가는 BlockData형식의 타입인지 확인
+    public static bool IsBlock(this TileType tile)
+    {
+        return blockSet.Contains(tile);
+    }
+
     // 타일 생성 시에 Int데이터가 추가적으로 필요한 타입인지 검사
     public static bool NeedsIntData(this TileType tile)
     {
-        return tile == TileType.Spray || tile == TileType.DirectedSpray;
+        return tile == TileType.Spray || tile == TileType.DirectedSpray ||
+               tile == TileType.Mirror;
     }
 
     public static bool NeedsFloatData(this TileType tile)
@@ -101,12 +118,20 @@ public static class TileFactory
         }
     }
 
-    public static TileData CreateTile(BoardSOTileData boardSOTileData)
+    public static T CreateTile<T>(BoardSOTileData boardSOTileData) where T : MonoBehaviour
     {
+        if (typeof(T) != typeof(TileData) && typeof(T) != typeof(BlockData))
+        {
+            Logger.LogError($"잘못된 타입 {typeof(T)}이 입력되었습니다. TileData 또는 BlockData를 넣어 주세요.");
+            return null;
+        }
+
         int i = boardSOTileData.pos.x;
         int j = boardSOTileData.pos.y;
         TileType type = boardSOTileData.type;
 
+        if (type.IsBlock() && typeof(T) == typeof(TileData) || !type.IsBlock() && typeof(T) == typeof(BlockData))
+            return null;
         if (!_tilePrefabDict.TryGetValue(type, out GameObject prefab))
         {
             Logger.LogError($"{boardSOTileData.type}에 해당하는 프리팹이 TileFactoryConfigSO에 설정되지 않았습니다.");
@@ -114,23 +139,25 @@ public static class TileFactory
         }
 
         Vector2 worldPos = Board.Instance.GetTilePos(i, j);
+        Transform parent = type.IsBlock() ? Board.Instance.blockParent : Board.Instance.tileParent;
         GameObject tileInstance = UnityEngine.Object.Instantiate(prefab,
-                                    worldPos, Quaternion.identity, Board.Instance.tileParent);
+                                    worldPos, Quaternion.identity, parent);
         tileInstance.name = $"{type}({i},{j})";
 
         // 프리팹에 이미 컴포넌트가 있다고 가정
-        TileData tileData = tileInstance.GetComponent<TileData>();
-        // tileInstance.name = $"{tileData.GetType().Name}({i},{j})";
-        if (tileData == null)
+        T data = tileInstance.GetComponent<T>();
+        if (data == null)
         {
-            Logger.LogError($"[TileFactory] '{prefab.name}' 프리팹에 TileData를 상속하는 컴포넌트가 없습니다. " +
+            Logger.LogError($"[TileFactory] '{prefab.name}' 프리팹에 {typeof(T)}를 상속하는 컴포넌트가 없습니다. " +
                    $"(요청된 타입: {boardSOTileData.type}). " +
-                   $"프리팹을 확인하고 NormalTile, PaintTile 같은 스크립트를 추가해주세요.");
+                   $"프리팹을 확인하고 {((typeof(T) == typeof(TileData)) ? "NormalTile" : "MirrorBlock")}  같은 스크립트를 추가해주세요.");
             return null;
         }
 
-        tileData.Initialize(boardSOTileData); // 초기화 메소드 호출
-        return tileData;
+        // 초기화 메소드 호출
+        if (data is TileData td) td.Initialize(boardSOTileData);
+        else if (data is BlockData bd) bd.Initialize(boardSOTileData);
+        return data;
     }
 }
 #endregion
@@ -144,7 +171,7 @@ public abstract class TileData : MonoBehaviour
     protected SpriteRenderer spriter;
     protected float paintTime = 0.25f;
 
-    public abstract void OnPlayerEnter(PlayerController player, float moveTime);
+    public abstract void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime);
 
     public virtual void Initialize(BoardSOTileData boardSOTileData)
     {
