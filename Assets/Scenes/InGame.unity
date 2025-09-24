@@ -1847,7 +1847,7 @@ PrefabInstance:
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: boardSO
       value: 
-      objectReference: {fileID: 11400000, guid: 1a3c6e5c29434b740b04068148145143, type: 2}
+      objectReference: {fileID: 11400000, guid: 98f4b7fa560aaa049a0d696645d207b9, type: 2}
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: gameClearText
       value: 

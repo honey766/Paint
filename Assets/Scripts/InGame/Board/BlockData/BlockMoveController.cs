@@ -21,17 +21,15 @@ public class BlockMoveController : SingletonBehaviour<BlockMoveController>
 
     public bool CanMove(Vector2Int curPos, Vector2Int direction)
     {
-        int n = 0;
-        Logger.Log("============CanMove");
-        foreach (var block in blocks)
-        {
-            if (block.Value.Type == TileType.Player)
-                Logger.Log($"Player pos : {block.Key}");
-        }
-        while (n++ < 100)
+        // Logger.Log($"========");
+        // foreach (var block in blocks)
+        // {
+        //     if (block.Value.Type == TileType.Player)
+        //         Logger.Log($"Player pos : {block.Key}");
+        // }
+        while (true)
         {
             curPos += direction;
-            Logger.Log($"CanMove : {curPos}");
             if (board.ContainsKey(curPos))
             {
                 if (!blocks.TryGetValue(curPos, out BlockData block))
@@ -42,7 +40,6 @@ public class BlockMoveController : SingletonBehaviour<BlockMoveController>
                 return false;
             }
         }
-        return false;
     }
 
     // 밀 수 있는 상태를 가정
@@ -50,13 +47,13 @@ public class BlockMoveController : SingletonBehaviour<BlockMoveController>
     {
         if (blocks.TryGetValue(curPos, out BlockData block) && block == originBlock)
             blocks.Remove(curPos);
+        else Logger.LogWarning($"내 자리에 내가 없어요; {curPos}, {block}, {direction}, origin:{originBlock}");
         Vector2Int tempPos = curPos + direction;
         BlockData prevBlock = originBlock;
         int pushCnt = 1;
 
         // 1회 push
-        int n = 0;
-        while (n++ < 100)
+        while (true)
         {
             if (board.ContainsKey(tempPos) && blocks.TryGetValue(tempPos, out block) &&
                 block.slidingDirection != direction)

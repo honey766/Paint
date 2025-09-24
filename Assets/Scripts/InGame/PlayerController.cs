@@ -33,10 +33,9 @@ public class PlayerController : BlockData
     public ParticleSystem particle;
     public Vector2Int movingDirection { get; private set; }
     public Vector2Int destPos; // 최종 이동 장소로서 예약된 좌표 (플레이어 이동 중에는 현재좌표 != 도착좌표)
-    private Queue<Vector3Int> moveToQueue = new Queue<Vector3Int>(); // 한 번에 여러 칸 이동하기 위해 다음에 이동할 타일을 나열한 큐
+    private Queue<Vector2Int> moveToQueue = new Queue<Vector2Int>(); // 한 번에 여러 칸 이동하기 위해 다음에 이동할 타일을 나열한 큐
     private bool isMoving; // 현재 이동 중인지
     private int moveCount;
-    private Vector2Int slidingTargetPos;
     private LinkedList<PlayerMoveData> moveDataListToRedo = new LinkedList<PlayerMoveData>(); // 되돌리기를 위해 그동안의 이동 데이터를 기록한 양방향 리스트
     private float lastRedoTime = 0f;
 
@@ -117,26 +116,23 @@ public class PlayerController : BlockData
     }
 
     // (i, j) 좌표로 이동 시도
-    public void TryMoveTo(int i, int j, bool isStartSliding = false)
+    public void TryMoveTo(int i, int j)
     {
         if (!CanMoveTo(i, j) || !GameManager.Instance.isGaming || slidingDirection != Vector2Int.zero)
             return;
-
-        if (isStartSliding) slidingTargetPos = new Vector2Int(i, j);
-        int moveCount = isStartSliding ? 0 : 1;
 
         // 같은 행, 열 중 어디인지에 따라 분기
         if (destPos.x == i) // j 방향(가로 이동)
         {
             int step = (j > destPos.y) ? 1 : -1;
             for (int col = destPos.y + step; col != j + step; col += step)
-                moveToQueue.Enqueue(new Vector3Int(destPos.x, col, moveCount));
+                moveToQueue.Enqueue(new Vector2Int(destPos.x, col));
         }
         else if (destPos.y == j) // i 방향(세로 이동)
         {
             int step = (i > destPos.x) ? 1 : -1;
             for (int row = destPos.x + step; row != i + step; row += step)
-                moveToQueue.Enqueue(new Vector3Int(row, destPos.y, moveCount));
+                moveToQueue.Enqueue(new Vector2Int(row, destPos.y));
         }
 
         destPos.x = i;
@@ -199,8 +195,7 @@ public class PlayerController : BlockData
 
         while (moveToQueue.Count > 0 && GameManager.Instance.isGaming)
         {
-            Vector3Int moveElement = moveToQueue.Dequeue();
-            Vector2Int nextPos = new Vector2Int(moveElement.x, moveElement.y); // 큐에서 하나 꺼내기
+            Vector2Int nextPos = moveToQueue.Dequeue(); // 큐에서 하나 꺼내기
             movingDirection = nextPos - curPos;
             if (!BlockMoveController.Instance.CanMove(curPos, movingDirection))
             {
@@ -208,19 +203,14 @@ public class PlayerController : BlockData
                 break;
             }
 
-            if (moveElement.z > 0)
-                IncreaseMoveCount();
-            BlockMoveController.Instance.MoveBlocks(this, curPos, movingDirection);
-            PlayerMoveAnimation(nextPos, moveTime);
+            IncreaseMoveCount();
+            curPos = nextPos;
+            BlockMoveController.Instance.MoveBlocks(this, nextPos - movingDirection, movingDirection);
+            PlayerMoveAnimation(nextPos, movingDirection, moveTime);
             Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, movingDirection, Color, moveTime);
-
             yield return halfMoveWaitForSeconds;
 
-            if (slidingDirection != Vector2Int.zero && slidingTargetPos == nextPos)
-                slidingDirection = Vector2Int.zero;
-            curPos = nextPos;
             Board.Instance.CheckGameClear();
-            
             yield return halfMoveWaitForSeconds;
         }
         if (slidingDirection == Vector2Int.zero)
@@ -237,7 +227,7 @@ public class PlayerController : BlockData
             BlockMoveController.Instance.MoveBlocks(this, curPos, slidingDirection);
             curPos += slidingDirection;
             destPos = this.curPos = curPos;
-            PlayerMoveAnimation(curPos, moveTime);
+            PlayerMoveAnimation(curPos, slidingDirection, moveTime);
             Board.Instance.board[curPos].OnBlockEnter(this, curPos, movingDirection, Color, moveTime);
             yield return halfMoveWaitForSeconds;
 
@@ -251,11 +241,11 @@ public class PlayerController : BlockData
         isMoving = false;
     }
 
-    private void PlayerMoveAnimation(Vector2Int nextPos, float moveTime)
+    private void PlayerMoveAnimation(Vector2Int nextPos, Vector2Int direction, float moveTime)
     {
         Vector2 nextRealPos = Board.Instance.GetTilePos(nextPos.x, nextPos.y);
         transform.DOMove(nextRealPos, moveTime).SetEase(Ease.Linear);
-        PlayerScaleAnimation(nextPos - curPos, moveTime);
+        PlayerScaleAnimation(direction, moveTime);
         if (curPos.x == nextPos.x) // 세로 이동
             particle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
         else

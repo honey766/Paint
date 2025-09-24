@@ -148,6 +148,7 @@ public class EditorDropdownController : MonoBehaviour
 
     public void MirrorButton()
     {
+        toggle.ToggleGroup(TileEditingTool.AddMirror);
         isMirrorBottomLeftToTopRight = !isMirrorBottomLeftToTopRight;
         inputField.text = isMirrorBottomLeftToTopRight ? "1" : "0";
         mirrorImage.rotation = isMirrorBottomLeftToTopRight ?
