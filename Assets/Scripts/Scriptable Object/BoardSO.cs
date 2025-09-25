@@ -43,5 +43,5 @@ public class BoardSO : ScriptableObject
     public List<BoardSOTileData> boardTileList = new List<BoardSOTileData>();
     [SerializeReference]
     public List<BoardSOTileData> targetTileList = new List<BoardSOTileData>();
-    public int limitStepForTwoStar, limitStepForThreeStar;
+    public int limitStepForOneStar, limitStepForTwoStar, limitStepForThreeStar;
 }
