@@ -6002,7 +6002,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EditorDataManager
   dropdownController: {fileID: 1128048805}
   tileDrawer: {fileID: 993150251}
-  sourceBoardSO: {fileID: 11400000, guid: 52dc82d26eea0a64f8b8d976feebbaf1, type: 2}
+  sourceBoardSO: {fileID: 0}
 --- !u!114 &993150253
 MonoBehaviour:
   m_ObjectHideFlags: 0
