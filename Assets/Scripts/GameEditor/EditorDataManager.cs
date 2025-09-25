@@ -125,6 +125,9 @@ public class EditorDataManager : MonoBehaviour
             case TileEditingTool.AddStamp:
                 AddObject(pos, TileType.Stamp);
                 break;
+            case TileEditingTool.AddWhitePaint:
+                AddObject(pos, TileType.WhitePaint);
+                break;
         }
     }
 

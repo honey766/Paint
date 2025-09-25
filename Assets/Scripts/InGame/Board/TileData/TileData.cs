@@ -12,6 +12,7 @@ public enum TileType
     Spray, // 플레이어가 진입한 방향으로 n칸을 플레이어의 색으로 색칠하는 특수타일
     DirectedSpray, // 특정 방향으로만 색칠하는 Spray
     Ice, // 플레이어나 블록이 진입하면 해당 방향으로 타일 끝까지 미끄러짐
+    WhitePaint,
 
     ////// Block //////
     Player = 10000,
@@ -43,7 +44,7 @@ public static class TileTypeExtensions
         if (tile == TileType.None || IsSpecialTile(tile) || color == TileType.None || IsSpecialTile(color))
             return tile;
 
-        if (tile == TileType.White || color == TileType.Black)
+        if (tile == TileType.White || color == TileType.Black || color == TileType.White)
         {
             return color;
         }
