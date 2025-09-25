@@ -21,6 +21,9 @@ public class PaintTile : TileData
             case TileType.Color2Paint:
                 block.ChangeColor(TileType.Color2);
                 break;
+            case TileType.WhitePaint:
+                block.ChangeColor(TileType.White);
+                break;
         }
     }
 }
