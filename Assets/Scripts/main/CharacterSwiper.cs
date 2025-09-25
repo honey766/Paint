@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using System.Collections.Generic;
 using System;
+using System.Collections;
 
 // JSON 데이터 구조
 [Serializable]
@@ -18,6 +19,7 @@ public class Character
 public class Characters
 {
     public Character[] characters;
+
 }
 
 
@@ -44,12 +46,32 @@ public class CharacterSwiper : MonoBehaviour
     void Start()
     {
         LoadAndSetupCharacters();
+        StartCoroutine(InitSnapToCard(GetSavedIndex()));
     }
 
     void Update()
     {
         if (isSnapping) return;
         UpdateCardTransforms();
+    }
+    private int GetSavedIndex()
+    {
+        // 저장된 인덱스 불러오기 (없으면 0으로 기본값)
+        return PlayerPrefs.GetInt("LastSelectedCard", 0);
+    }
+    private IEnumerator InitSnapToCard(int index)
+    {
+        // 한 프레임 기다렸다가 레이아웃 계산이 끝난 뒤 실행
+        yield return null;
+
+        if (cardRects.Count > 0 && index >= 0 && index < cardRects.Count)
+        {
+            float centerX = viewport.position.x;
+            float offset = centerX - cardRects[index].position.x;
+            content.anchoredPosition = new Vector2(content.anchoredPosition.x + offset, content.anchoredPosition.y);
+
+            UpdateCardTransforms();
+        }
     }
 
     private void LoadAndSetupCharacters()
@@ -139,7 +161,11 @@ public class CharacterSwiper : MonoBehaviour
         content.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
         {
             isSnapping = false;
+            PlayerPrefs.SetInt("LastSelectedCard", nearestIndex);
+            PlayerPrefs.Save();
         });
+
+
         // 가장 가까운 카드의 위치로 Content 패널을 스르륵 이동시킴
         /*Vector2 targetPos = new Vector2(-cardRects[nearestIndex].anchoredPosition.x, content.anchoredPosition.y);
         isSnapping = true;

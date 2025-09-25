@@ -33,15 +33,35 @@ public class CharacterItem : MonoBehaviour
         }
 
         // 뒷면 이미지 불러오기 (없으면 앞면 재사용)
-        //Sprite spriteBack = Resources.Load<Sprite>("Image/" + character.PicName);
-        //if (spriteBack != null)
-        //backImage.sprite = spriteBack;
+        Sprite spriteBack = Resources.Load<Sprite>("Images/front_img_1");
+        if (spriteBack != null)
+            backUI.sprite = spriteBack;
         // else
         // backImage.sprite = spriteFront;
     }
-
-    // 카드를 터치했을 때 호출될 함수
     public void OnCardClick()
+    {
+        if (!isSelected || isAnimating) return;
+
+        isAnimating = true;
+
+        Sequence flipSequence = DOTween.Sequence();
+        flipSequence.Append(transform.DORotate(new Vector3(0, 90, 0), flipDuration / 2).SetEase(Ease.InQuad))
+                    .AppendCallback(() =>
+                    {
+                    // 90도에서 앞/뒷면 교체
+                    isFlipped = !isFlipped;
+                        frontUI.gameObject.SetActive(!isFlipped);
+                        backUI.gameObject.SetActive(isFlipped);
+
+                    // 회전값을 즉시 270°(=-90°)로 세팅해서 반대편에서 시작
+                    transform.rotation = Quaternion.Euler(0, 270, 0);
+                    })
+                    .Append(transform.DORotate(Vector3.zero, flipDuration / 2).SetEase(Ease.OutQuad))
+                    .OnComplete(() => isAnimating = false);
+    }
+    // 카드를 터치했을 때 호출될 함수
+    /*public void OnCardClick()
     {
         // 중앙에 선택된 카드가 아니거나, 이미 애니메이션 중이면 무시
         if (!isSelected || isAnimating) return;
@@ -64,7 +84,7 @@ public class CharacterItem : MonoBehaviour
                     {
                         isAnimating = false;
                     });
-    }
+    }*/
 
     // CharacterSwiper가 이 카드를 '중앙 카드'로 선택했을 때 호출
     public void SetSelected()
