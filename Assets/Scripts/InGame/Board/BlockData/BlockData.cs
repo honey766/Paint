@@ -10,13 +10,13 @@ public abstract class BlockData : MonoBehaviour
     public abstract bool HasColor { get; protected set; }
     public abstract TileType Color { get; protected set; }
 
-    public Vector2Int slidingDirection; // Ice블럭을 밟아서 슬라이드중일 때 방향 (default : zero)
+    [HideInInspector] public Vector2Int slidingDirection; // Ice블럭을 밟아서 슬라이드중일 때 방향 (default : zero)
     protected Vector2Int curPos;
     protected float moveTime = 0.1f;
     protected Queue<Vector2Int> moveQueue = new Queue<Vector2Int>();
     protected WaitForSeconds moveWaitForSeconds;
     protected Coroutine moveCoroutine;
-    
+
 
     protected abstract void ApplyColorChange(TileType color);
 
@@ -31,7 +31,7 @@ public abstract class BlockData : MonoBehaviour
         slidingDirection = Vector2Int.zero;
     }
 
-#region Color
+    #region Color
     public void ChangeColor(TileType color)
     {
         if (!HasMutableColor)
@@ -41,8 +41,8 @@ public abstract class BlockData : MonoBehaviour
         }
         ApplyColorChange(color);
     }
-#endregion
-#region Move
+    #endregion
+    #region Move
     public void StartSliding(Vector2Int startPos, Vector2Int slidingDirection)
     {
         StartCoroutine(StartSlidingAfterSeconds(startPos, slidingDirection));
@@ -79,5 +79,5 @@ public abstract class BlockData : MonoBehaviour
         curPos = nextPos;
         return Board.Instance.CheckGameClear();
     }
-#endregion
+    #endregion
 }

@@ -14,7 +14,8 @@ public enum TileEditingTool
     AddIce,
     AddMirror,
     AddStamp,
-    AddWhitePaint
+    AddWhitePaint,
+    AddJustBlock
 }
 
 public class ToggleManager : SingletonBehaviour<ToggleManager>
