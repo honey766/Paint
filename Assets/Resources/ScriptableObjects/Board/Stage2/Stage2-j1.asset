@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83fed35bb4bd84548b0da6262a7d9a29, type: 3}
+  m_Name: Stage2-j1
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSO
+  n: 11
+  m: 1
+  startPos: {x: 0, y: 0}
+  boardTileList:
+  - rid: 1175378561342374176
+  - rid: 1175378561342374177
+  - rid: 1175378561342374178
+  - rid: 1175378561342374179
+  - rid: 1175378561342374180
+  - rid: 1175378561342374181
+  - rid: 1175378561342374182
+  - rid: 1175378561342374183
+  - rid: 1175378561342374184
+  - rid: 1175378561342374185
+  - rid: 1175378561342374186
+  targetTileList:
+  - rid: 1175378561342374187
+  - rid: 1175378561342374188
+  references:
+    version: 2
+    RefIds:
+    - rid: 1175378561342374176
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 9, y: 0}
+        type: 1
+    - rid: 1175378561342374177
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 1, y: 0}
+        type: 1
+    - rid: 1175378561342374178
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 6, y: 0}
+        type: 8
+    - rid: 1175378561342374179
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 10, y: 0}
+        type: 1
+    - rid: 1175378561342374180
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 8, y: 0}
+        type: 1
+    - rid: 1175378561342374181
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 4, y: 0}
+        type: 1
+    - rid: 1175378561342374182
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 5, y: 0}
+        type: 1
+    - rid: 1175378561342374183
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 7, y: 0}
+        type: 1
+    - rid: 1175378561342374184
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 0, y: 0}
+        type: 1
+    - rid: 1175378561342374185
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 3, y: 0}
+        type: 7
+    - rid: 1175378561342374186
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 2, y: 0}
+        type: 1
+    - rid: 1175378561342374187
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 9, y: 0}
+        type: 4
+    - rid: 1175378561342374188
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 10, y: 0}
+        type: 4
