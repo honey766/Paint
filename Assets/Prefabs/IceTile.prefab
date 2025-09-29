@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4354073850035013351}
   - component: {fileID: 349954659656813223}
   - component: {fileID: 2665978156827056942}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: IceTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}

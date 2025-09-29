@@ -3,6 +3,15 @@ using UnityEngine;
 
 public class ReversePaintTile : TileData
 {
+    public override void Initialize(BoardSOTileData boardSOTileData)
+    {
+        base.Initialize(boardSOTileData);
+        Color color1 = Board.Instance.colorPaletteSO.color1;
+        Color color2 = Board.Instance.colorPaletteSO.color2;
+        transform.GetChild(0).GetComponent<SpriteRenderer>().color = color1;
+        transform.GetChild(1).GetComponent<SpriteRenderer>().color = color2;
+    }
+
     public override void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)
     {
         if (block.HasMutableColor)

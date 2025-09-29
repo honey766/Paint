@@ -108,7 +108,7 @@ public class PlayerController : BlockData
 
     public void InitPlayer(BoardSO boardSO)
     {
-        ApplyColorChange(TileType.White);
+        ApplyColorChange(TileType.None);
         curPos.x = destPos.x = boardSO.startPos.x;
         curPos.y = destPos.y = boardSO.startPos.y;
         transform.position = Board.Instance.GetTilePos(curPos.x, curPos.y);
@@ -273,6 +273,10 @@ public class PlayerController : BlockData
 
         switch (Color)
         {
+            case TileType.None:
+                spriter.color = white;
+                main.startColor = white;
+                break;
             case TileType.White:
                 spriter.color = white;
                 main.startColor = white;

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9016879875351254455}
   - component: {fileID: 3097119692541910282}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 4354073850035013351}
   - component: {fileID: 349954659656813223}
   - component: {fileID: 8542489409701776032}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PaintTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
