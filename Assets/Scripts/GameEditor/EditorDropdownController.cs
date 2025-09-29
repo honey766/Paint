@@ -61,6 +61,10 @@ public class EditorDropdownController : MonoBehaviour
                 toggle.ToggleGroup(TileEditingTool.AddStamp);
                 inputField.gameObject.SetActive(false);
                 break;
+            case 5:
+                toggle.ToggleGroup(TileEditingTool.AddJustBlock);
+                inputField.gameObject.SetActive(false);
+                break;
         }
         DropdownObjectsInitAndSetActive(index);
     }

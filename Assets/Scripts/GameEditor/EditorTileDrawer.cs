@@ -11,7 +11,7 @@ public class EditorTileDrawer : MonoBehaviour
     [SerializeField] Transform targetParent;
     [SerializeField]
     GameObject color1Paint, color2Paint, reversePaint, whitePaint, spray, directedSpray, 
-                                ice, mirror, stamp;
+                                ice, mirror, stamp, justBlock;
     [SerializeField] Transform objectParent;
     [SerializeField] Color white, color1, color2, color12, black;
 
@@ -126,6 +126,8 @@ public class EditorTileDrawer : MonoBehaviour
                 return Instantiate(stamp, (Vector2)pos, Quaternion.identity, objectParent);
             case TileType.WhitePaint:
                 return Instantiate(whitePaint, (Vector2)pos, Quaternion.identity, objectParent);
+            case TileType.JustBlock:
+                return Instantiate(justBlock, (Vector2)pos, Quaternion.identity, objectParent);
         }
         return null;
     }

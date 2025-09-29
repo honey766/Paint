@@ -128,6 +128,9 @@ public class EditorDataManager : MonoBehaviour
             case TileEditingTool.AddWhitePaint:
                 AddObject(pos, TileType.WhitePaint);
                 break;
+            case TileEditingTool.AddJustBlock:
+                AddObject(pos, TileType.JustBlock);
+                break;
         }
     }
 
