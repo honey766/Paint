@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7167971627752070716}
   - component: {fileID: 7418051023692041009}
   - component: {fileID: 127746825634768529}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: mask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -159,7 +159,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3830984821993475571}
   - component: {fileID: 1680966998555291097}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Color1Paint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -251,7 +251,7 @@ GameObject:
   - component: {fileID: 3511306037758899495}
   - component: {fileID: 5747679810587045274}
   - component: {fileID: 382444501579096913}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ReversePaintTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -402,7 +402,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8830981175221135660}
   - component: {fileID: 5648430025190744869}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Color2Paint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
