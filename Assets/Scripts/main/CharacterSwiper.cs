@@ -66,6 +66,8 @@ public class CharacterSwiper : MonoBehaviour
         // 한 프레임 기다렸다가 레이아웃 계산이 끝난 뒤 실행
         yield return null;
 
+        LayoutRebuilder.ForceRebuildLayoutImmediate(content);
+
         if (cardRects.Count > 0 && index >= 0 && index < cardRects.Count)
         {
             float centerX = viewport.position.x;

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Collections;
 
 public class CharacterItem : MonoBehaviour
 {
@@ -15,6 +16,15 @@ public class CharacterItem : MonoBehaviour
     private bool isFlipped = false;
     private bool isSelected = false;
     private bool isAnimating = false;
+
+    void OnEnable()
+    {
+        isAnimating = false;
+        transform.rotation = Quaternion.identity;
+        frontUI.gameObject.SetActive(true);
+        backUI.gameObject.SetActive(false);
+        isFlipped = false;
+    }
 
     // 초기 데이터 세팅 (이름, 이미지 등)
 
@@ -45,21 +55,32 @@ public class CharacterItem : MonoBehaviour
 
         isAnimating = true;
 
+        
+
+        Logger.Log("zzz");
         Sequence flipSequence = DOTween.Sequence();
         flipSequence.Append(transform.DORotate(new Vector3(0, 90, 0), flipDuration / 2).SetEase(Ease.InQuad))
                     .AppendCallback(() =>
                     {
-                    // 90도에서 앞/뒷면 교체
-                    isFlipped = !isFlipped;
+                        Logger.Log("aeg");
+                        // 90도에서 앞/뒷면 교체
+                        isFlipped = !isFlipped;
                         frontUI.gameObject.SetActive(!isFlipped);
                         backUI.gameObject.SetActive(isFlipped);
 
-                    // 회전값을 즉시 270°(=-90°)로 세팅해서 반대편에서 시작
-                    transform.rotation = Quaternion.Euler(0, 270, 0);
+                        // 회전값을 즉시 270°(=-90°)로 세팅해서 반대편에서 시작
+                        transform.rotation = Quaternion.Euler(0, 270, 0);
                     })
                     .Append(transform.DORotate(Vector3.zero, flipDuration / 2).SetEase(Ease.OutQuad))
-                    .OnComplete(() => isAnimating = false);
+                    .OnComplete(() => { isAnimating = false;  Logger.Log("ggg");});
     }
+
+    IEnumerator StartRotateAfterFrame()
+    {
+        yield return null; // 1프레임 대rl
+        
+    }
+    
     // 카드를 터치했을 때 호출될 함수
     /*public void OnCardClick()
     {
