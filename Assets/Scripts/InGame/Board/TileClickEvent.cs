@@ -18,9 +18,6 @@ public class TileClickEvent : MonoBehaviour
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0, layerMask); // 마우스 위치에서 2D 레이캐스트
 
-            if (hit.collider == null) Logger.Log($"AA: hit is null");
-            else Logger.Log($"aa: {hit.collider.gameObject.name} click");
-
             // 마우스가 타일 위에 있으면서 이전의 타일과 다른 타일일 때
             if (hit.collider != null && lastTile != hit.collider.gameObject)
             {

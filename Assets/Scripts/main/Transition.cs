@@ -16,4 +16,15 @@ public class Transition : MonoBehaviour
             card.SetActive(true);
         });
     }
+
+    public void GoToChoiceLevel()
+    {
+        main.SetActive(false);
+        card.SetActive(true);
+        Invoke(nameof(FlipCard), 0.02f);
+    }
+    private void FlipCard()
+    {
+        card.transform.GetChild(0).GetComponent<CharacterSwiper>().FlipCardImmediately();
+    }
 }

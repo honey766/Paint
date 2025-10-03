@@ -2,9 +2,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class CharacterItem : MonoBehaviour
 {
+    public int stage;
+
     [Header("UI References")]
     public Image frontUI; // 카드의 앞면 UI 그룹
     public Image backUI;  // 카드의 뒷면 UI 그룹
@@ -30,6 +33,8 @@ public class CharacterItem : MonoBehaviour
 
     public void Setup(Character character)
     {
+        stage = character.Index;
+
         // 앞면 이미지 불러오기
         Sprite spriteFront = Resources.Load<Sprite>("Images/" + character.PicName);
         if (spriteFront != null)
@@ -49,20 +54,23 @@ public class CharacterItem : MonoBehaviour
         // else
         // backImage.sprite = spriteFront;
     }
+    public void OnCardClick(float duration)
+    {
+        float originalFlipDuration = flipDuration;
+        flipDuration = duration;
+        OnCardClick();
+        flipDuration = originalFlipDuration;
+    }
     public void OnCardClick()
     {
         if (!isSelected || isAnimating) return;
 
         isAnimating = true;
 
-        
-
-        Logger.Log("zzz");
         Sequence flipSequence = DOTween.Sequence();
         flipSequence.Append(transform.DORotate(new Vector3(0, 90, 0), flipDuration / 2).SetEase(Ease.InQuad))
                     .AppendCallback(() =>
                     {
-                        Logger.Log("aeg");
                         // 90도에서 앞/뒷면 교체
                         isFlipped = !isFlipped;
                         frontUI.gameObject.SetActive(!isFlipped);
@@ -72,15 +80,9 @@ public class CharacterItem : MonoBehaviour
                         transform.rotation = Quaternion.Euler(0, 270, 0);
                     })
                     .Append(transform.DORotate(Vector3.zero, flipDuration / 2).SetEase(Ease.OutQuad))
-                    .OnComplete(() => { isAnimating = false;  Logger.Log("ggg");});
+                    .OnComplete(() => isAnimating = false);
     }
 
-    IEnumerator StartRotateAfterFrame()
-    {
-        yield return null; // 1프레임 대rl
-        
-    }
-    
     // 카드를 터치했을 때 호출될 함수
     /*public void OnCardClick()
     {
@@ -120,9 +122,7 @@ public class CharacterItem : MonoBehaviour
         if (isFlipped)
         {
             isAnimating = false;
-            flipDuration /= 2f;
-            OnCardClick();
-            flipDuration *= 2f;
+            OnCardClick(flipDuration / 2f);
             // transform.DOKill(); // 진행중인 모든 애니메이션 정지
             // isFlipped = false;
             // frontUI.gameObject.SetActive(true);
@@ -130,5 +130,12 @@ public class CharacterItem : MonoBehaviour
             // transform.rotation = Quaternion.identity; // 회전값 즉시 초기화
         }
         isSelected = false;
+    }
+
+    public void OnStageButtonClick(int board)
+    {
+        PersistentDataManager.Instance.stage = stage;
+        PersistentDataManager.Instance.board = board;
+        UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
     }
 }

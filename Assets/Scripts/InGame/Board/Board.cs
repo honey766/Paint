@@ -77,6 +77,23 @@ public class Board : SingletonBehaviour<Board>
         // blackBorder.InitBorder(black, TileType.Black, n, m, target);
     }
 
+    public void InitBoardWhenRestart(BoardSO boardSO)
+    {
+        // Tile
+        foreach (var entry in boardSO.boardTileList)
+            if (entry.type.IsNormalTile() && board[entry.pos] is NormalTile normalTile)
+                normalTile.SetTileColor(entry.type, 0);
+
+        // Block
+        foreach (BlockData blockData in blocks.Values)
+            if (blockData.Type != TileType.Player)
+                Destroy(blockData.gameObject);
+        blocks.Clear();
+        foreach (var entry in boardSO.boardTileList)
+            if (entry.type.IsBlock())
+                blocks[entry.pos] = TileFactory.CreateTile<BlockData>(entry);
+    }
+
     /// <summary>
     /// (i, j) 타일의 실제 좌표를 반환
     /// </summary>

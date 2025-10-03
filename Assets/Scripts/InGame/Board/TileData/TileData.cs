@@ -36,6 +36,12 @@ public static class TileTypeExtensions
         TileType.Player, TileType.Mirror, TileType.Stamp, TileType.JustBlock
     };
 
+    public static bool IsNormalTile(this TileType tile)
+    {
+        return tile == TileType.White || tile == TileType.Black || tile == TileType.Color1 ||
+               tile == TileType.Color2 || tile == TileType.Color12;
+    }
+
     /// <summary>
     /// 타일에 특정 색을 추가
     /// </summary>

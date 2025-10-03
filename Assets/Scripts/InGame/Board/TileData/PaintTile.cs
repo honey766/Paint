@@ -3,6 +3,16 @@ using UnityEngine;
 
 public class PaintTile : TileData
 {
+    public override void Initialize(BoardSOTileData boardSOTileData)
+    {
+        base.Initialize(boardSOTileData);
+        SpriteRenderer paintSpriter = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        if (boardSOTileData.type == TileType.Color1Paint)
+            paintSpriter.sprite = Resources.Load<Sprite>("Images/Color1PaintOutline");
+        else if (boardSOTileData.type == TileType.Color2Paint)
+            paintSpriter.sprite = Resources.Load<Sprite>("Images/Color2PaintOutline");
+    }
+
     public override void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)
     {
         if (block.HasMutableColor)

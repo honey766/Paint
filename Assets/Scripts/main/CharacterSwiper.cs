@@ -29,7 +29,7 @@ public class CharacterSwiper : MonoBehaviour
     public ScrollRect scrollRect;
     public RectTransform content;
     public RectTransform viewport;
-    public GameObject characterCardPrefab; 
+    public GameObject characterCardPrefab;
 
     [Header("Card Effect Settings")]
     public float spacing = 350f;
@@ -120,10 +120,10 @@ public class CharacterSwiper : MonoBehaviour
             float t2 = 1 - Mathf.Cos(t * Mathf.PI / 2f);
             float scale = Mathf.Lerp(1f, scaleFactor, t2);//distance / spacing);
             float rotationY = Mathf.Lerp(0, rotationFactor, distance / spacing) * Mathf.Sign(cardCenterX - centerX);
-            
+
             // 적용
             cardRects[i].localScale = Vector3.one * scale;
-            cardRects[i].localRotation = Quaternion.Euler(0, rotationY, 0);
+            // cardRects[i].localRotation = Quaternion.Euler(0, rotationY, 0);
 
             // 중앙에 가장 가까운 카드(스케일이 거의 1)를 '선택된' 상태로 만듦
             if (scale > 0.99f)
@@ -161,9 +161,9 @@ public class CharacterSwiper : MonoBehaviour
         Logger.Log($"Aa{scrollRect.velocity.x}, {nearestIndex}");
         if (curIndex == nearestIndex)
         {
-            if (scrollRect.velocity.x > 500) 
+            if (scrollRect.velocity.x > 500)
                 nearestIndex = Mathf.Max(nearestIndex - 1, 0);
-            else if (scrollRect.velocity.x < -500) 
+            else if (scrollRect.velocity.x < -500)
                 nearestIndex = Mathf.Min(nearestIndex + 1, cardRects.Count - 1);
             Logger.Log($"Aa{scrollRect.velocity.x}, {nearestIndex}");
         }
@@ -199,5 +199,10 @@ public class CharacterSwiper : MonoBehaviour
             }
         }
         return nearestIndex;
+    }
+
+    public void FlipCardImmediately()
+    {
+        characterItems[PlayerPrefs.GetInt("LastSelectedCard")].OnCardClick(0);
     }
 }

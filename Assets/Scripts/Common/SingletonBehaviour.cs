@@ -34,16 +34,4 @@ public class SingletonBehaviour<T> : MonoBehaviour where T : SingletonBehaviour<
             Destroy(gameObject);
         }
     }
-
-    //삭제 시 실행되는 함수
-    protected virtual void OnDestroy()
-    {
-        Dispose();
-    }
-
-    //삭제 시 추가로 처리해 주어야할 작업을 여기서 처리
-    protected virtual void Dispose()
-    {
-        m_Instance = null;
-    }
 }
