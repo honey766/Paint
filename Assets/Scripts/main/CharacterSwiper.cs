@@ -39,6 +39,8 @@ public class CharacterSwiper : MonoBehaviour
     [Header("Snap Settings")]
     public float snapDuration = 0.3f;
     private bool isSnapping = false;
+    private Tween snapTween;
+    private int curIndex;
 
     private List<RectTransform> cardRects = new List<RectTransform>();
     private List<CharacterItem> characterItems = new List<CharacterItem>();
@@ -51,7 +53,7 @@ public class CharacterSwiper : MonoBehaviour
 
     void Update()
     {
-        if (isSnapping) return;
+        //if (isSnapping) return;
         UpdateCardTransforms();
     }
     private int GetSavedIndex()
@@ -131,6 +133,16 @@ public class CharacterSwiper : MonoBehaviour
         }
     }
 
+    public void OnBeginDrag()
+    {
+        curIndex = GetNearestIndex();
+
+        if (snapTween != null && snapTween.IsActive())
+        {
+            snapTween.Kill();
+        }
+    }
+
     // ScrollRect의 EventTrigger(EndDrag)에 연결할 함수
     public void OnEndDrag()
     {
@@ -139,8 +151,35 @@ public class CharacterSwiper : MonoBehaviour
 
     private void SnapToClosest()
     {
+        float centerX = viewport.position.x; //-content.anchoredPosition.x;
+        int nearestIndex = GetNearestIndex();
+
+        Logger.Log($"Aa{scrollRect.velocity.x}");
+        if (curIndex == nearestIndex)
+        {
+            if (scrollRect.velocity.x > 500) 
+                nearestIndex = Mathf.Max(nearestIndex - 1, 0);
+            else if (scrollRect.velocity.x < -500) 
+                nearestIndex = Mathf.Min(nearestIndex + 1, cardRects.Count - 1);
+        }
+
         scrollRect.StopMovement();
         scrollRect.velocity = Vector2.zero;
+
+        float offset = centerX - cardRects[nearestIndex].position.x;
+        Vector2 targetPos = new Vector2(content.anchoredPosition.x + offset, content.anchoredPosition.y);
+
+        isSnapping = true;
+        snapTween = content.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
+        {
+            isSnapping = false;
+            PlayerPrefs.SetInt("LastSelectedCard", nearestIndex);
+            PlayerPrefs.Save();
+        });
+    }
+
+    private int GetNearestIndex()
+    {
         float centerX = viewport.position.x; //-content.anchoredPosition.x;
         float minDistance = float.MaxValue;
         int nearestIndex = 0;
@@ -154,24 +193,6 @@ public class CharacterSwiper : MonoBehaviour
                 nearestIndex = i;
             }
         }
-        float offset = centerX - cardRects[nearestIndex].position.x;
-        Vector2 targetPos = new Vector2(content.anchoredPosition.x + offset, content.anchoredPosition.y);
-
-        isSnapping = true;
-        content.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
-        {
-            isSnapping = false;
-            PlayerPrefs.SetInt("LastSelectedCard", nearestIndex);
-            PlayerPrefs.Save();
-        });
-
-
-        // 가장 가까운 카드의 위치로 Content 패널을 스르륵 이동시킴
-        /*Vector2 targetPos = new Vector2(-cardRects[nearestIndex].anchoredPosition.x, content.anchoredPosition.y);
-        isSnapping = true;
-        content.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
-        {
-            isSnapping = false;
-        });*/
+        return nearestIndex;
     }
 }

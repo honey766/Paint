@@ -41,6 +41,9 @@ MonoBehaviour:
   - rid: 1175378561342374173
   - rid: 1175378561342374174
   - rid: 1175378561342374175
+  limitStepForOneStar: -1
+  limitStepForTwoStar: 24
+  limitStepForThreeStar: 22
   references:
     version: 2
     RefIds:
