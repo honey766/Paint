@@ -95,16 +95,19 @@ public class CharacterItem : MonoBehaviour
     // CharacterSwiper가 이 카드를 '선택 해제'했을 때 호출
     public void SetUnselected()
     {
-        isSelected = false;
-
         // 만약 카드가 뒤집혀 있었다면, 즉시 앞면으로 되돌림
         if (isFlipped)
         {
-            transform.DOKill(); // 진행중인 모든 애니메이션 정지
-            isFlipped = false;
-            frontUI.gameObject.SetActive(true);
-            backUI.gameObject.SetActive(false);
-            transform.rotation = Quaternion.identity; // 회전값 즉시 초기화
+            isAnimating = false;
+            flipDuration /= 2f;
+            OnCardClick();
+            flipDuration *= 2f;
+            // transform.DOKill(); // 진행중인 모든 애니메이션 정지
+            // isFlipped = false;
+            // frontUI.gameObject.SetActive(true);
+            // backUI.gameObject.SetActive(false);
+            // transform.rotation = Quaternion.identity; // 회전값 즉시 초기화
         }
+        isSelected = false;
     }
 }

@@ -114,9 +114,11 @@ public class CharacterSwiper : MonoBehaviour
             float distance = Mathf.Abs(cardCenterX - centerX);
 
             // 거리에 따라 스케일과 Y축 회전값 계산
-            float scale = Mathf.Lerp(1f, scaleFactor, distance / spacing);
+            float t = Mathf.Clamp01(distance / spacing);
+            float t2 = 1 - Mathf.Cos(t * Mathf.PI / 2f);
+            float scale = Mathf.Lerp(1f, scaleFactor, t2);//distance / spacing);
             float rotationY = Mathf.Lerp(0, rotationFactor, distance / spacing) * Mathf.Sign(cardCenterX - centerX);
-
+            
             // 적용
             cardRects[i].localScale = Vector3.one * scale;
             cardRects[i].localRotation = Quaternion.Euler(0, rotationY, 0);
@@ -154,13 +156,14 @@ public class CharacterSwiper : MonoBehaviour
         float centerX = viewport.position.x; //-content.anchoredPosition.x;
         int nearestIndex = GetNearestIndex();
 
-        Logger.Log($"Aa{scrollRect.velocity.x}");
+        Logger.Log($"Aa{scrollRect.velocity.x}, {nearestIndex}");
         if (curIndex == nearestIndex)
         {
             if (scrollRect.velocity.x > 500) 
                 nearestIndex = Mathf.Max(nearestIndex - 1, 0);
             else if (scrollRect.velocity.x < -500) 
                 nearestIndex = Mathf.Min(nearestIndex + 1, cardRects.Count - 1);
+            Logger.Log($"Aa{scrollRect.velocity.x}, {nearestIndex}");
         }
 
         scrollRect.StopMovement();
