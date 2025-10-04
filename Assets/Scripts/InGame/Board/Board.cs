@@ -12,6 +12,7 @@ public class Board : SingletonBehaviour<Board>
     public Dictionary<Vector2Int, BlockData> blocks; // 블록 위치와 상태
     public Dictionary<Vector2Int, TileType> target; // 목표 보드
     private int n, m; // 세로, 가로 크기
+    private bool existsEraser;
 
     [Header("색칠 색")]
     public Color white;
@@ -55,10 +56,15 @@ public class Board : SingletonBehaviour<Board>
 
     private void InitBoard()
     {
+        existsEraser = false;
         foreach (var entry in boardSO.boardTileList)
         {
             if (!entry.type.IsBlock())
+            {
                 board[entry.pos] = TileFactory.CreateTile<TileData>(entry);
+                if (entry.type == TileType.WhitePaint)
+                    existsEraser = true;
+            }
         }
         foreach (var entry in boardSO.boardTileList)
         {
@@ -122,8 +128,15 @@ public class Board : SingletonBehaviour<Board>
                     if (targetTileType == TileType.Color12)
                         isOkay = true;
 
-                if (isOkay) matchingTileWithTargetCount++;
-                else return false;
+                if (isOkay)
+                {
+                    matchingTileWithTargetCount++;
+                }
+                else // 엄한 데에다 보라색을 칠함
+                {
+                    if (!existsEraser) GameManager.Instance.Color12Warning();
+                    return false;
+                }
             }
         }
         return matchingTileWithTargetCount == target.Count;

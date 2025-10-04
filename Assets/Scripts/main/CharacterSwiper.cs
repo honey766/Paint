@@ -41,12 +41,14 @@ public class CharacterSwiper : MonoBehaviour
     private bool isSnapping = false;
     private Tween snapTween;
     private int curIndex;
+    private float canvasScaleFactor;
 
     private List<RectTransform> cardRects = new List<RectTransform>();
     private List<CharacterItem> characterItems = new List<CharacterItem>();
 
     void Start()
     {
+        canvasScaleFactor = GetComponentInParent<Canvas>().scaleFactor;
         LoadAndSetupCharacters();
         StartCoroutine(InitSnapToCard(GetSavedIndex()));
     }
@@ -71,7 +73,7 @@ public class CharacterSwiper : MonoBehaviour
         if (cardRects.Count > 0 && index >= 0 && index < cardRects.Count)
         {
             float centerX = viewport.position.x;
-            float offset = centerX - cardRects[index].position.x;
+            float offset = (centerX - cardRects[index].position.x) / canvasScaleFactor;
             content.anchoredPosition = new Vector2(content.anchoredPosition.x + offset, content.anchoredPosition.y);
 
             UpdateCardTransforms();
@@ -158,21 +160,23 @@ public class CharacterSwiper : MonoBehaviour
         float centerX = viewport.position.x; //-content.anchoredPosition.x;
         int nearestIndex = GetNearestIndex();
 
-        Logger.Log($"Aa{scrollRect.velocity.x}, {nearestIndex}");
         if (curIndex == nearestIndex)
         {
             if (scrollRect.velocity.x > 500)
                 nearestIndex = Mathf.Max(nearestIndex - 1, 0);
             else if (scrollRect.velocity.x < -500)
                 nearestIndex = Mathf.Min(nearestIndex + 1, cardRects.Count - 1);
-            Logger.Log($"Aa{scrollRect.velocity.x}, {nearestIndex}");
         }
 
         scrollRect.StopMovement();
         scrollRect.velocity = Vector2.zero;
 
-        float offset = centerX - cardRects[nearestIndex].position.x;
+        float offset = (centerX - cardRects[nearestIndex].position.x) / canvasScaleFactor;
         Vector2 targetPos = new Vector2(content.anchoredPosition.x + offset, content.anchoredPosition.y);
+
+        Logger.Log($"Viewport.rect is {viewport.rect}");
+        Logger.Log($"ScaleFactor is {canvasScaleFactor}");
+        Logger.Log($"CardSnap: TargetPos is {targetPos}, cardRects is {cardRects[nearestIndex].position.x},\ncenterX is {centerX}, anchor is {content.anchoredPosition.x}");
 
         isSnapping = true;
         snapTween = content.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>

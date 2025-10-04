@@ -9,9 +9,6 @@ public class PaintMainScreenController : MonoBehaviour
 
     private void Awake()
     {
-        Logger.Log($"{(float)Screen.height / Screen.width}\n{Screen.width},{Screen.height}");
-
-
         float ratio = (float)Screen.height / Screen.width;
         float buttonWidth = 160f;
         if (ratio > 2f)

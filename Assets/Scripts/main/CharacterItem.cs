@@ -132,10 +132,16 @@ public class CharacterItem : MonoBehaviour
         isSelected = false;
     }
 
-    public void OnStageButtonClick(int board)
+    public void OnStageButtonClick(int level)
     {
-        PersistentDataManager.Instance.stage = stage;
-        PersistentDataManager.Instance.board = board;
-        UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
+        if (PersistentDataManager.Instance.LoadStageAndLevel(stage, level))
+        {
+            Logger.Log($"Going To Stage {stage}-{level}");
+            UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
+        }
+        else
+        {
+            Logger.Log($"Failed to go to Stage {stage}-{level}");
+        }
     }
 }
