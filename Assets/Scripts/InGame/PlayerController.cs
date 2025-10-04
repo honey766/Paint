@@ -108,7 +108,7 @@ public class PlayerController : BlockData
 
     public void InitPlayer(BoardSO boardSO)
     {
-        ApplyColorChange(TileType.None);
+        ApplyColorChange(boardSO.startPlayerColor);
         curPos.x = destPos.x = boardSO.startPos.x;
         curPos.y = destPos.y = boardSO.startPos.y;
         transform.position = Board.Instance.GetTilePos(curPos.x, curPos.y);

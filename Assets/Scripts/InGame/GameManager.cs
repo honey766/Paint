@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : SingletonBehaviour<GameManager>
 {
     public bool isGaming;
-    public GameObject gameClearText;
+    public GameObject gameClearObj;
     public CameraSizeController cameraSizeController;
 
     [Header("InGame씬에서 바로 실행하기 (밑에 bool변수 true)")]
@@ -44,7 +44,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void GameClear()
     {
         isGaming = false;
-        gameClearText.SetActive(true);
+        gameClearObj.SetActive(true);
         Debug.Log("Game Clear");
     }
 
@@ -59,6 +59,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         isGaming = true;
         menuUI.SetActive(false);
+        gameClearObj.SetActive(false);
     }
 
     public void Restart()

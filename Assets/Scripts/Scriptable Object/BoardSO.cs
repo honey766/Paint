@@ -44,4 +44,5 @@ public class BoardSO : ScriptableObject
     [SerializeReference]
     public List<BoardSOTileData> targetTileList = new List<BoardSOTileData>();
     public int limitStepForOneStar, limitStepForTwoStar, limitStepForThreeStar;
+    public TileType startPlayerColor;
 }
