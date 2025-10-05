@@ -27,7 +27,7 @@ public class PlayerController : BlockData
 
     [Header("플레이어의 색")]
     public Color white;
-    public Color black;
+    public Color black, none;
 
     public ParticleSystem particle;
     public Vector2Int movingDirection { get; private set; }
@@ -92,7 +92,7 @@ public class PlayerController : BlockData
             if (Time.time >= keyboardNextFireTime)
             {
                 TryMoveTo(destPos.x + (int)dir.x, destPos.y + (int)dir.y);
-                keyboardNextFireTime = Time.time + moveTime;
+                keyboardNextFireTime = Time.time + moveTime * 2;
             }
         }
         else
@@ -104,6 +104,10 @@ public class PlayerController : BlockData
         //     StartCoroutine(Redo());
     }
 #endif
+    public void MoveOnce(Vector2Int dir)
+    {
+        TryMoveTo(destPos.x + dir.x, destPos.y + dir.y);
+    }
 
     public void InitPlayer(BoardSO boardSO)
     {
@@ -273,8 +277,8 @@ public class PlayerController : BlockData
         switch (Color)
         {
             case TileType.None:
-                spriter.color = white;
-                main.startColor = white;
+                spriter.color = none;
+                main.startColor = none;
                 break;
             case TileType.White:
                 spriter.color = white;

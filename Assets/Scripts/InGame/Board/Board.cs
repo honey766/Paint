@@ -163,8 +163,8 @@ public class Board : SingletonBehaviour<Board>
                 return colorPaletteSO.color12;
             case TileType.Black:
                 return black;
-            case TileType.ReversePaint:
-                return (colorPaletteSO.color12 + 2 * Color.white) / 3f;
+            // case TileType.ReversePaint:
+            //     return (colorPaletteSO.color12 + 2 * Color.white) / 3f;
             default:
                 Logger.LogWarning($"No color defined for tile type: {type}");
                 return white;

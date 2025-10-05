@@ -1,37 +1,65 @@
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class Settings : MonoBehaviour
 {
-    [SerializeField] private Sprite[] bgmSpr, sfxSpr, noticeSpr;
-    [SerializeField] private Slider bgmSlider, sfxSlider, moveDurationSlider;
-    [SerializeField] private Image bgmImage, sfxImage, noticeImage;
+    [Header("BGM")]
+    [SerializeField] private Sprite[] bgmSpr;
+    [SerializeField] private Slider bgmSlider;
+    [SerializeField] private Image bgmImage;
 
+    [Header("SFX")]
+    [SerializeField] private Sprite[] sfxSpr;
+    [SerializeField] private Slider sfxSlider;
+    [SerializeField] private Image sfxImage;
+
+    [Header("Movement Mode")]
+    [SerializeField] private GameObject tileTouchOutline;
+    [SerializeField] private GameObject joyStickOutline;
+
+    [Header("Move Latency Rate")]
+    [SerializeField] private Slider moveLatencyRateSlider;
+    [SerializeField] private GameObject  moveLatencyBlockObj, moveLatencyRateObj;
+
+    [Header("Notice")]
+    [SerializeField] private Sprite[] noticeSpr;
+    [SerializeField] private Image noticeImage;
+
+
+    int moveLatencyRate;
+    private bool isTileTouch;
     private bool isNotice;
 
     private void OnEnable()
     {
         int bgmV = LoadBGM();
         int sfxV = LoadSFX();
-        int moveDurationV = LoadMoveDuration();
+        moveLatencyRate = LoadMoveLatencyRate();
+        isTileTouch = LoadIsTileTouch();
         isNotice = LoadNotice();
 
         bgmSlider.value = bgmV / 100f + 0.0001f;
         OnBGMChanged(bgmV);
         sfxSlider.value = sfxV / 100f + 0.0001f;
         OnSFXChanged(sfxV);
-        moveDurationSlider.value = moveDurationV / 100f + 0.0001f;
+        moveLatencyRateSlider.value = moveLatencyRate / 100f + 0.0001f;
         noticeImage.sprite = isNotice ? noticeSpr[1] : noticeSpr[0];
-        Debug.Log($"Enter bgm : {bgmSlider.value}, sfx : {sfxSlider.value}");
+        SetMovementModeUI();
     }
 
     public void OnSettingExit()
     {
         SaveBgm((int)(bgmSlider.value * 100));
         SaveSfx((int)(sfxSlider.value * 100));
-        SaveMoveDuration((int)(moveDurationSlider.value * 100));
+        SaveMoveLatencyRate((int)(moveLatencyRateSlider.value * 100));
+        SaveIsTileTouch(isTileTouch);
         SaveNotice(isNotice);
+        PersistentDataManager.Instance.SaveSettings(isTileTouch, moveLatencyRateSlider.value);
         PlayerPrefs.Save();
+        if (SceneManager.GetActiveScene().name == "InGame")
+            GameManager.Instance.SettingsExit();
         Destroy(gameObject);
     }
 
@@ -45,6 +73,26 @@ public class Settings : MonoBehaviour
         sfxImage.sprite = value == 0 ? sfxSpr[0] : sfxSpr[1];
     }
 
+    public void OnTileTouchButtonClicked()
+    {
+        isTileTouch = true;
+        SetMovementModeUI();
+    }
+
+    public void OnJoyStickButtonClicked()
+    {
+        isTileTouch = false;
+        SetMovementModeUI();
+    }
+
+    private void SetMovementModeUI()
+    {
+        tileTouchOutline.SetActive(isTileTouch);
+        joyStickOutline.SetActive(!isTileTouch);
+        moveLatencyBlockObj.SetActive(isTileTouch);
+        moveLatencyRateObj.SetActive(!isTileTouch);
+    }
+
     public void OnNoticeClicked()
     {
         isNotice = !isNotice;
@@ -52,60 +100,15 @@ public class Settings : MonoBehaviour
     }
 
 
-    public static int LoadBGM()
-    {
-        if (PlayerPrefs.HasKey("bgm"))
-        {
-            return PlayerPrefs.GetInt("bgm");
-        }
-        else
-        {
-            PlayerPrefs.SetInt("bgm", 100);
-            return 100;
-        }
-    }
-
-    public static int LoadSFX()
-    {
-        if (PlayerPrefs.HasKey("sfx"))
-        {
-            return PlayerPrefs.GetInt("sfx");
-        }
-        else
-        {
-            PlayerPrefs.SetInt("sfx", 100);
-            return 100;
-        }
-    }
-
-    public static int LoadMoveDuration()
-    {
-        if (PlayerPrefs.HasKey("moveDuration"))
-        {
-            return PlayerPrefs.GetInt("moveDuration");
-        }
-        else
-        {
-            PlayerPrefs.SetInt("moveDuration", 100);
-            return 100;
-        }
-    }
-
-    public static bool LoadNotice()
-    {
-        if (PlayerPrefs.HasKey("notice"))
-        {
-            return PlayerPrefs.GetInt("notice") == 1;
-        }
-        else
-        {
-            PlayerPrefs.SetInt("notice", 1);
-            return true;
-        }
-    }
+    public static int LoadBGM() => PlayerPrefs.GetInt("bgm", 100);
+    public static int LoadSFX() => PlayerPrefs.GetInt("sfx", 100);
+    public static int LoadMoveLatencyRate() => PlayerPrefs.GetInt("moveLatencyRate", 70);
+    public static bool LoadIsTileTouch() => PlayerPrefs.GetInt("isTileTouch", 0) == 1;
+    public static bool LoadNotice() => PlayerPrefs.GetInt("notice", 1) == 1;
 
     public void SaveBgm(int bgm) => PlayerPrefs.SetInt("bgm", bgm);
     public void SaveSfx(int sfx) => PlayerPrefs.SetInt("sfx", sfx);
-    public void SaveMoveDuration(int moveDuration) => PlayerPrefs.SetInt("moveDuration", moveDuration);
+    public void SaveMoveLatencyRate(int moveLatencyRate) => PlayerPrefs.SetInt("moveLatencyRate", moveLatencyRate);
+    public void SaveIsTileTouch(bool isTileTouch) => PlayerPrefs.SetInt("isTileTouch", isTileTouch ? 1 : 0);
     public void SaveNotice(bool notice) => PlayerPrefs.SetInt("notice", notice ? 1 : 0);
 }

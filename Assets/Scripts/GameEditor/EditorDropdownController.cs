@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -159,3 +160,4 @@ public class EditorDropdownController : MonoBehaviour
                                Quaternion.identity : Quaternion.Euler(new Vector3(0, 0, 90));
     }
 }
+#endif

@@ -30,6 +30,7 @@ public class CharacterSwiper : MonoBehaviour
     public RectTransform content;
     public RectTransform viewport;
     public GameObject characterCardPrefab;
+    public GameObject levelButtonPrefab;
 
     [Header("Card Effect Settings")]
     public float spacing = 350f;
@@ -97,7 +98,7 @@ public class CharacterSwiper : MonoBehaviour
         {
             GameObject cardObject = Instantiate(characterCardPrefab, content);
             CharacterItem item = cardObject.GetComponent<CharacterItem>();
-            item.Setup(character);
+            item.Setup(character, levelButtonPrefab);
 
             // 생성된 카드와 컴포넌트들을 리스트에 저장
             characterItems.Add(item);
@@ -173,10 +174,6 @@ public class CharacterSwiper : MonoBehaviour
 
         float offset = (centerX - cardRects[nearestIndex].position.x) / canvasScaleFactor;
         Vector2 targetPos = new Vector2(content.anchoredPosition.x + offset, content.anchoredPosition.y);
-
-        Logger.Log($"Viewport.rect is {viewport.rect}");
-        Logger.Log($"ScaleFactor is {canvasScaleFactor}");
-        Logger.Log($"CardSnap: TargetPos is {targetPos}, cardRects is {cardRects[nearestIndex].position.x},\ncenterX is {centerX}, anchor is {content.anchoredPosition.x}");
 
         isSnapping = true;
         snapTween = content.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>

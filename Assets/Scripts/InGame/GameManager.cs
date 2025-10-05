@@ -16,18 +16,25 @@ public class GameManager : SingletonBehaviour<GameManager>
     public BoardSO boardSO;
 
     [SerializeField] private TextMeshProUGUI stageText;
+
     [Header("Three Star UI")]
     [SerializeField] private TextMeshProUGUI[] star321LimitText;
     private Color[] star321LimitTextColor;
     [SerializeField] private StarDropper[] star321Dropper;
     [SerializeField] private TextMeshProUGUI MoveCountText;
     [SerializeField] private Slider moveCountSlider;
-    [Header("Warning Text")]
+    private const float Star3SliderValue = 0.522f, Star2SliderValue = 0.268f, Star1SliderValue = 0.018f, Star1SliderStopValue = 0.05f;
+    private float starSpacing;
+
+    [Header("Warning")]
     [SerializeField] private GameObject color12Warning;
-    private const float Star3SliderValue = 0.522f, Star2SliderValue = 0.272f, Star1SliderValue = 0.016f, Star1SliderStopValue = 0.072f;
+
+    [Header("Movement Mode")]
+    [SerializeField] private TileClickEvent tileTouchScript;
+    [SerializeField] private JoyStickInputController joyStickScript;
 
 
-    private int stage, level;
+    private int stage, level, star;
 
     private void Awake()
     {
@@ -49,6 +56,34 @@ public class GameManager : SingletonBehaviour<GameManager>
         PlayerController.Instance.InitPlayer(boardSO);
         cameraSizeController.AdjustCameraSize(boardSO);
 
+        star = 3;
+ 
+        Invoke("InitializeUISetup", 0.05f);
+
+        SetMovementMode();
+
+        isGaming = true;
+
+        if (stage == 1 && level == 1) // 튜토리얼
+        {
+            isGaming = false;
+            GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas1");
+            Instantiate(tutorialCanvas);
+        }
+    }
+
+    // 보라색 테두리 경고문구, 별 슬라이더의 별 위치 조정
+    private void InitializeUISetup()
+    {
+        float canvasWidth = star321LimitText[0].GetComponentInParent<Canvas>().GetComponent<RectTransform>().rect.width;
+        starSpacing = (canvasWidth / 2f - 100) / 2f;
+        Logger.Log($"canvasWidth : {canvasWidth}, starSpacing : {starSpacing}");
+
+        float aspect = (float)Screen.height / Screen.width;
+        float ratio = Mathf.Lerp(0.4f, 0.8f, Mathf.InverseLerp(0.8f, 2, aspect));
+        color12Warning.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta =
+            new Vector2(canvasWidth * ratio, canvasWidth * ratio / 1976 * 852);
+
         star321LimitText[0].text = boardSO.limitStepForThreeStar.ToString();
         star321LimitText[1].text = boardSO.limitStepForTwoStar.ToString();
         if (boardSO.limitStepForOneStar > 0) star321LimitText[2].text = boardSO.limitStepForOneStar.ToString();
@@ -56,9 +91,13 @@ public class GameManager : SingletonBehaviour<GameManager>
 
         star321LimitTextColor = new Color[3];
         for (int i = 0; i < 3; i++)
+        {
+            star321LimitText[i].GetComponent<RectTransform>().anchoredPosition
+                = new Vector2(starSpacing * i, star321LimitText[i].GetComponent<RectTransform>().anchoredPosition.y);
+            star321Dropper[i].GetComponent<RectTransform>().anchoredPosition
+                = new Vector2(starSpacing * i, star321Dropper[i].GetComponent<RectTransform>().anchoredPosition.y);
             star321LimitTextColor[i] = star321LimitText[i].color;
-
-        isGaming = true;
+        }
     }
 
     private void InitStatus()
@@ -70,9 +109,12 @@ public class GameManager : SingletonBehaviour<GameManager>
             star321Dropper[i].gameObject.SetActive(true);
             star321Dropper[i].transform.rotation = Quaternion.identity;
             star321Dropper[i].GetComponent<Image>().color = new Color(0, 0, 0, 1);
-            star321Dropper[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(i * 175, -128.47f);
+            star321Dropper[i].GetComponent<RectTransform>().anchoredPosition
+                = new Vector2(starSpacing * i, -128.47f);
             star321Dropper[i].Init();
         }
+        star = 3;
+        tileTouchScript.Init();
         UpdateMoveCount(0);
     }
 
@@ -121,6 +163,9 @@ public class GameManager : SingletonBehaviour<GameManager>
     // 3/2/1별을 떨어트리면 n을 3/2/1을 입력
     private void DropStar(int n)
     {
+        if (star < n) return;
+
+        star = n - 1;
         n = 3 - n;
         if (star321Dropper[n].DropStar())
         {
@@ -139,6 +184,14 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         isGaming = false;
         gameClearObj.SetActive(true);
+        PersistentDataManager.Instance.SetStageClearData(star);
+        if (stage == 1 && level == 1) // 튜토리얼
+        {
+            GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas2");
+            Instantiate(tutorialCanvas);
+            GameObject moveTutorialCanvas = GameObject.Find("MoveTutorialCanvas(Clone)");
+            Destroy(moveTutorialCanvas);
+        }
         Logger.Log("Game Clear");
     }
 
@@ -159,6 +212,11 @@ public class GameManager : SingletonBehaviour<GameManager>
         Board.Instance.InitBoardWhenRestart(boardSO);
         PlayerController.Instance.InitPlayer(boardSO);
         InitStatus();
+        if (color12Warning.activeSelf)
+        {
+            color12Warning.GetComponent<RectTransform>().DOAnchorPosY(-310, rectDuration).SetEase(gogoEase)
+                          .OnComplete(() => color12Warning.SetActive(false));
+        }
         Resume();
     }
 
@@ -187,9 +245,29 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
     }
 
+    public void SettingsExit()
+    {
+        Invoke("SetMovementMode", 0.02f);
+    }
+
+    private void SetMovementMode()
+    {
+        bool isTileTouch = PersistentDataManager.Instance.isTileTouch;
+        tileTouchScript.enabled = isTileTouch;
+        joyStickScript.enabled = !isTileTouch;
+        if (!isTileTouch) joyStickScript.SetDelay();
+    }
+
     public void Color12Warning()
     {
-        Logger.Log("asdd");
+        if (color12Warning.activeSelf)
+            return;
+
         color12Warning.SetActive(true);
+        RectTransform rect = color12Warning.GetComponent<RectTransform>();
+        rect.anchoredPosition = new Vector2(0, -310);
+        rect.DOAnchorPosY(115, rectDuration).SetEase(gogoEase);
     }
+    public float rectDuration = 0.7f;
+    public Ease gogoEase;
 }

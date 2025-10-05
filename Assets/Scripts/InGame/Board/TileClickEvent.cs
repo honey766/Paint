@@ -9,6 +9,12 @@ public class TileClickEvent : MonoBehaviour
     private void Awake()
     {
         layerMask = 1 << LayerMask.NameToLayer("Tile");
+        Init();
+    }
+
+    public void Init()
+    {
+        lastTile = null;
     }
 
     private void Update()

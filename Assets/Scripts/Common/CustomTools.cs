@@ -1,33 +1,7 @@
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
-public class CustomTools : Editor
-{
-#if UNITY_EDITOR
-    [MenuItem("Inflearn/Add User Gem (+10)")]
-    public static void AddUserGem()
-    {
-        var Gem = long.Parse(PlayerPrefs.GetString("Gem"));
-        Gem += 10;
-
-        PlayerPrefs.SetString("Gem", Gem.ToString());
-        PlayerPrefs.Save();
-    }
-
-    [MenuItem("Inflearn/Add User Gold (+100)")]
-    public static void AddUserGold()
-    {
-        var Gold = long.Parse(PlayerPrefs.GetString("Gold"));
-        Gold += 100;
-
-        PlayerPrefs.SetString("Gold", Gold.ToString());
-        PlayerPrefs.Save();
-    }
-#endif
-
-    public static Quaternion GetRotationByDirection(Vector2Int direction)
+public class CustomTools
+{    public static Quaternion GetRotationByDirection(Vector2Int direction)
     {
         switch (direction)
         {

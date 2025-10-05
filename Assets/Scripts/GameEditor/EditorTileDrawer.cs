@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -175,3 +176,4 @@ public class EditorTileDrawer : MonoBehaviour
             obj.transform.rotation = Quaternion.identity;
     }
 }
+#endif

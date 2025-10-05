@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 public class Menu : MonoBehaviour
 {
     [SerializeField] bool isGaming;
+    [SerializeField] float rotateDuration;
 
     public void Resume()
     {

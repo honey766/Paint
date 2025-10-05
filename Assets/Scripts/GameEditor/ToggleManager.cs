@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using TMPro;
 using System.Collections.Generic;
 
@@ -21,7 +22,7 @@ public enum TileEditingTool
 public class ToggleManager : SingletonBehaviour<ToggleManager>
 {
     public TileEditingTool tool;
-    
+
     private Dictionary<TileEditingTool, ToggleController> toggleMap = new Dictionary<TileEditingTool, ToggleController>();
 
     private void Awake()
@@ -72,3 +73,4 @@ public class ToggleManager : SingletonBehaviour<ToggleManager>
         return true;
     }
 }
+#endif
