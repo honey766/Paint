@@ -337,10 +337,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae8be5944080351438eda80047b7d53d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialImageController
-  page: 1
   tutorialNum: 3
+  page: 0
+  tuto1_2AnimImage: {fileID: 0}
   tutorialImg: {fileID: 0}
   tutorialSprites: []
+  slideThresholdX: 60
 --- !u!1 &8623416803755049596
 GameObject:
   m_ObjectHideFlags: 0

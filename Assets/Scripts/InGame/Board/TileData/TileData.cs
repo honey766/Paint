@@ -17,7 +17,7 @@ public enum TileType
     ////// Block //////
     Player = 10000,
     Mirror, // Spray가 만나면 Spray의 방향이 꺾임
-    Stamp, // 플레이어와 동일한 로직을 수행
+    Brush, // 플레이어와 동일한 로직을 수행
     JustBlock // 그냥 기본 블록
 }
 #endregion
@@ -33,7 +33,7 @@ public static class TileTypeExtensions
     };
 
     private static HashSet<TileType> blockSet = new HashSet<TileType> {
-        TileType.Player, TileType.Mirror, TileType.Stamp, TileType.JustBlock
+        TileType.Player, TileType.Mirror, TileType.Brush, TileType.JustBlock
     };
 
     public static bool IsNormalTile(this TileType tile)

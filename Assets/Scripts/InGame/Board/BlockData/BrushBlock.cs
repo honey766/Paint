@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class StampBlock : BlockData
+public class BrushBlock : BlockData
 {
-    public override TileType Type { get; protected set; } = TileType.Stamp;
+    public override TileType Type { get; protected set; } = TileType.Brush;
     public override bool HasMutableColor { get; protected set; } = true;
     public override bool HasColor { get; protected set; } = true;
     public override TileType Color { get; protected set; } = TileType.White;

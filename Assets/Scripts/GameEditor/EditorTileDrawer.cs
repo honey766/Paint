@@ -123,7 +123,7 @@ public class EditorTileDrawer : MonoBehaviour
                 return Instantiate(ice, (Vector2)pos, Quaternion.identity, objectParent);
             case TileType.Mirror:
                 return Instantiate(mirror, (Vector2)pos, Quaternion.identity, objectParent);
-            case TileType.Stamp:
+            case TileType.Brush:
                 return Instantiate(stamp, (Vector2)pos, Quaternion.identity, objectParent);
             case TileType.WhitePaint:
                 return Instantiate(whitePaint, (Vector2)pos, Quaternion.identity, objectParent);

@@ -25,7 +25,6 @@ public class JoyStickInputController : MonoBehaviour
     private float firstRepeatDelay, holdRepeatInterval, lastInputTime;
     private bool isFirstInput;
     private bool clickedOnUI;
-    private int UILayer;
     private Vector2Int direction;
     private Queue<MouseRecord> records = new Queue<MouseRecord>();
 
@@ -33,7 +32,6 @@ public class JoyStickInputController : MonoBehaviour
     {
         dotImage = dotTr.GetComponent<Image>();
         direction = Vector2Int.zero;
-        UILayer = LayerMask.NameToLayer("UI");
     }
 
     private void Start()
@@ -131,10 +129,12 @@ public class JoyStickInputController : MonoBehaviour
         newer = records.Peek(); // queueRecordDuration 이후의 입력 중 가장 과거의 입력
         if (older.time < 0)
         {
+            // queueRecordDuration 이후의 입력만 있는 경우
             mousePos = newer.pos;
         }
         else
         {
+            // queueRecordDuration 전의 입력도 있는 경우 보간함
             float t = Mathf.InverseLerp(older.time, newer.time, queueRecordDuration);
             mousePos = Vector2.Lerp(older.pos, newer.pos, t);
         }
@@ -190,6 +190,4 @@ public class JoyStickInputController : MonoBehaviour
         firstRepeatDelay = Mathf.Lerp(firstRepeatDelayMin, firstRepeatDelayMax, t);
         holdRepeatInterval = Mathf.Lerp(holdRepeatIntervalMin, holdRepeatIntervalMax, t);
     }
-
-    
 }

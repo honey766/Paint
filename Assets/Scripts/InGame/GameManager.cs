@@ -84,12 +84,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         SetMovementMode();
 
         if (stage == 1 && level == 1 && tutorialLevel < 2) // 튜토리얼
-        {
-            isGaming = false;
-            GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas1");
-            tutorialLevel = 1;
-            Instantiate(tutorialCanvas);
-        }
+            FirstTutorialEvent();
     }
 
     // 보라색 테두리 경고문구(주석처리됨), 별 슬라이더의 별 위치 조정
@@ -207,37 +202,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (stage == 1 && level == 1) // 튜토리얼
         {
-            if (tutorialLevel == 1)
-            {
-                isGaming = false;
-                tutorialLevel++;
-                PersistentDataManager.Instance.LoadTutorialLevel(2);
-                GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas2");
-                Instantiate(tutorialCanvas);
-                Start();
-                color12Border.enabled = false;
-                isGaming = false;
-                return;
-            }
-            else if (tutorialLevel == 2)
-            {
-                tutorialLevel++;
-                PersistentDataManager.Instance.LoadTutorialLevel(3);
-                Start();
-                ThirdTutoialEvent();
-                return;
-            }
-            else if (tutorialLevel == 3)
-            {
-                GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas3");
-                Instantiate(tutorialCanvas);
-                GameObject moveTutorialCanvas = GameObject.Find("MoveTutorialCanvas(Clone)");
-                Destroy(moveTutorialCanvas);
-                Destroy(tutorialBorderTooltip);
-                isGaming = false;
-                PersistentDataManager.Instance.SetStageClearData(star);
-                return;
-            }
+            TutorialClearEvent();
+            return;
         }
         isGaming = false;
         gameClearObj.SetActive(true);
@@ -255,25 +221,69 @@ public class GameManager : SingletonBehaviour<GameManager>
         Logger.Log("Game Clear");
     }
 
+#region Tutorial
+    private void TutorialClearEvent()
+    {
+        if (tutorialLevel == 1)
+        {
+            isGaming = false;
+            tutorialLevel++;
+            PersistentDataManager.Instance.LoadTutorialLevel(2);
+            GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas2");
+            Instantiate(tutorialCanvas);
+            GameObject moveTutorialCanvas = GameObject.Find("MoveTutorialCanvas(Clone)");
+            Destroy(moveTutorialCanvas);
+            Start();
+            color12Border.enabled = false;
+            isGaming = false;
+        }
+        else if (tutorialLevel == 2)
+        {
+            tutorialLevel++;
+            PersistentDataManager.Instance.LoadTutorialLevel(3);
+            Start();
+            ThirdTutorialEvent();
+        }
+        else if (tutorialLevel == 3)
+        {
+            GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas3");
+            Instantiate(tutorialCanvas);
+            GameObject moveTutorialCanvas = GameObject.Find("MoveTutorialCanvas(Clone)");
+            Destroy(moveTutorialCanvas);
+            Destroy(tutorialBorderTooltip);
+            isGaming = false;
+            PersistentDataManager.Instance.SetStageClearData(star);
+        }
+    }
+    private void FirstTutorialEvent()
+    {
+        isGaming = false;
+        GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas1");
+        tutorialLevel = 1;
+        Instantiate(tutorialCanvas);
+    }
     public void SecondTutorialEvent()
     {
+        GameObject movetutorialCanvas = Resources.Load<GameObject>("Prefabs/MoveTutorialCanvas");
+        Instantiate(movetutorialCanvas);
         tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
         tutorialColor12BorderTempObj.transform.position = Board.Instance.GetTilePos(2, 1);
         tutorialArrow = Instantiate(tutorialArrow);
         tutorialArrow.transform.position = Board.Instance.GetTilePos(2, 0);
         tutorialBorderTooltip = Instantiate(tutorialBorderTooltip);
     }
-    private void ThirdTutoialEvent()
+    private void ThirdTutorialEvent()
     {
         Destroy(tutorialColor12BorderTempObj);
-        Invoke("ThirdTutoialEventAfterSeconds", 0.1f);
+        Invoke("ThirdTutorialEventAfterSeconds", 0.1f);
         tutorialArrow.transform.position = Board.Instance.GetTilePos(1, -1);
     }
-    private void ThirdTutoialEventAfterSeconds()
+    private void ThirdTutorialEventAfterSeconds()
     {  
         tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
         tutorialColor12Border.transform.position = Board.Instance.GetTilePos(1, 0);
     }
+#endregion
 
     public void Pause()
     {
