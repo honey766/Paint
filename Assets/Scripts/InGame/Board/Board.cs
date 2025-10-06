@@ -47,6 +47,21 @@ public class Board : SingletonBehaviour<Board>
         {
             this.colorPaletteSO = PersistentDataManager.Instance.colorPaletteSO;
         }
+        if (board != null)
+        {
+            foreach (var entry in board.Values)
+            {
+                Logger.Log("QQQQQQQQQQQQQ");
+                Destroy(entry.gameObject);
+            }
+        }
+        if (blocks != null)
+        {
+            foreach (var entry in blocks.Values)
+                if (entry.Type != TileType.Player)
+                    Destroy(entry.gameObject);
+        }
+
         this.n = boardSO.n;
         this.m = boardSO.m;
         board = new Dictionary<Vector2Int, TileData>();

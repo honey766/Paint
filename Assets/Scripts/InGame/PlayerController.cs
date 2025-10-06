@@ -35,6 +35,7 @@ public class PlayerController : BlockData
     private Queue<Vector2Int> moveToQueue = new Queue<Vector2Int>(); // 한 번에 여러 칸 이동하기 위해 다음에 이동할 타일을 나열한 큐
     private bool isMoving; // 현재 이동 중인지
     public int moveCount { get; private set; }
+    private int savedMoveCount;
     private LinkedList<PlayerMoveData> moveDataListToRedo = new LinkedList<PlayerMoveData>(); // 되돌리기를 위해 그동안의 이동 데이터를 기록한 양방향 리스트
     private float lastRedoTime = 0f;
 
@@ -65,6 +66,7 @@ public class PlayerController : BlockData
         spriter = transform.GetChild(0).GetComponent<SpriteRenderer>();
         player = transform.GetChild(0).transform;
         halfMoveWaitForSeconds = new WaitForSeconds(moveTime / 2f);
+        savedMoveCount = 0;
     }
 
     //삭제 시 실행되는 함수
@@ -109,14 +111,16 @@ public class PlayerController : BlockData
         TryMoveTo(destPos.x + dir.x, destPos.y + dir.y);
     }
 
-    public void InitPlayer(BoardSO boardSO)
+    public void InitPlayer(BoardSO boardSO, bool saveMoveCount = false)
     {
+        if (saveMoveCount) this.savedMoveCount = moveCount;
         moveToQueue.Clear();
         ApplyColorChange(boardSO.startPlayerColor);
         curPos.x = destPos.x = boardSO.startPos.x;
         curPos.y = destPos.y = boardSO.startPos.y;
-        transform.position = Board.Instance.GetTilePos(curPos.x, curPos.y);
-        SetMoveCount(0);
+        transform.DOKill();
+        transform.position = Board.Instance.GetTilePos(boardSO.startPos.x, boardSO.startPos.y);
+        SetMoveCount(savedMoveCount);
     }
 
     // (i, j) 좌표로 이동 시도

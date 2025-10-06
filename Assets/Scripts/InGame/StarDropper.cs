@@ -25,6 +25,12 @@ public class StarDropper : MonoBehaviour
         hasDropped = false;
     }
 
+    public void DoAllKill()
+    {
+        starImage.GetComponent<RectTransform>().DOKill();
+        starImage.DOKill();
+    }
+
     public bool DropStar()
     {
         if (hasDropped) return false;

@@ -280,7 +280,8 @@ MonoBehaviour:
   stage: 0
   frontUI: {fileID: 2209829976043114061}
   backUI: {fileID: 2892858689171098474}
-  extraButtonSprite: {fileID: 21300000, guid: b1c69400ba0272643b063133c2356472, type: 3}
+  extraButtonSprite: {fileID: 21300000, guid: 6008bc26985b8dd46b9621e92529a7c4, type: 3}
+  extraButtonLockedSprite: {fileID: 21300000, guid: b1c69400ba0272643b063133c2356472, type: 3}
   buttonLockedSprite: {fileID: 2050884686751419605, guid: 080499fa38ee7d645bf40094ac266892, type: 3}
   backUISprite: {fileID: -5426212148991853529, guid: 11c786a21b3fa4e4980c13cb05f68f68, type: 3}
   starSprite: {fileID: 5199979006384268662, guid: fec33e0548c143a44abe05193d5bf9c4, type: 3}

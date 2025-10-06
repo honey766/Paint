@@ -7,9 +7,21 @@ using DG.Tweening;
 public class GameManager : SingletonBehaviour<GameManager>
 {
     public bool isGaming;
-    public GameObject gameClearObj, gameOverObj;
     public CameraSizeController cameraSizeController;
     [SerializeField] private StageSO stageSO;
+
+    [Header("GameClear, GameOver")]
+    public GameObject gameClearObj;
+    [SerializeField] private TextMeshProUGUI goToNextLevelText; 
+    [SerializeField] private GameObject goToExtraObj;
+    [SerializeField] private GameObject gameOverObj;
+
+    [Header("Tutorial")]
+    [SerializeField] private MeshRenderer color12Border;
+    [SerializeField] private GameObject tutorialColor12Border;
+    [SerializeField] private GameObject tutorialArrow;
+    [SerializeField] private GameObject tutorialBorderTooltip;
+    private GameObject tutorialColor12BorderTempObj;
 
     [Header("InGame씬에서 바로 실행하기 (밑에 bool변수 true)")]
     public bool startGameDirectlyAtInGameScene;
@@ -24,26 +36,34 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private TextMeshProUGUI MoveCountText;
     [SerializeField] private Slider moveCountSlider;
     private const float Star3SliderValue = 0.522f, Star2SliderValue = 0.268f, Star1SliderValue = 0.018f, Star1SliderStopValue = 0.05f;
-    private float starSpacing;
+    private float starSpacing, starPosY;
 
     [Header("Warning")]
-    [SerializeField] private GameObject color12Warning;
+    [SerializeField] private Image color12WarningBackground;
+    private TextMeshProUGUI color12WarningText;
+    private Image color12WarningRestartButton;
 
     [Header("Movement Mode")]
     [SerializeField] private TileClickEvent tileTouchScript;
     [SerializeField] private JoyStickInputController joyStickScript;
 
-
     private int stage, level, star;
+    private int tutorialLevel;
 
     private void Awake()
     {
         m_IsDestroyOnLoad = true;
         Init();
+
+        color12WarningText = color12WarningBackground.transform.parent.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>();
+        color12WarningRestartButton = color12WarningText.transform.parent.GetChild(1).GetChild(0).GetComponent<Image>();
+        starPosY = star321Dropper[0].GetComponent<RectTransform>().anchoredPosition.y;
     }
 
     private void Start()
     {
+        isGaming = true;
+
         if (!startGameDirectlyAtInGameScene)
         {
             stage = PersistentDataManager.Instance.stage;
@@ -51,9 +71,10 @@ public class GameManager : SingletonBehaviour<GameManager>
             boardSO = PersistentDataManager.Instance.boardSO;
         }
 
-        stageText.text = $"Stage{stage}-{level}";
+        stageText.text = (level < 0 ? "<color=#550000>Ex " : "") + $"Level{stage}-{Mathf.Abs(level)}";
         Board.Instance.InitBoard(boardSO);
-        PlayerController.Instance.InitPlayer(boardSO);
+        bool saveMoveCount = stage == 1 && level == 1;
+        PlayerController.Instance.InitPlayer(boardSO, saveMoveCount);
         cameraSizeController.AdjustCameraSize(boardSO);
 
         star = 3;
@@ -62,17 +83,16 @@ public class GameManager : SingletonBehaviour<GameManager>
 
         SetMovementMode();
 
-        isGaming = true;
-
-        if (stage == 1 && level == 1) // 튜토리얼
+        if (stage == 1 && level == 1 && tutorialLevel < 2) // 튜토리얼
         {
             isGaming = false;
             GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas1");
+            tutorialLevel = 1;
             Instantiate(tutorialCanvas);
         }
     }
 
-    // 보라색 테두리 경고문구, 별 슬라이더의 별 위치 조정
+    // 보라색 테두리 경고문구(주석처리됨), 별 슬라이더의 별 위치 조정
     private void InitializeUISetup()
     {
         float canvasWidth = star321LimitText[0].GetComponentInParent<Canvas>().GetComponent<RectTransform>().rect.width;
@@ -81,8 +101,8 @@ public class GameManager : SingletonBehaviour<GameManager>
 
         float aspect = (float)Screen.height / Screen.width;
         float ratio = Mathf.Lerp(0.4f, 0.8f, Mathf.InverseLerp(0.8f, 2, aspect));
-        color12Warning.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta =
-            new Vector2(canvasWidth * ratio, canvasWidth * ratio / 1976 * 852);
+        // color12Warning.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta =
+        //     new Vector2(canvasWidth * ratio, canvasWidth * ratio / 1976 * 852);
 
         star321LimitText[0].text = boardSO.limitStepForThreeStar.ToString();
         star321LimitText[1].text = boardSO.limitStepForTwoStar.ToString();
@@ -104,18 +124,19 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         for (int i = 0; i < 3; i++)
         {
+            star321LimitText[i].DOKill();
             star321LimitText[i].gameObject.SetActive(true);
             star321LimitText[i].color = star321LimitTextColor[i];
+            star321Dropper[i].DoAllKill();
             star321Dropper[i].gameObject.SetActive(true);
             star321Dropper[i].transform.rotation = Quaternion.identity;
             star321Dropper[i].GetComponent<Image>().color = new Color(0, 0, 0, 1);
             star321Dropper[i].GetComponent<RectTransform>().anchoredPosition
-                = new Vector2(starSpacing * i, -128.47f);
+                = new Vector2(starSpacing * i, starPosY);
             star321Dropper[i].Init();
         }
         star = 3;
         tileTouchScript.Init();
-        UpdateMoveCount(0);
     }
 
     public void UpdateMoveCount(int moveCount)
@@ -184,17 +205,74 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     public void GameClear()
     {
+        if (stage == 1 && level == 1) // 튜토리얼
+        {
+            if (tutorialLevel == 1)
+            {
+                isGaming = false;
+                tutorialLevel++;
+                PersistentDataManager.Instance.LoadTutorialLevel(2);
+                GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas2");
+                Instantiate(tutorialCanvas);
+                Start();
+                color12Border.enabled = false;
+                isGaming = false;
+                return;
+            }
+            else if (tutorialLevel == 2)
+            {
+                tutorialLevel++;
+                PersistentDataManager.Instance.LoadTutorialLevel(3);
+                Start();
+                ThirdTutoialEvent();
+                return;
+            }
+            else if (tutorialLevel == 3)
+            {
+                GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas3");
+                Instantiate(tutorialCanvas);
+                GameObject moveTutorialCanvas = GameObject.Find("MoveTutorialCanvas(Clone)");
+                Destroy(moveTutorialCanvas);
+                Destroy(tutorialBorderTooltip);
+                isGaming = false;
+                PersistentDataManager.Instance.SetStageClearData(star);
+                return;
+            }
+        }
         isGaming = false;
         gameClearObj.SetActive(true);
         PersistentDataManager.Instance.SetStageClearData(star);
-        if (stage == 1 && level == 1) // 튜토리얼
-        {
-            GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas2");
-            Instantiate(tutorialCanvas);
-            GameObject moveTutorialCanvas = GameObject.Find("MoveTutorialCanvas(Clone)");
-            Destroy(moveTutorialCanvas);
-        }
+
+        if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfExtraLevelOfStage[stage - 1])
+            goToNextLevelText.text = "다음 스테이지";
+        else if (level < 0)
+            goToNextLevelText.text = "다음 Ex단계";
+        else
+            goToNextLevelText.text = "다음 단계";
+        goToExtraObj.SetActive(level == stageSO.numOfLevelOfStage[stage - 1]
+            && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= stageSO.numOfLevelOfStage[stage - 1] * 3);
+        
         Logger.Log("Game Clear");
+    }
+
+    public void SecondTutorialEvent()
+    {
+        tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
+        tutorialColor12BorderTempObj.transform.position = Board.Instance.GetTilePos(2, 1);
+        tutorialArrow = Instantiate(tutorialArrow);
+        tutorialArrow.transform.position = Board.Instance.GetTilePos(2, 0);
+        tutorialBorderTooltip = Instantiate(tutorialBorderTooltip);
+    }
+    private void ThirdTutoialEvent()
+    {
+        Destroy(tutorialColor12BorderTempObj);
+        Invoke("ThirdTutoialEventAfterSeconds", 0.1f);
+        tutorialArrow.transform.position = Board.Instance.GetTilePos(1, -1);
+    }
+    private void ThirdTutoialEventAfterSeconds()
+    {  
+        tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
+        tutorialColor12Border.transform.position = Board.Instance.GetTilePos(1, 0);
     }
 
     public void Pause()
@@ -214,11 +292,8 @@ public class GameManager : SingletonBehaviour<GameManager>
         Board.Instance.InitBoardWhenRestart(boardSO);
         PlayerController.Instance.InitPlayer(boardSO);
         InitStatus();
-        if (color12Warning.activeSelf)
-        {
-            color12Warning.GetComponent<RectTransform>().DOAnchorPosY(-310, rectDuration).SetEase(gogoEase)
-                          .OnComplete(() => color12Warning.SetActive(false));
-        }
+        if (color12WarningBackground.gameObject.activeSelf)
+            SetColor12Warning(false);
         if (gameOverObj.activeSelf) gameOverObj.SetActive(false);
         Resume();
     }
@@ -234,7 +309,7 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     public void GoToNextStage()
     {
-        if (level == stageSO.numOfLevelOfStage[stage - 1])
+        if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfExtraLevelOfStage[stage - 1])
         {
             if (stageSO.numOfStage == stage || PersistentDataManager.Instance.totalStar < stageSO.numOfStarToUnlockStage[stage])
             {
@@ -242,17 +317,39 @@ public class GameManager : SingletonBehaviour<GameManager>
                 return;
             }
         }
-        int nextStage = level == stageSO.numOfLevelOfStage[stage - 1] ? stage + 1 : stage;
-        int nextLevel = level == stageSO.numOfLevelOfStage[stage - 1] ? 1 : level + 1;
+
+        int nextStage, nextLevel;
+        if (level > 0)
+        {
+            nextStage = level == stageSO.numOfLevelOfStage[stage - 1] ? stage + 1 : stage;
+            nextLevel = level == stageSO.numOfLevelOfStage[stage - 1] ? 1 : level + 1;
+        }
+        else
+        {
+            nextStage = level == -stageSO.numOfExtraLevelOfStage[stage - 1] ? stage + 1 : stage;
+            nextLevel = level == -stageSO.numOfExtraLevelOfStage[stage - 1] ? 1 : level - 1;
+        }
         if (PersistentDataManager.Instance.LoadStageAndLevel(nextStage, nextLevel))
         {
-            if (level == stageSO.numOfLevelOfStage[stage - 1])
+            if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfExtraLevelOfStage[stage - 1])
                 PlayerPrefs.SetInt("LastSelectedCard", stage);
             UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
         }
         else
         {
-            Logger.Log($"Failed to go to Next Stage {stage}-{level}");
+            Logger.Log($"Failed to go to Next Stage {stage} - {level}");
+        }
+    }
+
+    public void GoToExtraStage()
+    {
+        if (PersistentDataManager.Instance.LoadStageAndLevel(stage, -1))
+        {
+            UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
+        }
+        else
+        {
+            Logger.Log($"Failed to go to Extra Stage {stage}-{1}");
         }
     }
 
@@ -269,16 +366,35 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (!isTileTouch) joyStickScript.SetDelay();
     }
 
+    private void SetColor12Warning(bool isAppear)
+    {
+        if (isAppear)
+        {
+            Logger.Log("Asdd");
+            color12WarningBackground.transform.parent.gameObject.SetActive(true);
+            color12WarningBackground.color = new Color(1, 1, 1, 0);
+            color12WarningText.color = new Color(0, 0, 0, 0);
+            color12WarningRestartButton.color = new Color(1, 1, 1, 0);
+            color12WarningBackground.DOColor(new Color(1, 1, 1, 0.5f), 0.6f);
+            color12WarningText.DOColor(Color.black, 0.6f);
+            color12WarningRestartButton.DOColor(Color.white, 0.6f);
+        }
+        else
+        {
+            color12WarningBackground.transform.parent.gameObject.SetActive(false);
+        }
+    }
+
     public void Color12Warning()
     {
-        if (color12Warning.activeSelf)
+        if (color12WarningBackground.transform.parent.gameObject.activeSelf)
             return;
 
-        color12Warning.SetActive(true);
-        RectTransform rect = color12Warning.GetComponent<RectTransform>();
-        rect.anchoredPosition = new Vector2(0, -310);
-        rect.DOAnchorPosY(115, rectDuration).SetEase(gogoEase);
+        SetColor12Warning(true);
+        // RectTransform rect = color12Warning.GetComponent<RectTransform>();
+        // rect.anchoredPosition = new Vector2(0, -310);
+        // rect.DOAnchorPosY(115, rectDuration).SetEase(gogoEase);
     }
-    public float rectDuration = 0.7f;
-    public Ease gogoEase;
+    // public float rectDuration = 0.7f;
+    // public Ease gogoEase = Ease.OutQuad;
 }

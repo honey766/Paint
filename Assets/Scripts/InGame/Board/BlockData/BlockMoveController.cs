@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class BlockMoveController : SingletonBehaviour<BlockMoveController>
 {
+    [SerializeField] private TileClickEvent tileClickScript;
     private Dictionary<Vector2Int, TileData> board; // 보드 상태
     private Dictionary<Vector2Int, BlockData> blocks; // 블록 위치와 상태
 
@@ -76,7 +77,10 @@ public class BlockMoveController : SingletonBehaviour<BlockMoveController>
                 if (block.slidingDirection != direction)
                 {
                     if (block.Type == TileType.Player)
+                    {
+                        tileClickScript.lastTile = null;
                         PlayerController.Instance.ClearMoveQueue();
+                    }
                     block.StartSliding(tempPos, direction);
                 }
             }

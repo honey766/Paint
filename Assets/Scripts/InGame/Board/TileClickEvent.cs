@@ -3,8 +3,9 @@ using System.Text.RegularExpressions;
 
 public class TileClickEvent : MonoBehaviour
 {
-    private GameObject lastTile = null;
+    public GameObject lastTile = null;
     private int layerMask;
+    private bool isMouseDown;
 
     private void Awake()
     {
@@ -15,11 +16,17 @@ public class TileClickEvent : MonoBehaviour
     public void Init()
     {
         lastTile = null;
+        isMouseDown = false;
     }
 
     private void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonDown(0) && !CustomTools.IsPointerOverUIElement())
+            isMouseDown = true;
+        if (Input.GetMouseButtonUp(0))
+            isMouseDown = false;
+
+        if (isMouseDown)
         {
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0, layerMask); // 마우스 위치에서 2D 레이캐스트

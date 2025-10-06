@@ -60,7 +60,7 @@ public class Transition : MonoBehaviour
         main.SetActive(false);
         card.SetActive(true);
         SetStarCountText();
-        Invoke(nameof(FlipCard), 0.02f);
+        Invoke(nameof(FlipCard), 0.05f);
     }
     private void FlipCard()
     {

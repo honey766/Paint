@@ -34,6 +34,11 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
         this.moveLatencyRate = moveLatencyRate;
     }
 
+    public void LoadTutorialLevel(int level)
+    {
+        boardSO = Resources.Load<BoardSO>($"ScriptableObjects/Board/Stage1/Stage1-1-{level}");
+    }
+
     // stage, level이 존재하면 true
     public bool LoadStageAndLevel(int stage, int level)
     {

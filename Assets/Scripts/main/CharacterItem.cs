@@ -12,7 +12,7 @@ public class CharacterItem : MonoBehaviour
     [Header("UI References")]
     public Image frontUI; // 카드의 앞면 UI 그룹
     public Image backUI;  // 카드의 뒷면 UI 그룹
-    public Sprite extraButtonSprite, buttonLockedSprite, backUISprite, starSprite;
+    public Sprite extraButtonSprite, extraButtonLockedSprite, buttonLockedSprite, backUISprite, starSprite;
 
 
     [Header("Flip Settings")]
@@ -91,11 +91,13 @@ public class CharacterItem : MonoBehaviour
     {
         GameObject button = Instantiate(levelButtonPrefab, backUI.transform);
         button.GetComponent<RectTransform>().anchoredPosition = anchoredPos;
-        if (level < 0)
-            button.GetComponent<Image>().sprite = extraButtonSprite;
+        
         // 레벨 진입 가능
         if (canEnter)
         {
+            if (level < 0)
+                button.GetComponent<Image>().sprite = extraButtonSprite;
+
             string levelStr = (level < 0 ? "Ex" : "") + Mathf.Abs(level).ToString();
             button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = levelStr;
             button.GetComponent<Button>().onClick.AddListener(() => OnStageButtonClick(level));
@@ -113,7 +115,7 @@ public class CharacterItem : MonoBehaviour
         }
         else
         {
-            if (level < 0) button.GetComponent<Image>().sprite = extraButtonSprite;
+            if (level < 0) button.GetComponent<Image>().sprite = extraButtonLockedSprite;
             else button.GetComponent<Image>().sprite = buttonLockedSprite;
         }
     }
