@@ -22,11 +22,13 @@ public class TutorialImageController : MonoBehaviour, IPointerDownHandler, IPoin
     }
     private Queue<MouseRecord> records = new Queue<MouseRecord>();
     private int isSlided; // 0 : no, 1 : 왼쪽으로 했음, 2 : 오른쪽으로 했음
+    bool isPointerDownInvoked;
     
 
     private void Awake()
     {
         curPage = 0;
+        isPointerDownInvoked = false;
         SetTutoImage();
     }
 
@@ -74,21 +76,24 @@ public class TutorialImageController : MonoBehaviour, IPointerDownHandler, IPoin
     public void OnPointerDown(PointerEventData eventData)
     {
         if (tutorialNum != 1) return;
+        isPointerDownInvoked = true;
         isSlided = 0;
         records.Enqueue(new MouseRecord { time = Time.time, pos = eventData.position });
     }
 
     public void OnPointerMove(PointerEventData eventData)
     {
-        if (!Input.GetMouseButton(0)) return; // 마우스가 눌려 있지 않으면 리턴
-        if (tutorialNum != 1) return;
-        
+        if (tutorialNum != 1 || !isPointerDownInvoked || !Input.GetMouseButton(0))
+            return; // 마우스가 눌려 있지 않으면 리턴
+
+        Logger.Log($"push {eventData.position.x}");
         records.Enqueue(new MouseRecord { time = Time.time, pos = eventData.position });
         Vector2 mousePosAgo;
         if (!GetMousePosAgo(out mousePosAgo)) return;
 
         if (Mathf.Abs(mousePosAgo.x - eventData.position.x) > slideThresholdX)
         {
+            Logger.Log($"{mousePosAgo.x} -> {eventData.position.x}");
             // 오른쪽 슬라이드
             if (mousePosAgo.x < eventData.position.x && isSlided != 2)
             {
@@ -108,6 +113,7 @@ public class TutorialImageController : MonoBehaviour, IPointerDownHandler, IPoin
     public void OnPointerUp(PointerEventData eventData)
     {
         if (tutorialNum != 1) return;
+        isPointerDownInvoked = false;
         records.Clear();
     }
 

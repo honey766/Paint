@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class Settings : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class Settings : MonoBehaviour
     [Header("Movement Mode")]
     [SerializeField] private GameObject tileTouchOutline;
     [SerializeField] private GameObject joyStickOutline;
+    [SerializeField] private TextMeshProUGUI movementInformationText;
 
     [Header("Move Latency Rate")]
     [SerializeField] private Slider moveLatencyRateSlider;
@@ -27,6 +29,7 @@ public class Settings : MonoBehaviour
     [SerializeField] private Sprite[] noticeSpr;
     [SerializeField] private Image noticeImage;
 
+    private bool isMoveTooltipActivated;
 
     int moveLatencyRate;
     private bool isTileTouch;
@@ -34,6 +37,8 @@ public class Settings : MonoBehaviour
 
     private void OnEnable()
     {
+        isMoveTooltipActivated = false;
+
         int bgmV = LoadBGM();
         int sfxV = LoadSFX();
         moveLatencyRate = LoadMoveLatencyRate();
@@ -60,6 +65,8 @@ public class Settings : MonoBehaviour
         PlayerPrefs.Save();
         if (SceneManager.GetActiveScene().name == "InGame")
             GameManager.Instance.SettingsExit();
+        MoveTutorialTooltip moveTutorial = FindAnyObjectByType<MoveTutorialTooltip>();
+        if (moveTutorial != null) moveTutorial.SetInformationText();
         Destroy(gameObject);
     }
 
@@ -71,6 +78,14 @@ public class Settings : MonoBehaviour
     public void OnSFXChanged(float value)
     {
         sfxImage.sprite = value == 0 ? sfxSpr[0] : sfxSpr[1];
+    }
+
+    public void OnMovementInformationButtonClicked()
+    {
+        isMoveTooltipActivated = !isMoveTooltipActivated;
+        movementInformationText.transform.parent.gameObject.SetActive(isMoveTooltipActivated);
+        if (isTileTouch) movementInformationText.text = "[타일 터치] 타일을 직접 터치해서\n                    해당 타일의 위치로 이동해요.";
+        else movementInformationText.text = "[스와이프] 화면을 상하좌우로 스와이프해서\n                   캐릭터를 움직여요.";
     }
 
     public void OnTileTouchButtonClicked()

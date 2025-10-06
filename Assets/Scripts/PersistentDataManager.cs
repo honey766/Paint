@@ -28,9 +28,9 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
         moveLatencyRate = PlayerPrefs.GetInt("moveLatencyRate", 70) / 100f;
     }
 
-    public void SaveSettings(bool isTileTouchMode, float moveLatencyRate)
+    public void SaveSettings(bool isTileTouch, float moveLatencyRate)
     {
-        this.isTileTouch = isTileTouchMode;
+        this.isTileTouch = isTileTouch;
         this.moveLatencyRate = moveLatencyRate;
     }
 

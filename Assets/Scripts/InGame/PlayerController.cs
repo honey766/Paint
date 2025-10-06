@@ -172,20 +172,20 @@ public class PlayerController : BlockData
         Vector2Int curPos = destPos;
         int moveCount = 0;
 
-        Logger.Log($"curPos : {curPos}, newDestPos : {newDestPos}, direction : {direction}");
+        //Logger.Log($"curPos : {curPos}, newDestPos : {newDestPos}, direction : {direction}");
 
         while (curPos != newDestPos)
         {
             curPos += direction;
             moveCount++;
-            Logger.Log($"moveCount : {moveCount}, curPos : {curPos}");
+            //Logger.Log($"moveCount : {moveCount}, curPos : {curPos}");
             if (!Board.Instance.board.ContainsKey(curPos))
             {
-                if (moveCount == 1 || moveCount == 2 && blockCount == 1) { Logger.Log("이동 못하면섴");
+                if (moveCount == 1 || moveCount == 2 && blockCount == 1) { //Logger.Log("이동 못하면섴");
                     return false; }
                 curPos -= direction * (1 + blockCount);
                 i = curPos.x; j = curPos.y;
-                Logger.Log($"이동 가능한 곳까지 가자ㅇㅇ {curPos}");
+                //Logger.Log($"이동 가능한 곳까지 가자ㅇㅇ {curPos}");
                 return true;
             }
             if (Board.Instance.blocks.ContainsKey(curPos))
@@ -193,11 +193,11 @@ public class PlayerController : BlockData
                 blockCount++;
                 if (blockCount == 2)
                 {
-                    if (moveCount == 2) {Logger.Log("두칸 이동인데 블록이 두개!");
+                    if (moveCount == 2) {//Logger.Log("두칸 이동인데 블록이 두개!");
                         return false; }
                     curPos -= direction * 2; // 2보 후퇴한 곳까지 이동 가능
                     i = curPos.x; j = curPos.y;
-                    Logger.Log($"블록이 두개니깐 적당한 곳까지 가라! {curPos}");
+                    //Logger.Log($"블록이 두개니깐 적당한 곳까지 가라! {curPos}");
                     return true;
                 }
             }
@@ -207,17 +207,17 @@ public class PlayerController : BlockData
             curPos += direction;
             if (!Board.Instance.board.ContainsKey(curPos) || Board.Instance.blocks.ContainsKey(curPos))
             {
-                if (moveCount == 1) { Logger.Log("블럭시치 한 개 땜에 못감...");
+                if (moveCount == 1) { //Logger.Log("블럭시치 한 개 땜에 못감...");
                     return false; }
                 curPos -= direction * 2;
                 i = curPos.x; j = curPos.y;
-                Logger.Log("블럭 한 개 때문에 한 칸 덜 가겠구만..;");
+                //Logger.Log("블럭 한 개 때문에 한 칸 덜 가겠구만..;");
                 return true;
             }
-            Logger.Log("블럭 한 개는 그냥 밀지 ㅋㅋ");
+            //Logger.Log("블럭 한 개는 그냥 밀지 ㅋㅋ");
             return true;
         }
-        Logger.Log($"최종 : {curPos}");
+        //Logger.Log($"최종 : {curPos}");
         return true;
 
         // 같은 행, 열 중 어디인지에 따라 분기

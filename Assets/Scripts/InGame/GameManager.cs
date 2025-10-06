@@ -22,6 +22,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private GameObject tutorialArrow;
     [SerializeField] private GameObject tutorialBorderTooltip;
     private GameObject tutorialColor12BorderTempObj;
+    private GameObject moveTutorialCanvasObj;
 
     [Header("InGame씬에서 바로 실행하기 (밑에 bool변수 true)")]
     public bool startGameDirectlyAtInGameScene;
@@ -73,9 +74,9 @@ public class GameManager : SingletonBehaviour<GameManager>
 
         stageText.text = (level < 0 ? "<color=#550000>Ex " : "") + $"Level{stage}-{Mathf.Abs(level)}";
         Board.Instance.InitBoard(boardSO);
-        bool saveMoveCount = stage == 1 && level == 1;
-        PlayerController.Instance.InitPlayer(boardSO, saveMoveCount);
-        cameraSizeController.AdjustCameraSize(boardSO);
+        bool isTutorial = stage == 1 && level == 1;
+        PlayerController.Instance.InitPlayer(boardSO, isTutorial);
+        cameraSizeController.AdjustCameraSize(boardSO, isTutorial);
 
         star = 3;
  
@@ -231,8 +232,8 @@ public class GameManager : SingletonBehaviour<GameManager>
             PersistentDataManager.Instance.LoadTutorialLevel(2);
             GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas2");
             Instantiate(tutorialCanvas);
-            GameObject moveTutorialCanvas = GameObject.Find("MoveTutorialCanvas(Clone)");
-            Destroy(moveTutorialCanvas);
+            moveTutorialCanvasObj = GameObject.Find("MoveTutorialCanvas(Clone)");
+            moveTutorialCanvasObj.SetActive(false);
             Start();
             color12Border.enabled = false;
             isGaming = false;
@@ -258,14 +259,14 @@ public class GameManager : SingletonBehaviour<GameManager>
     private void FirstTutorialEvent()
     {
         isGaming = false;
-        GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas1");
         tutorialLevel = 1;
+        GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas1");
         Instantiate(tutorialCanvas);
+        stageText.text = "Tutorial";
     }
     public void SecondTutorialEvent()
     {
-        GameObject movetutorialCanvas = Resources.Load<GameObject>("Prefabs/MoveTutorialCanvas");
-        Instantiate(movetutorialCanvas);
+        moveTutorialCanvasObj.SetActive(true);
         tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
         tutorialColor12BorderTempObj.transform.position = Board.Instance.GetTilePos(2, 1);
         tutorialArrow = Instantiate(tutorialArrow);

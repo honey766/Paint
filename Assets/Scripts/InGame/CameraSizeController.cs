@@ -24,7 +24,7 @@ public class CameraSizeController : MonoBehaviour
         }
     }
 
-    public void AdjustCameraSize(BoardSO boardSO)
+    public void AdjustCameraSize(BoardSO boardSO, bool isTutorial = false)
     {
         // 1. 두 좌표 사이의 거리 계산
         int n = boardSO.n;
@@ -35,7 +35,7 @@ public class CameraSizeController : MonoBehaviour
 
         // 3. 카메라 size(세로 길이의 절반) 계산
         float requiredSizeY = (m / 2f) + verPadding;
-        float requiredSizeX = (n / 2f) / screenAspect + horPadding;
+        float requiredSizeX = (n / 2f) / screenAspect + horPadding + (isTutorial ? 1.5f : 0);
 
         // 4. 가로, 세로 중 더 큰 값을 기준으로 최종 size 결정
         // (화면 비율을 고려하여 가로 길이도 세로 size로 변환)
