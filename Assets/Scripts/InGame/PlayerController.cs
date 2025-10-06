@@ -111,6 +111,7 @@ public class PlayerController : BlockData
 
     public void InitPlayer(BoardSO boardSO)
     {
+        moveToQueue.Clear();
         ApplyColorChange(boardSO.startPlayerColor);
         curPos.x = destPos.x = boardSO.startPos.x;
         curPos.y = destPos.y = boardSO.startPos.y;

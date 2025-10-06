@@ -12,7 +12,7 @@ public class CharacterItem : MonoBehaviour
     [Header("UI References")]
     public Image frontUI; // 카드의 앞면 UI 그룹
     public Image backUI;  // 카드의 뒷면 UI 그룹
-    public Sprite buttonLockedSprite, backUISprite, starSprite;
+    public Sprite extraButtonSprite, buttonLockedSprite, backUISprite, starSprite;
 
 
     [Header("Flip Settings")]
@@ -68,8 +68,8 @@ public class CharacterItem : MonoBehaviour
         int numOfLevel = PersistentDataManager.Instance.stageSO.numOfLevelOfStage[stage - 1];
         int numOfExtraLevel = PersistentDataManager.Instance.stageSO.numOfExtraLevelOfStage[stage - 1];
 
-        int x = -257, y = 575, diff = 256;
-        for (int i = 0; i < numOfLevel; i++)
+        int x = -257, y = 575, diff = 256, i;
+        for (i = 0; i < numOfLevel; i++)
         {
             InstantiateButton(levelButtonPrefab,
                               new Vector2(x + diff * (i % 3), y - diff * (i / 3)),
@@ -77,24 +77,27 @@ public class CharacterItem : MonoBehaviour
                               i == 0 || PersistentDataManager.Instance.GetStageClearData(stage, i) > 0);
         }
 
-        y = 575 - 128 * 9;
-        for (int i = 0; i < numOfExtraLevel; i++)
+        //y = 575 - 128 * 9;
+        for (int j = 0; j < numOfExtraLevel; j++)
         {
             InstantiateButton(levelButtonPrefab,
-                    new Vector2(x + diff * (i % 3), y - diff * (i / 3)),
-                    -i - 1,
-                    PersistentDataManager.Instance.GetStageTotalStarData(stage) >= numOfLevel * 3
-                    && (i == 0 || PersistentDataManager.Instance.GetExtraStageClearData(stage, i) > 0));
+                    new Vector2(x + diff * ((i + j) % 3), y - diff * ((i + j) / 3)),
+                    -j - 1,
+                    PersistentDataManager.Instance.GetStageTotalStarData(stage) >= numOfLevel * 3);
+                    // && (i == 0 || PersistentDataManager.Instance.GetExtraStageClearData(stage, i) > 0));
         }
     }
     private void InstantiateButton(GameObject levelButtonPrefab, Vector2 anchoredPos, int level, bool canEnter)
     {
         GameObject button = Instantiate(levelButtonPrefab, backUI.transform);
         button.GetComponent<RectTransform>().anchoredPosition = anchoredPos;
+        if (level < 0)
+            button.GetComponent<Image>().sprite = extraButtonSprite;
         // 레벨 진입 가능
         if (canEnter)
         {
-            button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mathf.Abs(level).ToString();
+            string levelStr = (level < 0 ? "Ex" : "") + Mathf.Abs(level).ToString();
+            button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = levelStr;
             button.GetComponent<Button>().onClick.AddListener(() => OnStageButtonClick(level));
             // 별 표시
             int star;
@@ -110,7 +113,8 @@ public class CharacterItem : MonoBehaviour
         }
         else
         {
-            button.GetComponent<Image>().sprite = buttonLockedSprite;
+            if (level < 0) button.GetComponent<Image>().sprite = extraButtonSprite;
+            else button.GetComponent<Image>().sprite = buttonLockedSprite;
         }
     }
 

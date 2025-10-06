@@ -7,7 +7,7 @@ using DG.Tweening;
 public class GameManager : SingletonBehaviour<GameManager>
 {
     public bool isGaming;
-    public GameObject gameClearObj;
+    public GameObject gameClearObj, gameOverObj;
     public CameraSizeController cameraSizeController;
     [SerializeField] private StageSO stageSO;
 
@@ -177,6 +177,8 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     public void GameOver()
     {
+        isGaming = false;
+        gameOverObj.SetActive(true);
         Logger.Log("GAMEOVER!~~");
     }
 
@@ -217,6 +219,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             color12Warning.GetComponent<RectTransform>().DOAnchorPosY(-310, rectDuration).SetEase(gogoEase)
                           .OnComplete(() => color12Warning.SetActive(false));
         }
+        if (gameOverObj.activeSelf) gameOverObj.SetActive(false);
         Resume();
     }
 
@@ -231,6 +234,14 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     public void GoToNextStage()
     {
+        if (level == stageSO.numOfLevelOfStage[stage - 1])
+        {
+            if (stageSO.numOfStage == stage || PersistentDataManager.Instance.totalStar < stageSO.numOfStarToUnlockStage[stage])
+            {
+                SelectLevel();
+                return;
+            }
+        }
         int nextStage = level == stageSO.numOfLevelOfStage[stage - 1] ? stage + 1 : stage;
         int nextLevel = level == stageSO.numOfLevelOfStage[stage - 1] ? 1 : level + 1;
         if (PersistentDataManager.Instance.LoadStageAndLevel(nextStage, nextLevel))

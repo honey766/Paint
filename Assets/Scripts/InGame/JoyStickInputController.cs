@@ -87,10 +87,13 @@ public class JoyStickInputController : MonoBehaviour
         if ((mousePosAgo - mousePos).sqrMagnitude >= thresholdDistSqr && direction != inputDir)
         {
             dotTr.sizeDelta = new Vector2(120, 120);
-            isFirstInput = true;
+            isFirstInput = direction == Vector2Int.zero;
             direction = inputDir;
-            lastInputTime = Time.time;
-            PlayerController.Instance.MoveOnce(direction);
+            if (direction == Vector2Int.zero || Time.time - lastInputTime > holdRepeatInterval)
+            {
+                lastInputTime = Time.time;
+                PlayerController.Instance.MoveOnce(direction);
+            }
             ChangeDotSprite();
         }
         else if (direction != Vector2Int.zero) // 꾹 누르는 중
