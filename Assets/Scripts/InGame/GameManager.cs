@@ -122,7 +122,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             star321LimitText[i].DOKill();
             star321LimitText[i].gameObject.SetActive(true);
             star321LimitText[i].color = star321LimitTextColor[i];
-            star321Dropper[i].DoAllKill();
+            star321Dropper[i].CancelSequence();
             star321Dropper[i].gameObject.SetActive(true);
             star321Dropper[i].transform.rotation = Quaternion.identity;
             star321Dropper[i].GetComponent<Image>().color = new Color(0, 0, 0, 1);
