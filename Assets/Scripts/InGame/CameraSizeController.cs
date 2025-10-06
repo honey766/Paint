@@ -3,7 +3,8 @@ using UnityEngine;
 public class CameraSizeController : MonoBehaviour
 {
     [Tooltip("원하는 여백(padding) 값")]
-    public float padding = 1f;
+    public float horPadding = 1f;
+    public float verPadding = 1.5f;
 
     private Camera cam;
 
@@ -33,8 +34,8 @@ public class CameraSizeController : MonoBehaviour
         float screenAspect = (float)Screen.width / Screen.height;
 
         // 3. 카메라 size(세로 길이의 절반) 계산
-        float requiredSizeY = (m / 2f) + padding;
-        float requiredSizeX = (n / 2f) / screenAspect + padding;
+        float requiredSizeY = (m / 2f) + verPadding;
+        float requiredSizeX = (n / 2f) / screenAspect + horPadding;
 
         // 4. 가로, 세로 중 더 큰 값을 기준으로 최종 size 결정
         // (화면 비율을 고려하여 가로 길이도 세로 size로 변환)

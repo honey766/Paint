@@ -27,15 +27,15 @@ public class PlayerController : BlockData
 
     [Header("플레이어의 색")]
     public Color white;
-    public Color black;
+    public Color black, none;
 
-    public TextMeshProUGUI MoveCountText;
     public ParticleSystem particle;
     public Vector2Int movingDirection { get; private set; }
     public Vector2Int destPos; // 최종 이동 장소로서 예약된 좌표 (플레이어 이동 중에는 현재좌표 != 도착좌표)
     private Queue<Vector2Int> moveToQueue = new Queue<Vector2Int>(); // 한 번에 여러 칸 이동하기 위해 다음에 이동할 타일을 나열한 큐
     private bool isMoving; // 현재 이동 중인지
-    private int moveCount;
+    public int moveCount { get; private set; }
+    private int savedMoveCount;
     private LinkedList<PlayerMoveData> moveDataListToRedo = new LinkedList<PlayerMoveData>(); // 되돌리기를 위해 그동안의 이동 데이터를 기록한 양방향 리스트
     private float lastRedoTime = 0f;
 
@@ -66,6 +66,7 @@ public class PlayerController : BlockData
         spriter = transform.GetChild(0).GetComponent<SpriteRenderer>();
         player = transform.GetChild(0).transform;
         halfMoveWaitForSeconds = new WaitForSeconds(moveTime / 2f);
+        savedMoveCount = 0;
     }
 
     //삭제 시 실행되는 함수
@@ -93,7 +94,7 @@ public class PlayerController : BlockData
             if (Time.time >= keyboardNextFireTime)
             {
                 TryMoveTo(destPos.x + (int)dir.x, destPos.y + (int)dir.y);
-                keyboardNextFireTime = Time.time + moveTime;
+                keyboardNextFireTime = Time.time + moveTime * 2;
             }
         }
         else
@@ -105,20 +106,27 @@ public class PlayerController : BlockData
         //     StartCoroutine(Redo());
     }
 #endif
-
-    public void InitPlayer(BoardSO boardSO)
+    public void MoveOnce(Vector2Int dir)
     {
-        ApplyColorChange(TileType.None);
+        TryMoveTo(destPos.x + dir.x, destPos.y + dir.y);
+    }
+
+    public void InitPlayer(BoardSO boardSO, bool saveMoveCount = false)
+    {
+        if (saveMoveCount) this.savedMoveCount = moveCount;
+        moveToQueue.Clear();
+        ApplyColorChange(boardSO.startPlayerColor);
         curPos.x = destPos.x = boardSO.startPos.x;
         curPos.y = destPos.y = boardSO.startPos.y;
-        transform.position = Board.Instance.GetTilePos(curPos.x, curPos.y);
-        SetMoveCount(0);
+        transform.DOKill();
+        transform.position = Board.Instance.GetTilePos(boardSO.startPos.x, boardSO.startPos.y);
+        SetMoveCount(savedMoveCount);
     }
 
     // (i, j) 좌표로 이동 시도
     public void TryMoveTo(int i, int j)
     {
-        if (!CanMoveTo(i, j) || !GameManager.Instance.isGaming || slidingDirection != Vector2Int.zero)
+        if (!CanMoveTo(ref i, ref j) || !GameManager.Instance.isGaming || slidingDirection != Vector2Int.zero)
             return;
 
         // 같은 행, 열 중 어디인지에 따라 분기
@@ -151,42 +159,120 @@ public class PlayerController : BlockData
     }
 
     // 플레이어가 (destPos.x, destPos.y) => (i, j)로 갈 수 있는지 검사
-    private bool CanMoveTo(int i, int j)
+    // 블록이 2개 이상 있는 경우, 갈 수 있는 곳까지 가도록 i와 j를 변경
+    private bool CanMoveTo(ref int i, ref int j)
     {
+        Vector2Int newDestPos = new Vector2Int(i, j);
         if (destPos.x != i && destPos.y != j) return false; // 대각선 방향은 이동X
-        if (!Board.Instance.board.ContainsKey(new Vector2Int(i, j))) return false; // 타일이 없으면 이동x
+        if (!Board.Instance.board.ContainsKey(newDestPos)) return false; // 타일이 없으면 이동x
 
-        // // 플레이어와 같은 색의 타일은 이동 불가능
-        // TileColor playerColor = myColor;
-        // TileColor changeColor;
+        int blockCount = 0;
+        Vector2Int direction = NormalizeVector2Int(newDestPos - destPos);
+        if (direction == Vector2Int.zero) return false; // 현재 지점과 목표 지점이 같으면 ㅇㅇ..
+        Vector2Int curPos = destPos;
+        int moveCount = 0;
+
+        Logger.Log($"curPos : {curPos}, newDestPos : {newDestPos}, direction : {direction}");
+
+        while (curPos != newDestPos)
+        {
+            curPos += direction;
+            moveCount++;
+            Logger.Log($"moveCount : {moveCount}, curPos : {curPos}");
+            if (!Board.Instance.board.ContainsKey(curPos))
+            {
+                if (moveCount == 1 || moveCount == 2 && blockCount == 1) { Logger.Log("이동 못하면섴");
+                    return false; }
+                curPos -= direction * (1 + blockCount);
+                i = curPos.x; j = curPos.y;
+                Logger.Log($"이동 가능한 곳까지 가자ㅇㅇ {curPos}");
+                return true;
+            }
+            if (Board.Instance.blocks.ContainsKey(curPos))
+            {
+                blockCount++;
+                if (blockCount == 2)
+                {
+                    if (moveCount == 2) {Logger.Log("두칸 이동인데 블록이 두개!");
+                        return false; }
+                    curPos -= direction * 2; // 2보 후퇴한 곳까지 이동 가능
+                    i = curPos.x; j = curPos.y;
+                    Logger.Log($"블록이 두개니깐 적당한 곳까지 가라! {curPos}");
+                    return true;
+                }
+            }
+        }
+        if (blockCount == 1)
+        {
+            curPos += direction;
+            if (!Board.Instance.board.ContainsKey(curPos) || Board.Instance.blocks.ContainsKey(curPos))
+            {
+                if (moveCount == 1) { Logger.Log("블럭시치 한 개 땜에 못감...");
+                    return false; }
+                curPos -= direction * 2;
+                i = curPos.x; j = curPos.y;
+                Logger.Log("블럭 한 개 때문에 한 칸 덜 가겠구만..;");
+                return true;
+            }
+            Logger.Log("블럭 한 개는 그냥 밀지 ㅋㅋ");
+            return true;
+        }
+        Logger.Log($"최종 : {curPos}");
+        return true;
 
         // 같은 행, 열 중 어디인지에 따라 분기
-        if (destPos.x == i) // j 방향(가로 이동)
-        {
-            int step = (j > destPos.y) ? 1 : -1;
-            for (int col = destPos.y + step; col != j + step; col += step)
-            {
-                if (!Board.Instance.board.ContainsKey(new Vector2Int(i, col)))
-                    return false;
-            }
-        }
-        else if (destPos.y == j) // i 방향(세로 이동)
-        {
-            int step = (i > destPos.x) ? 1 : -1;
-            for (int row = destPos.x + step; row != i + step; row += step)
-            {
-                // changeColor = Board.Instance.IsChangeTile(row, j);
-                // if (changeColor != TileColor.None) // 색 바꾸는 타일
-                //     playerColor = changeColor;
-                // else if (playerColor != TileColor.None && Board.Instance.HasColor(row, j, playerColor))
-                //     return false;
+        // if (destPos.x == i) // j 방향(가로 이동)
+        // {
+        //     int step = (j > destPos.y) ? 1 : -1;
+        //     for (int col = destPos.y + step; col != j + step; col += step)
+        //     {
+        //         curPos = new Vector2Int(i, col);
+        //         if (!Board.Instance.board.ContainsKey(curPos))
+        //             return false;
+        //         if (Board.Instance.blocks.ContainsKey(curPos))
+        //         {
+        //             blockCount++;
+        //             if (blockCount >= 2)
+        //             {
+        //                 Logger.Log("사이에 블록이 2개 이상 있어서 안 감 ㅅㄱ");
+        //                 return false;
+        //             }
+        //         }
+        //     }
+        // }
+        // else if (destPos.y == j) // i 방향(세로 이동)
+        // {
+        //     int step = (i > destPos.x) ? 1 : -1;
+        //     for (int row = destPos.x + step; row != i + step; row += step)
+        //     {
+        //         curPos = new Vector2Int(row, j);
+        //         if (!Board.Instance.board.ContainsKey(curPos))
+        //             return false;
+        //         if (Board.Instance.blocks.ContainsKey(curPos))
+        //         {
+        //             blockCount++;
+        //             if (blockCount >= 2)
+        //             {
+        //                 Logger.Log("사이에 블록이 2개 이상 있어서 안 감 ㅅㄱ");
+        //                 return false;
+        //             }
+        //         }
+        //     }
+        // }
+        // if (Mathf.Abs(destPos.x - i) + Mathf.Abs(destPos.y - j) == 1 && blockCount == 1)
+        // {
+        //     Logger.Log("한 칸 이동이긴 한데 블록이 있어서 안 감ㅅㄱ");
+        //     return false;
+        // }
+    }
 
-                if (!Board.Instance.board.ContainsKey(new Vector2Int(row, j)))
-                    return false;
-            }
-        }
-
-        return true;
+    // Vector2Int(-1/0/1, -1/0/1)
+    private Vector2Int NormalizeVector2Int(Vector2Int vec)
+    {
+        if (vec == Vector2Int.zero) return vec;
+        if (vec.x == 0) return new Vector2Int(0, vec.y / Mathf.Abs(vec.y));
+        if (vec.y == 0) return new Vector2Int(vec.x / Mathf.Abs(vec.x), 0);
+        return new Vector2Int(vec.x / Mathf.Abs(vec.x), vec.y / Mathf.Abs(vec.y));
     }
 
     private IEnumerator Move()
@@ -274,8 +360,8 @@ public class PlayerController : BlockData
         switch (Color)
         {
             case TileType.None:
-                spriter.color = white;
-                main.startColor = white;
+                spriter.color = none;
+                main.startColor = none;
                 break;
             case TileType.White:
                 spriter.color = white;
@@ -303,19 +389,19 @@ public class PlayerController : BlockData
     private void SetMoveCount(int n)
     {
         moveCount = n;
-        MoveCountText.text = moveCount.ToString();
+        GameManager.Instance.UpdateMoveCount(moveCount);
     }
 
     private void IncreaseMoveCount()
     {
         moveCount++;
-        MoveCountText.text = moveCount.ToString();
+        GameManager.Instance.UpdateMoveCount(moveCount);
     }
 
     private void DecreaseMoveCount()
     {
         moveCount--;
-        MoveCountText.text = moveCount.ToString();
+        GameManager.Instance.UpdateMoveCount(moveCount);
     }
 
     // private IEnumerator Redo()

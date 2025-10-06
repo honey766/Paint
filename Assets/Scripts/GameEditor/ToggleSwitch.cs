@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -40,3 +41,4 @@ public class ToggleController : MonoBehaviour
             toggle.isOn = state;
     }
 }
+#endif

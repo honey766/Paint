@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using TMPro;
 using UnityEngine;
 
@@ -139,3 +140,4 @@ public class EditorCameraMove : MonoBehaviour
         return dropdown.childCount > 3 || inputField.isFocused;
     }
 }
+#endif

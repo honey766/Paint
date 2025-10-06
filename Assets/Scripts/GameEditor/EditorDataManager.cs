@@ -67,8 +67,8 @@ public class EditorDataManager : MonoBehaviour
         else
         {
             startPos = new Vector2Int(100000, 100000);
-            for (int i = 0; i < 6; i++)
-                for (int j = 0; j < 6; j++)
+            for (int i = 1; i < 5; i++)
+                for (int j = 1; j < 5; j++)
                     AddTile(new Vector2Int(i, j));
         }
     }
@@ -123,7 +123,7 @@ public class EditorDataManager : MonoBehaviour
                 AddObject(pos, TileType.Mirror);
                 break;
             case TileEditingTool.AddStamp:
-                AddObject(pos, TileType.Stamp);
+                AddObject(pos, TileType.Brush);
                 break;
             case TileEditingTool.AddWhitePaint:
                 AddObject(pos, TileType.WhitePaint);

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
@@ -40,3 +41,4 @@ public class EditorInputController : MonoBehaviour
         }
     }
 }
+#endif

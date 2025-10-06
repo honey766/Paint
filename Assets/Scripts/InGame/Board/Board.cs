@@ -12,6 +12,7 @@ public class Board : SingletonBehaviour<Board>
     public Dictionary<Vector2Int, BlockData> blocks; // 블록 위치와 상태
     public Dictionary<Vector2Int, TileType> target; // 목표 보드
     private int n, m; // 세로, 가로 크기
+    private bool existsEraser;
 
     [Header("색칠 색")]
     public Color white;
@@ -46,6 +47,21 @@ public class Board : SingletonBehaviour<Board>
         {
             this.colorPaletteSO = PersistentDataManager.Instance.colorPaletteSO;
         }
+        if (board != null)
+        {
+            foreach (var entry in board.Values)
+            {
+                Logger.Log("QQQQQQQQQQQQQ");
+                Destroy(entry.gameObject);
+            }
+        }
+        if (blocks != null)
+        {
+            foreach (var entry in blocks.Values)
+                if (entry.Type != TileType.Player)
+                    Destroy(entry.gameObject);
+        }
+
         this.n = boardSO.n;
         this.m = boardSO.m;
         board = new Dictionary<Vector2Int, TileData>();
@@ -55,10 +71,15 @@ public class Board : SingletonBehaviour<Board>
 
     private void InitBoard()
     {
+        existsEraser = false;
         foreach (var entry in boardSO.boardTileList)
         {
             if (!entry.type.IsBlock())
+            {
                 board[entry.pos] = TileFactory.CreateTile<TileData>(entry);
+                if (entry.type == TileType.WhitePaint)
+                    existsEraser = true;
+            }
         }
         foreach (var entry in boardSO.boardTileList)
         {
@@ -75,6 +96,23 @@ public class Board : SingletonBehaviour<Board>
         // color2Border.InitBorder(colorPaletteSO.color2, TileType.Color2, n, m, target);
         color12Border.InitBorder(colorPaletteSO.color12, TileType.Color12, n, m, target);
         // blackBorder.InitBorder(black, TileType.Black, n, m, target);
+    }
+
+    public void InitBoardWhenRestart(BoardSO boardSO)
+    {
+        // Tile
+        foreach (var entry in boardSO.boardTileList)
+            if (entry.type.IsNormalTile() && board[entry.pos] is NormalTile normalTile)
+                normalTile.SetTileColor(entry.type, 0);
+
+        // Block
+        foreach (BlockData blockData in blocks.Values)
+            if (blockData.Type != TileType.Player)
+                Destroy(blockData.gameObject);
+        blocks.Clear();
+        foreach (var entry in boardSO.boardTileList)
+            if (entry.type.IsBlock())
+                blocks[entry.pos] = TileFactory.CreateTile<BlockData>(entry);
     }
 
     /// <summary>
@@ -105,8 +143,15 @@ public class Board : SingletonBehaviour<Board>
                     if (targetTileType == TileType.Color12)
                         isOkay = true;
 
-                if (isOkay) matchingTileWithTargetCount++;
-                else return false;
+                if (isOkay)
+                {
+                    matchingTileWithTargetCount++;
+                }
+                else // 엄한 데에다 보라색을 칠함
+                {
+                    if (!existsEraser) GameManager.Instance.Color12Warning();
+                    return false;
+                }
             }
         }
         return matchingTileWithTargetCount == target.Count;
@@ -133,8 +178,8 @@ public class Board : SingletonBehaviour<Board>
                 return colorPaletteSO.color12;
             case TileType.Black:
                 return black;
-            case TileType.ReversePaint:
-                return (colorPaletteSO.color12 + 2 * Color.white) / 3f;
+            // case TileType.ReversePaint:
+            //     return (colorPaletteSO.color12 + 2 * Color.white) / 3f;
             default:
                 Logger.LogWarning($"No color defined for tile type: {type}");
                 return white;
