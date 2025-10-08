@@ -35,6 +35,7 @@ public class TutorialController : MonoBehaviour
             PersistentDataManager.Instance.LoadTutorialLevel(2);
             Instantiate(tutorialCanvas2);
             moveTutorialCanvasObj = GameObject.Find("MoveTutorialCanvas(Clone)");
+            moveTutorialCanvasObj.GetComponent<MoveTutorialTooltip>().EnteredTutorialTwo();
             moveTutorialCanvasObj.SetActive(false);
             if (tutorialArrowObj != null)
                 tutorialArrowObj.SetActive(false);
