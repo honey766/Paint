@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a29d3d61a9467747982ea1575f076b9, type: 3}
   m_Name: RedBlue
   m_EditorClassIdentifier: Assembly-CSharp::ColorPaletteSO
-  color1: {r: 1, g: 0.45098042, b: 0.41176474, a: 1}
-  color2: {r: 0.4, g: 0.4, b: 1, a: 1}
-  color12: {r: 0.65, g: 0, b: 1, a: 1}
+  color1: {r: 1, g: 0.45098042, b: 0.4156863, a: 1}
+  color2: {r: 0.23529413, g: 0.5686275, b: 1, a: 1}
+  color12: {r: 0.6509804, g: 0, b: 1, a: 1}

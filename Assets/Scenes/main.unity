@@ -1277,7 +1277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
   transitionDuration: 0.65
-  waitDuration: 0.1
+  waitDuration: 0.05
   red: {r: 1, g: 0.45098042, b: 0.41176474, a: 1}
   blue: {r: 0.40000004, g: 0.627451, b: 1, a: 1}
   purple: {r: 0.5803922, g: 0.3019608, b: 0.5921569, a: 1}
