@@ -76,7 +76,10 @@ public class SprayTile : TileData
             if (Board.Instance.blocks.TryGetValue(curPos, out BlockData blockData))
             {
                 if (blockData is MirrorBlock mirrorBlock)
+                {
+                    mirrorBlock.OnMirrorEnter(colorType);
                     ChangeDirectionDueToMirror(ref direction, mirrorBlock.isBottomLeftToTopRight);
+                }
             }
 
             if (Board.Instance.CheckGameClear())
