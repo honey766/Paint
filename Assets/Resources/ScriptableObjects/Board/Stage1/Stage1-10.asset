@@ -38,13 +38,9 @@ MonoBehaviour:
   - rid: 83688400411427075
   - rid: 83688400411427076
   - rid: 83688400411427077
-  - rid: 83688400411427078
-  - rid: 83688400411427079
-  - rid: 83688400411427080
-  - rid: 83688400411427081
-  limitStepForOneStar: 0
-  limitStepForTwoStar: 0
-  limitStepForThreeStar: 0
+  limitStepForOneStar: -1
+  limitStepForTwoStar: 36
+  limitStepForThreeStar: 30
   startPlayerColor: 0
   references:
     version: 2
@@ -154,23 +150,3 @@ MonoBehaviour:
       data:
         pos: {x: 4, y: 0}
         type: 4
-    - rid: 83688400411427078
-      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
-      data:
-        pos: {x: 1, y: 2}
-        type: 5
-    - rid: 83688400411427079
-      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
-      data:
-        pos: {x: 1, y: 4}
-        type: 5
-    - rid: 83688400411427080
-      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
-      data:
-        pos: {x: 3, y: 2}
-        type: 5
-    - rid: 83688400411427081
-      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
-      data:
-        pos: {x: 3, y: 4}
-        type: 5

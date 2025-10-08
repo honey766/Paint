@@ -222,8 +222,11 @@ public class GameManager : SingletonBehaviour<GameManager>
             goToNextLevelText.text = "다음 Ex단계";
         else
             goToNextLevelText.text = "다음 단계";
-        goToExtraObj.SetActive(level == stageSO.numOfLevelOfStage[stage - 1]
-            && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= stageSO.numOfLevelOfStage[stage - 1] * 3);
+        goToExtraObj.SetActive(
+            level == stageSO.numOfLevelOfStage[stage - 1]
+            && stageSO.numOfExtraLevelOfStage[stage - 1] > 0
+            && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= stageSO.numOfLevelOfStage[stage - 1] * 3
+        );
         
         Logger.Log("Game Clear");
     }
@@ -274,12 +277,13 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
 
         int nextStage, nextLevel;
-        if (level > 0)
+        // 다음 레벨 계산
+        if (level > 0) // 일반 레벨일 때
         {
             nextStage = level == stageSO.numOfLevelOfStage[stage - 1] ? stage + 1 : stage;
             nextLevel = level == stageSO.numOfLevelOfStage[stage - 1] ? 1 : level + 1;
         }
-        else
+        else // 엑스트라 레벨일 때
         {
             nextStage = level == -stageSO.numOfExtraLevelOfStage[stage - 1] ? stage + 1 : stage;
             nextLevel = level == -stageSO.numOfExtraLevelOfStage[stage - 1] ? 1 : level - 1;
