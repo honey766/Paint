@@ -65,8 +65,13 @@ public class Settings : MonoBehaviour
         PlayerPrefs.Save();
         if (SceneManager.GetActiveScene().name == "InGame")
             GameManager.Instance.SettingsExit();
+
         MoveTutorialTooltip moveTutorial = FindAnyObjectByType<MoveTutorialTooltip>();
         if (moveTutorial != null) moveTutorial.SetMoveTutorialText();
+
+        TutorialController tc = FindAnyObjectByType<TutorialController>();
+        if (tc != null) tc.SettingsExitWhenFirstTutorial();
+
         Destroy(gameObject);
     }
 

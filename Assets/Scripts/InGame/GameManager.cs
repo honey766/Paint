@@ -33,8 +33,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private TextMeshProUGUI MoveCountText;
     [SerializeField] private Slider moveCountSlider;
     [SerializeField] private float leftStarPosX;
-    //private const float Star3SliderValue = 0.522f, Star2SliderValue = 0.268f, Star1SliderValue = 0.018f, Star1SliderStopValue = 0.05f;
-    private const float Star3SliderValue = 0.582f, Star2SliderValue = 0.3f, Star1SliderValue = 0.018f, Star1SliderStopValue = 0.054f;
+    private const float Star3SliderValue = 0.522f, Star2SliderValue = 0.268f, Star1SliderValue = 0.018f, Star1SliderStopValue = 0.05f;
+    //private const float Star3SliderValue = 0.582f, Star2SliderValue = 0.3f, Star1SliderValue = 0.018f, Star1SliderStopValue = 0.054f;
     private float starSpacing, starPosY;
 
     [Header("Warning")]
@@ -228,90 +228,6 @@ public class GameManager : SingletonBehaviour<GameManager>
         Logger.Log("Game Clear");
     }
 
-#region Tutorial
-    // private void TutorialClearEvent()
-    // {
-    //     if (tutorialLevel == 1)
-    //     {
-    //         isGaming = false;
-    //         tutorialLevel++;
-    //         PersistentDataManager.Instance.LoadTutorialLevel(2);
-    //         GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas2");
-    //         Instantiate(tutorialCanvas);
-    //         moveTutorialCanvasObj = GameObject.Find("MoveTutorialCanvas(Clone)");
-    //         moveTutorialCanvasObj.SetActive(false);
-    //         tutorialArrow.SetActive(false);
-    //         Start();
-    //         color12Border.enabled = false;
-    //         isGaming = false;
-    //     }
-    //     else if (tutorialLevel == 2)
-    //     {
-    //         tutorialLevel++;
-    //         PersistentDataManager.Instance.LoadTutorialLevel(3);
-    //         Start();
-    //         ThirdTutorialEvent();
-    //     }
-    //     else if (tutorialLevel == 3)
-    //     {
-    //         GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas3");
-    //         Instantiate(tutorialCanvas);
-    //         GameObject moveTutorialCanvas = GameObject.Find("MoveTutorialCanvas(Clone)");
-    //         Destroy(moveTutorialCanvas);
-    //         Destroy(tutorialBorderTooltip);
-    //         Destroy(tutorialAnswerButtonObj);
-    //         isGaming = false;
-    //         PersistentDataManager.Instance.SetStageClearData(star);
-    //     }
-    // }
-    // private void FirstTutorialEvent()
-    // {
-    //     isGaming = false;
-    //     tutorialLevel = 1;
-    //     GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas1");
-    //     Instantiate(tutorialCanvas);
-    // }
-    // int firstTutorialArrowStatus = 0;
-    // public void FirstTutorialImageCloseEvent()
-    // {
-    //     tutorialArrow = Instantiate(tutorialArrow);
-    //     tutorialArrow.transform.position = new Vector2(-2, 0);
-    //     PlayerController.Instance.MoveEvent += (pos) =>
-    //     {
-    //         // TODO
-    //     };
-    // }
-    // public void SecondTutorialEvent()
-    // {
-    //     moveTutorialCanvasObj.SetActive(true);
-    //     tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
-    //     tutorialColor12BorderTempObj.transform.position = Board.Instance.GetTilePos(2, 1);
-    //     tutorialArrow = Instantiate(tutorialArrow);
-    //     tutorialArrow.transform.position = Board.Instance.GetTilePos(2, 0);
-    //     tutorialBorderTooltip = Instantiate(tutorialBorderTooltip);
-    //     GameObject tutorialAnswerButton = Resources.Load<GameObject>("Prefabs/TutorialAnswerButton");
-    //     tutorialAnswerButtonObj = Instantiate(tutorialAnswerButton);
-    //     tutorialAnswerButtonObj.SetActive(false);
-    //     tutorialIsOpenedAnswerButton = false;
-    // }
-    // private void ThirdTutorialEvent()
-    // {
-    //     Destroy(tutorialColor12BorderTempObj);
-    //     Invoke("ThirdTutorialEventAfterSeconds", 0.1f);
-    //     tutorialArrow.transform.position = Board.Instance.GetTilePos(1, -1);
-    //     //TutorialAnswerButton tutorialAnswerButton = FindAnyObjectByType<TutorialAnswerButton>();
-    //     tutorialAnswerButtonObj.SetActive(true);
-    //     tutorialAnswerButtonObj.GetComponent<TutorialAnswerButton>().OnTutorial3();
-    //     tutorialAnswerButtonObj.SetActive(false);
-    //     tutorialIsOpenedAnswerButton = false;
-    // }
-    // private void ThirdTutorialEventAfterSeconds()
-    // {  
-    //     tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
-    //     tutorialColor12Border.transform.position = Board.Instance.GetTilePos(1, 0);
-    // }
-#endregion
-
     public void Pause()
     {
         isGaming = false;
@@ -332,6 +248,8 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (color12WarningBackground.gameObject.activeSelf)
             SetColor12Warning(false);
         if (gameOverObj.activeSelf) gameOverObj.SetActive(false);
+        TutorialController t = FindAnyObjectByType<TutorialController>();
+        if (t != null) t.RestartWhenFirstTutorial();
         Resume();
     }
 
@@ -410,14 +328,14 @@ public class GameManager : SingletonBehaviour<GameManager>
             GameObject color12WarningParent = color12WarningBackground.transform.parent.gameObject;
             if (stage == 1 && level == 1)
             {
-                RectTransform rect = color12WarningParent.GetComponent<RectTransform>();
+                // RectTransform rect = color12WarningParent.GetComponent<RectTransform>();
 
-                // 가로: stretch (0~1)
-                rect.anchorMin = new Vector2(0, 0.5f);  // 왼쪽
-                rect.anchorMax = new Vector2(1, 0.5f);  // 오른쪽
-                rect.pivot = new Vector2(0.5f, 0.5f);
+                // // 가로: stretch (0~1)
+                // rect.anchorMin = new Vector2(0, 0.5f);  // 왼쪽
+                // rect.anchorMax = new Vector2(1, 0.5f);  // 오른쪽
+                // rect.pivot = new Vector2(0.5f, 0.5f);
 
-                rect.anchoredPosition = new Vector2(0, 0);
+                // rect.anchoredPosition = new Vector2(0, 0);
 
                 TutorialController.GetComponent<TutorialController>().ShowTutorialAnswerButton();
             }

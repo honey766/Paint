@@ -11,14 +11,14 @@ public class MirrorBlock : BlockData
 
     public bool isBottomLeftToTopRight;
     private SpriteRenderer mirrorSpriter;
-    private Color defaultColor = new Color(0.68f, 0.87f, 0.8f, 0.6f);
+    private Color defaultColor = new Color(0.44f, 0.71f, 0.62f, 0.65f);
     protected const float mirrorColorChangeTime = 1.2f;
 
     public override void Initialize(BoardSOTileData boardSOTileData)
     {
         base.Initialize(boardSOTileData);
 
-        mirrorSpriter = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        mirrorSpriter = transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>();
         if (boardSOTileData is BoardSOIntTileData intTileData)
         {
             isBottomLeftToTopRight = intTileData.intValue == 1;

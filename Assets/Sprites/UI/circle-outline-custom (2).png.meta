@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: bae4bdd24c1378543985f737653ddfa5
+guid: 51ba965ac17e8da4fa9e6178bc77484b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8520280511914094119
-    second: Mirror551_0
+      213: -5562498894345460324
+    second: circle-outline-custom (2)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,9 +49,9 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 9
-  spritePivot: {x: 0.5, y: 0.45}
-  spritePixelsToUnits: 260
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 128
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Mirror551_0
+      name: circle-outline-custom (2)_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 260
-        height: 308
+        x: 9
+        y: 9
+        width: 110
+        height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9d15dac4402e1c980800000000000000
-      internalID: -8520280511914094119
+      spriteID: c95290b1ab80ec2b0800000000000000
+      internalID: -5562498894345460324
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Mirror551_0: -8520280511914094119
+      circle-outline-custom (2)_0: -5562498894345460324
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
