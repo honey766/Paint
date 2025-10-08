@@ -24,7 +24,7 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
     {
         Init();
         LoadStageClearData();
-        isTileTouch = PlayerPrefs.GetInt("isTileTouch", 0) == 1;
+        isTileTouch = PlayerPrefs.GetInt("isTileTouch", 1) == 1;
         moveLatencyRate = PlayerPrefs.GetInt("moveLatencyRate", 70) / 100f;
     }
 

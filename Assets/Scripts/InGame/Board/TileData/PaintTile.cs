@@ -8,9 +8,9 @@ public class PaintTile : TileData
         base.Initialize(boardSOTileData);
         SpriteRenderer paintSpriter = transform.GetChild(0).GetComponent<SpriteRenderer>();
         if (boardSOTileData.type == TileType.Color1Paint)
-            paintSpriter.sprite = Resources.Load<Sprite>("Images/Color1PaintOutline");
+            paintSpriter.sprite = Resources.Load<Sprite>("Images/Color1PaintNew");
         else if (boardSOTileData.type == TileType.Color2Paint)
-            paintSpriter.sprite = Resources.Load<Sprite>("Images/Color2PaintOutline");
+            paintSpriter.sprite = Resources.Load<Sprite>("Images/Color2Paint");
     }
 
     public override void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)

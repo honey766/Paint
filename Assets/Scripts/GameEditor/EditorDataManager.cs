@@ -441,6 +441,13 @@ public class EditorDataManager : MonoBehaviour
         board.startPos = startPos - new Vector2Int(minX, minY);
         board.boardTileList = boardTileList;
         board.targetTileList = targetTileList;
+        if (sourceBoardSO != null)
+        {
+            board.limitStepForOneStar = sourceBoardSO.limitStepForOneStar;
+            board.limitStepForTwoStar = sourceBoardSO.limitStepForTwoStar;
+            board.limitStepForThreeStar = sourceBoardSO.limitStepForThreeStar;
+            board.startPlayerColor = sourceBoardSO.startPlayerColor;
+        }
         return board;
     }
 

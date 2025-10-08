@@ -36,6 +36,13 @@
             "Name":"폭포",
             "CV": "Voice Actor 2",
             "PicName":"back_img_6"
+        },
+	{
+            "Index":7,
+            "Name":"폭포",
+            "CV": "Voice Actor 2",
+            "PicName":"back_img_6"
         }
+
     ]
 }

@@ -46,12 +46,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb25cfde28b26f469baf6292b7513f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveTimePerTile: 0.1
-  gray: {r: 0, g: 0, b: 0, a: 0}
-  red: {r: 0, g: 0, b: 0, a: 0}
-  green: {r: 0, g: 0, b: 0, a: 0}
-  blue: {r: 0, g: 0, b: 0, a: 0}
-  MoveCountText: {fileID: 0}
+  slidingDirection: {x: 0, y: 0}
+  white: {r: 0, g: 0, b: 0, a: 0}
+  black: {r: 0, g: 0, b: 0, a: 0}
+  none: {r: 0, g: 0, b: 0, a: 0}
+  particle: {fileID: 0}
+  destPos: {x: 0, y: 0}
 --- !u!1 &6829983025399143308
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,7 +130,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 10000
   m_Sprite: {fileID: -2311659948842064771, guid: 06427232b7471294b928d7ab4d16f256, type: 3}
   m_Color: {r: 0.8, g: 1, b: 0.8, a: 1}
   m_FlipX: 0
@@ -4945,7 +4945,7 @@ ParticleSystemRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 9999
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0

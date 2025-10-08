@@ -24,6 +24,7 @@ public class GridBorderDrawer : MonoBehaviour
         meshFilter.mesh = mesh;
     }
 
+    public float alphaalpha = 0.5f;
     public void InitBorder(Color borderColor, TileType myColor, int n, int m, Dictionary<Vector2Int, TileType> target)
     {
         answer = new TileType[n, m];
@@ -33,9 +34,9 @@ public class GridBorderDrawer : MonoBehaviour
                     answer[i, j] = type;
                 else
                     answer[i, j] = TileType.None;
-                
+
         this.myColor = myColor;
-        meshRenderer.material.color = borderColor;
+        meshRenderer.material.color = new Color(borderColor.r, borderColor.g, borderColor.b, alphaalpha);
         gridSize = new Vector2Int(n, m);
         isMyColor = new bool[gridSize.x, gridSize.y];
         transform.position = -new Vector2((gridSize.x - 1) / 2f, (gridSize.y - 1) / 2f);

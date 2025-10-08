@@ -65,8 +65,13 @@ public class Settings : MonoBehaviour
         PlayerPrefs.Save();
         if (SceneManager.GetActiveScene().name == "InGame")
             GameManager.Instance.SettingsExit();
+
         MoveTutorialTooltip moveTutorial = FindAnyObjectByType<MoveTutorialTooltip>();
-        if (moveTutorial != null) moveTutorial.SetInformationText();
+        if (moveTutorial != null) moveTutorial.SetMoveTutorialText();
+
+        TutorialController tc = FindAnyObjectByType<TutorialController>();
+        if (tc != null) tc.SettingsExitWhenFirstTutorial();
+
         Destroy(gameObject);
     }
 
@@ -118,7 +123,7 @@ public class Settings : MonoBehaviour
     public static int LoadBGM() => PlayerPrefs.GetInt("bgm", 100);
     public static int LoadSFX() => PlayerPrefs.GetInt("sfx", 100);
     public static int LoadMoveLatencyRate() => PlayerPrefs.GetInt("moveLatencyRate", 70);
-    public static bool LoadIsTileTouch() => PlayerPrefs.GetInt("isTileTouch", 0) == 1;
+    public static bool LoadIsTileTouch() => PlayerPrefs.GetInt("isTileTouch", 1) == 1;
     public static bool LoadNotice() => PlayerPrefs.GetInt("notice", 1) == 1;
 
     public void SaveBgm(int bgm) => PlayerPrefs.SetInt("bgm", bgm);

@@ -124,6 +124,19 @@ public class UIManager : SingletonBehaviour<UIManager>
 
     public void OpenShop()
     {
-        
+
+    }
+
+    public void OpenExitGame()
+    {
+        GameObject exitGamePrefab = Resources.Load<GameObject>("Prefabs/ExitGame");
+
+        if (exitGamePrefab == null)
+        {
+            Debug.LogError($"프리팹 로드 실패! 경로를 확인하세요: {"Prefabs/ExitGame"}");
+            return;
+        }
+
+        Instantiate(exitGamePrefab);
     }
 }

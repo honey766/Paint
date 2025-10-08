@@ -17,12 +17,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private GameObject gameOverObj;
 
     [Header("Tutorial")]
-    [SerializeField] private MeshRenderer color12Border;
-    [SerializeField] private GameObject tutorialColor12Border;
-    [SerializeField] private GameObject tutorialArrow;
-    [SerializeField] private GameObject tutorialBorderTooltip;
-    private GameObject tutorialColor12BorderTempObj;
-    private GameObject moveTutorialCanvasObj;
+    [SerializeField] private GameObject TutorialController;
+    private bool isFirstTutorial;
 
     [Header("InGame씬에서 바로 실행하기 (밑에 bool변수 true)")]
     public bool startGameDirectlyAtInGameScene;
@@ -36,7 +32,9 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private StarDropper[] star321Dropper;
     [SerializeField] private TextMeshProUGUI MoveCountText;
     [SerializeField] private Slider moveCountSlider;
+    [SerializeField] private float leftStarPosX;
     private const float Star3SliderValue = 0.522f, Star2SliderValue = 0.268f, Star1SliderValue = 0.018f, Star1SliderStopValue = 0.05f;
+    //private const float Star3SliderValue = 0.582f, Star2SliderValue = 0.3f, Star1SliderValue = 0.018f, Star1SliderStopValue = 0.054f;
     private float starSpacing, starPosY;
 
     [Header("Warning")]
@@ -49,7 +47,6 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private JoyStickInputController joyStickScript;
 
     private int stage, level, star;
-    private int tutorialLevel;
 
     private void Awake()
     {
@@ -59,9 +56,10 @@ public class GameManager : SingletonBehaviour<GameManager>
         color12WarningText = color12WarningBackground.transform.parent.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>();
         color12WarningRestartButton = color12WarningText.transform.parent.GetChild(1).GetChild(0).GetComponent<Image>();
         starPosY = star321Dropper[0].GetComponent<RectTransform>().anchoredPosition.y;
+        isFirstTutorial = true;
     }
 
-    private void Start()
+    public void Start()
     {
         isGaming = true;
 
@@ -84,8 +82,16 @@ public class GameManager : SingletonBehaviour<GameManager>
 
         SetMovementMode();
 
-        if (stage == 1 && level == 1 && tutorialLevel < 2) // 튜토리얼
-            FirstTutorialEvent();
+        if (isTutorial)
+        {
+            stageText.text = "Tutorial";
+            if (isFirstTutorial)
+            {
+                isFirstTutorial = false;
+                TutorialController = Instantiate(TutorialController);
+                TutorialController.GetComponent<TutorialController>().FirstTutorialEvent();
+            }
+        }
     }
 
     // 보라색 테두리 경고문구(주석처리됨), 별 슬라이더의 별 위치 조정
@@ -109,9 +115,9 @@ public class GameManager : SingletonBehaviour<GameManager>
         for (int i = 0; i < 3; i++)
         {
             star321LimitText[i].GetComponent<RectTransform>().anchoredPosition
-                = new Vector2(starSpacing * i, star321LimitText[i].GetComponent<RectTransform>().anchoredPosition.y);
+                = new Vector2(leftStarPosX + starSpacing * i, star321LimitText[i].GetComponent<RectTransform>().anchoredPosition.y);
             star321Dropper[i].GetComponent<RectTransform>().anchoredPosition
-                = new Vector2(starSpacing * i, star321Dropper[i].GetComponent<RectTransform>().anchoredPosition.y);
+                = new Vector2(leftStarPosX + starSpacing * i, star321Dropper[i].GetComponent<RectTransform>().anchoredPosition.y);
             star321LimitTextColor[i] = star321LimitText[i].color;
         }
     }
@@ -128,7 +134,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             star321Dropper[i].transform.rotation = Quaternion.identity;
             star321Dropper[i].GetComponent<Image>().color = new Color(0, 0, 0, 1);
             star321Dropper[i].GetComponent<RectTransform>().anchoredPosition
-                = new Vector2(starSpacing * i, starPosY);
+                = new Vector2(leftStarPosX + starSpacing * i, starPosY);
             star321Dropper[i].Init();
         }
         star = 3;
@@ -203,7 +209,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (stage == 1 && level == 1) // 튜토리얼
         {
-            TutorialClearEvent();
+            TutorialController.GetComponent<TutorialController>().TutorialClearEvent(star);
             return;
         }
         isGaming = false;
@@ -216,75 +222,14 @@ public class GameManager : SingletonBehaviour<GameManager>
             goToNextLevelText.text = "다음 Ex단계";
         else
             goToNextLevelText.text = "다음 단계";
-        goToExtraObj.SetActive(level == stageSO.numOfLevelOfStage[stage - 1]
-            && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= stageSO.numOfLevelOfStage[stage - 1] * 3);
+        goToExtraObj.SetActive(
+            level == stageSO.numOfLevelOfStage[stage - 1]
+            && stageSO.numOfExtraLevelOfStage[stage - 1] > 0
+            && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= stageSO.numOfLevelOfStage[stage - 1] * 3
+        );
         
         Logger.Log("Game Clear");
     }
-
-#region Tutorial
-    private void TutorialClearEvent()
-    {
-        if (tutorialLevel == 1)
-        {
-            isGaming = false;
-            tutorialLevel++;
-            PersistentDataManager.Instance.LoadTutorialLevel(2);
-            GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas2");
-            Instantiate(tutorialCanvas);
-            moveTutorialCanvasObj = GameObject.Find("MoveTutorialCanvas(Clone)");
-            moveTutorialCanvasObj.SetActive(false);
-            Start();
-            color12Border.enabled = false;
-            isGaming = false;
-        }
-        else if (tutorialLevel == 2)
-        {
-            tutorialLevel++;
-            PersistentDataManager.Instance.LoadTutorialLevel(3);
-            Start();
-            ThirdTutorialEvent();
-        }
-        else if (tutorialLevel == 3)
-        {
-            GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas3");
-            Instantiate(tutorialCanvas);
-            GameObject moveTutorialCanvas = GameObject.Find("MoveTutorialCanvas(Clone)");
-            Destroy(moveTutorialCanvas);
-            Destroy(tutorialBorderTooltip);
-            isGaming = false;
-            PersistentDataManager.Instance.SetStageClearData(star);
-        }
-    }
-    private void FirstTutorialEvent()
-    {
-        isGaming = false;
-        tutorialLevel = 1;
-        GameObject tutorialCanvas = Resources.Load<GameObject>("Prefabs/TutorialCanvas1");
-        Instantiate(tutorialCanvas);
-        stageText.text = "Tutorial";
-    }
-    public void SecondTutorialEvent()
-    {
-        moveTutorialCanvasObj.SetActive(true);
-        tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
-        tutorialColor12BorderTempObj.transform.position = Board.Instance.GetTilePos(2, 1);
-        tutorialArrow = Instantiate(tutorialArrow);
-        tutorialArrow.transform.position = Board.Instance.GetTilePos(2, 0);
-        tutorialBorderTooltip = Instantiate(tutorialBorderTooltip);
-    }
-    private void ThirdTutorialEvent()
-    {
-        Destroy(tutorialColor12BorderTempObj);
-        Invoke("ThirdTutorialEventAfterSeconds", 0.1f);
-        tutorialArrow.transform.position = Board.Instance.GetTilePos(1, -1);
-    }
-    private void ThirdTutorialEventAfterSeconds()
-    {  
-        tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
-        tutorialColor12Border.transform.position = Board.Instance.GetTilePos(1, 0);
-    }
-#endregion
 
     public void Pause()
     {
@@ -306,6 +251,8 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (color12WarningBackground.gameObject.activeSelf)
             SetColor12Warning(false);
         if (gameOverObj.activeSelf) gameOverObj.SetActive(false);
+        TutorialController t = FindAnyObjectByType<TutorialController>();
+        if (t != null) t.RestartWhenFirstTutorial();
         Resume();
     }
 
@@ -330,12 +277,13 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
 
         int nextStage, nextLevel;
-        if (level > 0)
+        // 다음 레벨 계산
+        if (level > 0) // 일반 레벨일 때
         {
             nextStage = level == stageSO.numOfLevelOfStage[stage - 1] ? stage + 1 : stage;
             nextLevel = level == stageSO.numOfLevelOfStage[stage - 1] ? 1 : level + 1;
         }
-        else
+        else // 엑스트라 레벨일 때
         {
             nextStage = level == -stageSO.numOfExtraLevelOfStage[stage - 1] ? stage + 1 : stage;
             nextLevel = level == -stageSO.numOfExtraLevelOfStage[stage - 1] ? 1 : level - 1;
@@ -381,8 +329,21 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (isAppear)
         {
-            Logger.Log("Asdd");
-            color12WarningBackground.transform.parent.gameObject.SetActive(true);
+            GameObject color12WarningParent = color12WarningBackground.transform.parent.gameObject;
+            if (stage == 1 && level == 1)
+            {
+                // RectTransform rect = color12WarningParent.GetComponent<RectTransform>();
+
+                // // 가로: stretch (0~1)
+                // rect.anchorMin = new Vector2(0, 0.5f);  // 왼쪽
+                // rect.anchorMax = new Vector2(1, 0.5f);  // 오른쪽
+                // rect.pivot = new Vector2(0.5f, 0.5f);
+
+                // rect.anchoredPosition = new Vector2(0, 0);
+
+                TutorialController.GetComponent<TutorialController>().ShowTutorialAnswerButton();
+            }
+            color12WarningParent.SetActive(true);
             color12WarningBackground.color = new Color(1, 1, 1, 0);
             color12WarningText.color = new Color(0, 0, 0, 0);
             color12WarningRestartButton.color = new Color(1, 1, 1, 0);

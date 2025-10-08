@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
+using System;
 
 public struct PlayerMoveData
 {
@@ -24,6 +25,8 @@ public class PlayerController : BlockData
     public override bool HasMutableColor { get; protected set; } = true;
     public override bool HasColor { get; protected set; } = true;
     public override TileType Color { get; protected set; } = TileType.White;
+
+    public Action<Vector2Int> MoveEvent;
 
     [Header("플레이어의 색")]
     public Color white;
@@ -120,6 +123,7 @@ public class PlayerController : BlockData
         curPos.y = destPos.y = boardSO.startPos.y;
         transform.DOKill();
         transform.position = Board.Instance.GetTilePos(boardSO.startPos.x, boardSO.startPos.y);
+        Logger.Log($"Pos:{transform.position}, startPos:{boardSO.startPos}");
         SetMoveCount(savedMoveCount);
     }
 
@@ -296,6 +300,7 @@ public class PlayerController : BlockData
             Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, movingDirection, Color, moveTime);
             yield return halfMoveWaitForSeconds;
 
+            MoveEvent?.Invoke(curPos);
             Board.Instance.CheckGameClear();
             yield return halfMoveWaitForSeconds;
         }

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1356913649570352477
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5379263973127053699}
+  - component: {fileID: 641469539586469505}
+  m_Layer: 0
+  m_Name: TutorialController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5379263973127053699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356913649570352477}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &641469539586469505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356913649570352477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcb6a1ef9fa766348b455b30b4af2a32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialController
+  tutorialColor12Border: {fileID: 2423370065991545357, guid: 660a8ddae3a6e0441ab2a96d15399b85, type: 3}
+  tutorialArrow: {fileID: 4740121860822539955, guid: 7fb94e348e4d3c54ba2aeb21cf4335e2, type: 3}
+  tutorialTouchAnimation: {fileID: 8043505281303483132, guid: 5e3ef52e94d3003439209f7c799df90d, type: 3}
+  tutorialBorderTooltip: {fileID: 4179562635264220208, guid: 07afe401508af6348bde0adcb62a4067, type: 3}
+  tutorialCanvas1: {fileID: 4564424731138342343, guid: 2aa94fa43a4d003418813c672fb5dedf, type: 3}
+  tutorialCanvas2: {fileID: 6563372530933766636, guid: f219526887576a9498fa7100a969bea4, type: 3}
+  tutorialCanvas3: {fileID: 4564424731138342343, guid: 06d6eabc89ab2bc4ead45143ef106171, type: 3}
+  tutorialAnswerButton: {fileID: 4720564441767680807, guid: 138b7f4007dacca46a9c2606fdeafc5f, type: 3}
+  tutorialLevel: 0

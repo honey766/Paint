@@ -15,6 +15,17 @@ public class Transition : MonoBehaviour
         Application.targetFrameRate = 60;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (card.activeSelf)
+                CardToMainMenu();
+            else
+                UIManager.Instance.OpenExitGame();
+        }
+    }
+
     public void MainMenuToCard()
     {
         UIManager.Instance.ScreenTransition(() =>
@@ -42,12 +53,6 @@ public class Transition : MonoBehaviour
     public void OpenSettings()
     {
         UIManager.Instance.OpenSettings();
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-            OpenMenu();
     }
 
     public void OpenShop()

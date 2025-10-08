@@ -39,6 +39,8 @@ public class CameraSizeController : MonoBehaviour
 
         // 4. 가로, 세로 중 더 큰 값을 기준으로 최종 size 결정
         // (화면 비율을 고려하여 가로 길이도 세로 size로 변환)
-        cam.orthographicSize = Mathf.Max(requiredSizeY, requiredSizeX);
+        float cameraSize = Mathf.Max(requiredSizeY, requiredSizeX);
+        cameraSize = Mathf.Ceil(cameraSize * 2f) / 2f; // 0.5단위
+        cam.orthographicSize = cameraSize;
     }
 }

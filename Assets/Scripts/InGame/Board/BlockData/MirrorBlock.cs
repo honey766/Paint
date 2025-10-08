@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 public class MirrorBlock : BlockData
@@ -9,20 +10,31 @@ public class MirrorBlock : BlockData
     protected override void ApplyColorChange(TileType color) { }
 
     public bool isBottomLeftToTopRight;
+    private SpriteRenderer mirrorSpriter;
+    private Color defaultColor = new Color(0.44f, 0.71f, 0.62f, 0.65f);
+    protected const float mirrorColorChangeTime = 1.2f;
 
     public override void Initialize(BoardSOTileData boardSOTileData)
     {
         base.Initialize(boardSOTileData);
 
+        mirrorSpriter = transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>();
         if (boardSOTileData is BoardSOIntTileData intTileData)
         {
             isBottomLeftToTopRight = intTileData.intValue == 1;
-            if (!isBottomLeftToTopRight)
-                transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90));
+            if (isBottomLeftToTopRight)
+                transform.localScale = new Vector3(-1, 1, 1) * transform.localScale.x;
         }
         else
         {
             Logger.LogError($"MirrorBlock에 잘못된 데이터 타입이 전달되었습니다. : {boardSOTileData}");
         }
+    }
+
+    public void OnMirrorEnter(TileType color)
+    {
+        mirrorSpriter.DOKill();
+        mirrorSpriter.color = Board.Instance.GetColorByType(color);
+        mirrorSpriter.DOColor(defaultColor, mirrorColorChangeTime);
     }
 }
