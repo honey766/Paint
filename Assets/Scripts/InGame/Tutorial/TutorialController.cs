@@ -172,7 +172,7 @@ public class TutorialController : MonoBehaviour
     {
         Destroy(tutorialColor12BorderTempObj);
         Invoke("ThirdTutorialEventAfterSeconds", 0.1f);
-        tutorialArrow.transform.position = Board.Instance.GetTilePos(1, 1);
+        tutorialArrowObj.transform.position = Board.Instance.GetTilePos(1, 1);
         tutorialAnswerButton.SetActive(true);
         tutorialAnswerButton.GetComponent<TutorialAnswerButton>().OnTutorial3();
         tutorialAnswerButton.SetActive(false);
