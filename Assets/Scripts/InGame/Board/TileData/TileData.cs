@@ -98,7 +98,7 @@ public static class TileTypeExtensions
     public static bool NeedsIntData(this TileType tile)
     {
         return tile == TileType.Spray || tile == TileType.DirectedSpray ||
-               tile == TileType.Mirror;
+               tile == TileType.Mirror || tile == TileType.Brush;
     }
 
     public static bool NeedsFloatData(this TileType tile)

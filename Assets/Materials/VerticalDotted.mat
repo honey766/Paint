@@ -41,9 +41,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DashLength: 32
+    - _DashLength: 44.300003
     - _ScreenX: 1000
-    - _ScreenY: 1920
+    - _ScreenY: 2658
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1

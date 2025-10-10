@@ -13,6 +13,17 @@ public class BrushBlock : BlockData
     {
         base.Initialize(boardSOTileData);
         spriter = GetComponent<SpriteRenderer>();
+
+        if (boardSOTileData is BoardSOIntTileData intTileData)
+        {
+            if (intTileData.intValue == 1) Color = TileType.Color1;
+            else if (intTileData.intValue == 2) Color = TileType.Color2;
+            Board.Instance.GetColorByType(Color);
+        }
+        else
+        {
+            Logger.LogError($"BrushBlock에 잘못된 데이터 타입이 전달되었습니다. : {boardSOTileData}");
+        }
     }
 
     protected override void ApplyColorChange(TileType color)

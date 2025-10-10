@@ -9,21 +9,42 @@ public class TutorialController : MonoBehaviour
     [SerializeField] private GameObject tutorialTouchAnimation;
     [SerializeField] private GameObject tutorialBorderTooltip;
     [SerializeField] private GameObject tutorialCanvas1, tutorialCanvas2, tutorialCanvas3;
-    [SerializeField] private GameObject tutorialAnswerButton;
-    private MeshRenderer color12Border;
+    [SerializeField] private GameObject tutorial1_1_2Answer, tutorial1_1_3Answer;
+    // [SerializeField] private GameObject tutorialAnswerButton;
+    //private MeshRenderer color12Border;
+    private GameObject color12Lines;
     private GameObject tutorialColor12BorderTempObj;
     private GameObject moveTutorialCanvasObj;
     private GameObject tutorialArrowObj;
     private GameObject tutorialTouchAnimationObj;
-    private bool tutorialIsOpenedAnswerButton;
+    private GameObject tutorial1_1_2AnswerObj, tutorial1_1_3AnswerObj;
+    private RectTransform hintButton, restartButton;
+    private Vector2 restartButtonPos;
+    // private bool tutorialIsOpenedAnswerButton;
     private int firstTutorialArrowStatus;
+    private RectTransform moveCountTutoRect;
     [SerializeField] private int tutorialLevel;
 
     private void Awake()
     {
-        color12Border = GameObject.Find("Color12BorderDrawer").GetComponent<MeshRenderer>();
+        //color12Border = GameObject.Find("Color12BorderDrawer").GetComponent<MeshRenderer>();
+        color12Lines = GameObject.Find("PurpleLines");
+        hintButton = GameObject.Find("HintButton").GetComponent<RectTransform>();
+        restartButton = GameObject.Find("RestartButton").GetComponent<RectTransform>();
+        hintButton.gameObject.SetActive(false);
+        restartButtonPos = restartButton.anchoredPosition;
+        restartButton.anchoredPosition = new Vector2(0, restartButtonPos.y);
         tutorialArrowObj = null;
         tutorialTouchAnimationObj = null;
+        moveCountTutoRect = null;
+        GameManager.Instance.HideStar();
+    }
+
+    private void Update()
+    {
+        if (tutorialLevel < 2 || moveCountTutoRect == null) return;
+        int digits = Mathf.Clamp(PlayerController.Instance.moveCount.ToString().Length, 2, 7);
+        moveCountTutoRect.anchoredPosition = new Vector2(-71 * digits, 15.7f);
     }
 
     public void TutorialClearEvent(int star)
@@ -42,9 +63,12 @@ public class TutorialController : MonoBehaviour
             if (tutorialTouchAnimationObj != null)
                 Destroy(tutorialTouchAnimationObj);
             GameManager.Instance.Start();
-            color12Border.enabled = false;
+            //color12Border.enabled = false;
+            color12Lines.SetActive(false);
             GameManager.Instance.isGaming = false; // Start에서 isGaming이 true가 되므로 한 번 더 false
             PlayerController.Instance.MoveEvent = null;
+            hintButton.gameObject.SetActive(true);
+            restartButton.anchoredPosition = restartButtonPos;
         }
         else if (tutorialLevel == 2)
         {
@@ -58,7 +82,7 @@ public class TutorialController : MonoBehaviour
             GameObject moveTutorialCanvas = GameObject.Find("MoveTutorialCanvas(Clone)");
             Destroy(moveTutorialCanvas);
             // Destroy(tutorialBorderTooltip);
-            Destroy(tutorialAnswerButton);
+            // Destroy(tutorialAnswerButton);
             GameManager.Instance.isGaming = false;
             PersistentDataManager.Instance.SetStageClearData(star);
         }
@@ -155,7 +179,7 @@ public class TutorialController : MonoBehaviour
         moveTutorialCanvasObj.SetActive(true);
         moveTutorialCanvasObj.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text =
             "<color=#A600FF>보라색 테두리</color> 안에만 <color=#A600FF>보라색</color>을 칠해야 해요.\n"
-          + "<color=#992525>빨강</color>, <color=#222288>파랑</color>은 아무렇게나 칠해도 괜찮아요.";
+          + "<color=#992525>빨강</color>, <color=#222288>파랑</color>은 어떤 곳에든 칠할 수 있어요.";
         tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
         tutorialColor12BorderTempObj.transform.position = Board.Instance.GetTilePos(2, 1);
         if (tutorialArrowObj != null) tutorialArrowObj.SetActive(true);
@@ -163,40 +187,49 @@ public class TutorialController : MonoBehaviour
         tutorialArrowObj.transform.GetChild(1).GetChild(1).gameObject.SetActive(false);
         tutorialArrowObj.transform.localScale = new Vector3(1, -1, 1);
         tutorialArrowObj.transform.position = Board.Instance.GetTilePos(2, 2);
-        // tutorialBorderTooltip = Instantiate(tutorialBorderTooltip);
-        tutorialAnswerButton = Instantiate(tutorialAnswerButton);
-        tutorialAnswerButton.SetActive(false);
-        tutorialIsOpenedAnswerButton = false;
     }
     public void ThirdTutorialEvent()
     {
         Destroy(tutorialColor12BorderTempObj);
         Invoke("ThirdTutorialEventAfterSeconds", 0.1f);
         tutorialArrowObj.transform.position = Board.Instance.GetTilePos(1, 1);
-        tutorialAnswerButton.SetActive(true);
-        tutorialAnswerButton.GetComponent<TutorialAnswerButton>().OnTutorial3();
-        tutorialAnswerButton.SetActive(false);
-        tutorialIsOpenedAnswerButton = false;
+        RectTransform moveTutoText = moveTutorialCanvasObj.transform.GetChild(0).GetChild(1).GetComponent<RectTransform>();
+        moveTutoText.offsetMin = new Vector2(130, moveTutoText.offsetMin.y); // Left
+        moveTutoText.offsetMax = new Vector2(-130, moveTutoText.offsetMax.y); // Right
+        moveTutoText.GetComponent<TextMeshProUGUI>().text =
+            "플레이어의 이동횟수가 적을수록 ↗\n"
+          + "더 많은 <color=#B6A33F>별</color>을 획득해요.";
+        moveCountTutoRect = moveTutoText.transform.parent.GetChild(2).GetComponent<RectTransform>();
+        moveCountTutoRect.gameObject.SetActive(true);
+        GameManager.Instance.highlightHintObj.SetActive(false);
+        if (tutorial1_1_2AnswerObj != null)
+            Destroy(tutorial1_1_2AnswerObj);
+        GameManager.Instance.ShowStar();
     }
     private void ThirdTutorialEventAfterSeconds()
     {
         tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
         tutorialColor12Border.transform.position = Board.Instance.GetTilePos(1, 0);
     }
-    public void ShowTutorialAnswerButton()
+
+    public void HighlightTutorialAnswer()
     {
-        if (tutorialIsOpenedAnswerButton == false)
+        GameManager.Instance.highlightHintObj.SetActive(true);
+    }
+
+    public void ShowHint()
+    {
+        if (tutorialLevel == 1)
         {
-            tutorialIsOpenedAnswerButton = true;
-            tutorialAnswerButton.SetActive(true);
-            RectTransform rect = tutorialAnswerButton.transform.GetChild(0).GetComponent<RectTransform>();
-            rect.offsetMin = new Vector2(-200, rect.offsetMin.y);
-            DOTween.To(
-                () => rect.offsetMin.x,
-                x => rect.offsetMin = new Vector2(x, rect.offsetMin.y),
-                0f,
-                0.6f
-            );
+            if (tutorial1_1_2AnswerObj == null)
+                tutorial1_1_2AnswerObj = Instantiate(tutorial1_1_2Answer);
+            else tutorial1_1_2AnswerObj.SetActive(true);
+        }
+        else
+        {
+            if (tutorial1_1_3AnswerObj == null)
+                tutorial1_1_3AnswerObj = Instantiate(tutorial1_1_3Answer);
+            else tutorial1_1_3AnswerObj.SetActive(true);
         }
     }
 }

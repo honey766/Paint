@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 27cac8ff864ba3c42a4f628486eb4de6
+guid: db3b01c6311abb34d934e960f7f051f8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3909656241234881843
-    second: KakaoTalk_20251003_193305393_0
+      213: 1496381682723185713
+    second: NewPurple2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,9 +49,9 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 256
+  alignment: 9
+  spritePivot: {x: 0.467626, y: 0.532374}
+  spritePixelsToUnits: 260
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -110,7 +110,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: iOS
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: KakaoTalk_20251003_193305393_0
+      name: NewPurple2_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 256
-        height: 256
+        width: 260
+        height: 260
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: dc25e43ec5c1eb9c0800000000000000
-      internalID: -3909656241234881843
+      spriteID: 134ed17563734c410800000000000000
+      internalID: 1496381682723185713
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      KakaoTalk_20251003_193305393_0: -3909656241234881843
+      NewPurple2_0: 1496381682723185713
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

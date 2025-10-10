@@ -17,7 +17,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private GameObject gameOverObj;
 
     [Header("Tutorial")]
-    [SerializeField] private GameObject TutorialController;
+    [SerializeField] private GameObject tutorialControllerPrefab;
+    private TutorialController tutorialController;
     private bool isFirstTutorial;
 
     [Header("InGame씬에서 바로 실행하기 (밑에 bool변수 true)")]
@@ -28,8 +29,6 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     [Header("Three Star UI")]
     [SerializeField] private TextMeshProUGUI[] star321LimitText;
-    private Color[] star321LimitTextColor;
-    //[SerializeField] private StarDropper[] star321Dropper;
     [SerializeField] private Image[] starImages;
     [SerializeField] private TextMeshProUGUI MoveCountText;
     [SerializeField] private Slider moveCountSlider;
@@ -45,10 +44,14 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private Image color12WarningBackground;
     private TextMeshProUGUI color12WarningText;
     private Image color12WarningRestartButton;
+    private readonly Color color12WarningTextColor = new Color(0.3803922f, 0.3921569f, 0.4f, 1f);
 
     [Header("Movement Mode")]
     [SerializeField] private TileClickEvent tileTouchScript;
     [SerializeField] private JoyStickInputController joyStickScript;
+
+    [Header("Hint")]
+    public GameObject highlightHintObj;
 
     private int stage, level, star;
 
@@ -93,8 +96,8 @@ public class GameManager : SingletonBehaviour<GameManager>
             if (isFirstTutorial)
             {
                 isFirstTutorial = false;
-                TutorialController = Instantiate(TutorialController);
-                TutorialController.GetComponent<TutorialController>().FirstTutorialEvent();
+                tutorialController = Instantiate(tutorialControllerPrefab).GetComponent<TutorialController>();
+                tutorialController.FirstTutorialEvent();
             }
         }
     }
@@ -150,7 +153,9 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void UpdateMoveCount(int moveCount)
     {
         MoveCountText.text = moveCount.ToString();
-        float sliderTargetValue;
+        if (moveCount < 10) MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-41, -10);
+        else MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-15, -10);
+        // float sliderTargetValue;
 
         if (moveCount <= boardSO.limitStepForThreeStar)
         {
@@ -189,6 +194,22 @@ public class GameManager : SingletonBehaviour<GameManager>
         // moveCountSlider.DOValue(sliderTargetValue, 0.3f).SetEase(Ease.OutQuad);
     }
 
+    public void HideStar()
+    {
+        for (int i = 0; i < 3; i++)
+            starImages[i].transform.parent.gameObject.SetActive(false);
+    }
+    public void ShowStar()
+    {
+        Color color = starImages[0].color;
+        for (int i = 0; i < 3; i++)
+        {
+            starImages[i].transform.parent.gameObject.SetActive(true);
+            starImages[i].color = new Color(color.r, color.g, color.b, 0);
+            starImages[i].DOColor(color, 0.8f);
+        }
+    }
+
     // 3/2/1별을 떨어트리면 n을 3/2/1을 입력
     private void DropStar(int n)
     {
@@ -203,8 +224,9 @@ public class GameManager : SingletonBehaviour<GameManager>
         //     star321LimitText[n].DOColor(color, 0.4f);
         // }
         starImages[n].gameObject.SetActive(false);
-        starParticle.anchoredPosition = starImages[n].transform.parent.GetComponent<RectTransform>().anchoredPosition + starImageToParticleOffset;
-        starParticleSystem.Emit(8);
+        //starParticle.anchoredPosition = starImages[n].transform.parent.GetComponent<RectTransform>().anchoredPosition + starImageToParticleOffset;
+        //starParticleSystem.Emit(8);
+        starImages[n].transform.parent.GetComponentInChildren<ParticleSystem>().Emit(9);
     }
 
     public void GameOver()
@@ -218,7 +240,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (stage == 1 && level == 1) // 튜토리얼
         {
-            TutorialController.GetComponent<TutorialController>().TutorialClearEvent(star);
+            tutorialController.TutorialClearEvent(star);
             return;
         }
         isGaming = false;
@@ -263,6 +285,17 @@ public class GameManager : SingletonBehaviour<GameManager>
         TutorialController t = FindAnyObjectByType<TutorialController>();
         if (t != null) t.RestartWhenFirstTutorial();
         Resume();
+    }
+
+    public void ShowHint()
+    {
+        if (stage == 1 && level == 1)
+        {
+            tutorialController.ShowHint();
+            return;
+        }
+        GameObject hint = Resources.Load<GameObject>("Prefabs/Hint");
+        Instantiate(hint);
     }
 
     public void SelectLevel()
@@ -350,14 +383,14 @@ public class GameManager : SingletonBehaviour<GameManager>
 
                 // rect.anchoredPosition = new Vector2(0, 0);
 
-                TutorialController.GetComponent<TutorialController>().ShowTutorialAnswerButton();
+                tutorialController.GetComponent<TutorialController>().HighlightTutorialAnswer();
             }
             color12WarningParent.SetActive(true);
             color12WarningBackground.color = new Color(1, 1, 1, 0);
             color12WarningText.color = new Color(0, 0, 0, 0);
             color12WarningRestartButton.color = new Color(1, 1, 1, 0);
             color12WarningBackground.DOColor(new Color(1, 1, 1, 0.5f), 0.6f);
-            color12WarningText.DOColor(Color.black, 0.6f);
+            color12WarningText.DOColor(color12WarningTextColor, 0.6f);
             color12WarningRestartButton.DOColor(Color.white, 0.6f);
         }
         else

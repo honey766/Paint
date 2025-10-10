@@ -51,5 +51,7 @@ MonoBehaviour:
   tutorialCanvas1: {fileID: 4564424731138342343, guid: 2aa94fa43a4d003418813c672fb5dedf, type: 3}
   tutorialCanvas2: {fileID: 6563372530933766636, guid: f219526887576a9498fa7100a969bea4, type: 3}
   tutorialCanvas3: {fileID: 4564424731138342343, guid: 06d6eabc89ab2bc4ead45143ef106171, type: 3}
-  tutorialAnswerButton: {fileID: 4720564441767680807, guid: 138b7f4007dacca46a9c2606fdeafc5f, type: 3}
+  highlightAnswer: {fileID: 0}
+  tutorial1_1_2Answer: {fileID: 4564424731138342343, guid: 5613b515ae1235e45a2504e11d3e2827, type: 3}
+  tutorial1_1_3Answer: {fileID: 4564424731138342343, guid: 15631793574342d469adbb3deb98f7e3, type: 3}
   tutorialLevel: 0
