@@ -19,7 +19,6 @@ public class Character
 public class Characters
 {
     public Character[] characters;
-
 }
 
 
@@ -204,6 +203,6 @@ public class CharacterSwiper : MonoBehaviour
 
     public void FlipCardImmediately()
     {
-        characterItems[PlayerPrefs.GetInt("LastSelectedCard")].OnCardClick(0);
+        characterItems[PlayerPrefs.GetInt("LastSelectedCard", 0)].OnCardClick(0);
     }
 }

@@ -175,5 +175,14 @@ public class EditorTileDrawer : MonoBehaviour
         else
             obj.transform.rotation = Quaternion.identity;
     }
+
+    public void SetBrush(GameObject obj, int encodedValue)
+    {
+        SpriteRenderer spriter = obj.GetComponent<SpriteRenderer>();
+        if (encodedValue == 1)
+            spriter.color = new Color(1, 0.45f, 0.41f, 0.6f);
+        else if (encodedValue == 2)
+            spriter.color = new Color(0.24f, 0.57f, 1, 0.6f);
+    }
 }
 #endif

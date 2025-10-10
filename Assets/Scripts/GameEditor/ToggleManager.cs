@@ -14,7 +14,7 @@ public enum TileEditingTool
     AddSpray, AddDirectedSpray,
     AddIce,
     AddMirror,
-    AddStamp,
+    AddBrush,
     AddWhitePaint,
     AddJustBlock
 }

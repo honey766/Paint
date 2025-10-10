@@ -122,7 +122,7 @@ public class EditorDataManager : MonoBehaviour
             case TileEditingTool.AddMirror:
                 AddObject(pos, TileType.Mirror);
                 break;
-            case TileEditingTool.AddStamp:
+            case TileEditingTool.AddBrush:
                 AddObject(pos, TileType.Brush);
                 break;
             case TileEditingTool.AddWhitePaint:
@@ -314,6 +314,9 @@ public class EditorDataManager : MonoBehaviour
                 break;
             case TileType.Mirror:
                 tileDrawer.SetMirror(blockObj, extraIntBlockDatas[pos]);
+                break;
+            case TileType.Brush:
+                tileDrawer.SetBrush(blockObj, extraIntBlockDatas[pos]);
                 break;
         }
     }

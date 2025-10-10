@@ -17,7 +17,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private GameObject gameOverObj;
 
     [Header("Tutorial")]
-    [SerializeField] private GameObject TutorialController;
+    [SerializeField] private GameObject tutorialControllerPrefab;
+    private TutorialController tutorialController;
     private bool isFirstTutorial;
 
     [Header("InGame씬에서 바로 실행하기 (밑에 bool변수 true)")]
@@ -28,23 +29,29 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     [Header("Three Star UI")]
     [SerializeField] private TextMeshProUGUI[] star321LimitText;
-    private Color[] star321LimitTextColor;
-    [SerializeField] private StarDropper[] star321Dropper;
+    [SerializeField] private Image[] starImages;
     [SerializeField] private TextMeshProUGUI MoveCountText;
     [SerializeField] private Slider moveCountSlider;
-    [SerializeField] private float leftStarPosX;
-    private const float Star3SliderValue = 0.522f, Star2SliderValue = 0.268f, Star1SliderValue = 0.018f, Star1SliderStopValue = 0.05f;
+    [SerializeField] private RectTransform starParticle;
+    [SerializeField] private Vector2 starImageToParticleOffset;
+    private ParticleSystem starParticleSystem;
+    //[SerializeField] private float leftStarPosX = 0;
+    //private const float Star3SliderValue = 0.522f, Star2SliderValue = 0.268f, Star1SliderValue = 0.018f, Star1SliderStopValue = 0.05f;
     //private const float Star3SliderValue = 0.582f, Star2SliderValue = 0.3f, Star1SliderValue = 0.018f, Star1SliderStopValue = 0.054f;
-    private float starSpacing, starPosY;
+    //private float starSpacing, starPosY;
 
     [Header("Warning")]
     [SerializeField] private Image color12WarningBackground;
     private TextMeshProUGUI color12WarningText;
     private Image color12WarningRestartButton;
+    private readonly Color color12WarningTextColor = new Color(0.3803922f, 0.3921569f, 0.4f, 1f);
 
     [Header("Movement Mode")]
     [SerializeField] private TileClickEvent tileTouchScript;
     [SerializeField] private JoyStickInputController joyStickScript;
+
+    [Header("Hint")]
+    public GameObject highlightHintObj;
 
     private int stage, level, star;
 
@@ -55,7 +62,8 @@ public class GameManager : SingletonBehaviour<GameManager>
 
         color12WarningText = color12WarningBackground.transform.parent.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>();
         color12WarningRestartButton = color12WarningText.transform.parent.GetChild(1).GetChild(0).GetComponent<Image>();
-        starPosY = star321Dropper[0].GetComponent<RectTransform>().anchoredPosition.y;
+        //starPosY = star321Dropper[0].GetComponent<RectTransform>().anchoredPosition.y;
+        starParticleSystem = starParticle.transform.GetChild(0).GetComponent<ParticleSystem>();
         isFirstTutorial = true;
     }
 
@@ -88,8 +96,8 @@ public class GameManager : SingletonBehaviour<GameManager>
             if (isFirstTutorial)
             {
                 isFirstTutorial = false;
-                TutorialController = Instantiate(TutorialController);
-                TutorialController.GetComponent<TutorialController>().FirstTutorialEvent();
+                tutorialController = Instantiate(tutorialControllerPrefab).GetComponent<TutorialController>();
+                tutorialController.FirstTutorialEvent();
             }
         }
     }
@@ -97,12 +105,12 @@ public class GameManager : SingletonBehaviour<GameManager>
     // 보라색 테두리 경고문구(주석처리됨), 별 슬라이더의 별 위치 조정
     private void InitializeUISetup()
     {
-        float canvasWidth = star321LimitText[0].GetComponentInParent<Canvas>().GetComponent<RectTransform>().rect.width;
-        starSpacing = (canvasWidth / 2f - 100) / 2f;
-        Logger.Log($"canvasWidth : {canvasWidth}, starSpacing : {starSpacing}");
+        // float canvasWidth = star321LimitText[0].GetComponentInParent<Canvas>().GetComponent<RectTransform>().rect.width;
+        // starSpacing = (canvasWidth / 2f - 100) / 2f;
+        // Logger.Log($"canvasWidth : {canvasWidth}, starSpacing : {starSpacing}");
 
-        float aspect = (float)Screen.height / Screen.width;
-        float ratio = Mathf.Lerp(0.4f, 0.8f, Mathf.InverseLerp(0.8f, 2, aspect));
+        // float aspect = (float)Screen.height / Screen.width;
+        // float ratio = Mathf.Lerp(0.4f, 0.8f, Mathf.InverseLerp(0.8f, 2, aspect));
         // color12Warning.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta =
         //     new Vector2(canvasWidth * ratio, canvasWidth * ratio / 1976 * 852);
 
@@ -111,31 +119,32 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (boardSO.limitStepForOneStar > 0) star321LimitText[2].text = boardSO.limitStepForOneStar.ToString();
         else star321LimitText[2].text = "∞";
 
-        star321LimitTextColor = new Color[3];
-        for (int i = 0; i < 3; i++)
-        {
-            star321LimitText[i].GetComponent<RectTransform>().anchoredPosition
-                = new Vector2(leftStarPosX + starSpacing * i, star321LimitText[i].GetComponent<RectTransform>().anchoredPosition.y);
-            star321Dropper[i].GetComponent<RectTransform>().anchoredPosition
-                = new Vector2(leftStarPosX + starSpacing * i, star321Dropper[i].GetComponent<RectTransform>().anchoredPosition.y);
-            star321LimitTextColor[i] = star321LimitText[i].color;
-        }
+        // star321LimitTextColor = new Color[3];
+        // for (int i = 0; i < 3; i++)
+        // {
+        //     star321LimitText[i].GetComponent<RectTransform>().anchoredPosition
+        //         = new Vector2(leftStarPosX + starSpacing * i, star321LimitText[i].GetComponent<RectTransform>().anchoredPosition.y);
+        //     star321Dropper[i].GetComponent<RectTransform>().anchoredPosition
+        //         = new Vector2(leftStarPosX + starSpacing * i, star321Dropper[i].GetComponent<RectTransform>().anchoredPosition.y);
+        //     star321LimitTextColor[i] = star321LimitText[i].color;
+        // }
     }
 
     private void InitStatus()
     {
         for (int i = 0; i < 3; i++)
         {
-            star321LimitText[i].DOKill();
-            star321LimitText[i].gameObject.SetActive(true);
-            star321LimitText[i].color = star321LimitTextColor[i];
-            star321Dropper[i].CancelSequence();
-            star321Dropper[i].gameObject.SetActive(true);
-            star321Dropper[i].transform.rotation = Quaternion.identity;
-            star321Dropper[i].GetComponent<Image>().color = new Color(0, 0, 0, 1);
-            star321Dropper[i].GetComponent<RectTransform>().anchoredPosition
-                = new Vector2(leftStarPosX + starSpacing * i, starPosY);
-            star321Dropper[i].Init();
+            // star321LimitText[i].DOKill();
+            // star321LimitText[i].gameObject.SetActive(true);
+            // star321LimitText[i].color = star321LimitTextColor[i];
+            // star321Dropper[i].CancelSequence();
+            // star321Dropper[i].gameObject.SetActive(true);
+            // star321Dropper[i].transform.rotation = Quaternion.identity;
+            // star321Dropper[i].GetComponent<Image>().color = new Color(0, 0, 0, 1);
+            // star321Dropper[i].GetComponent<RectTransform>().anchoredPosition
+            //     = new Vector2(leftStarPosX + starSpacing * i, starPosY);
+            // star321Dropper[i].Init();
+            starImages[i].gameObject.SetActive(true);
         }
         star = 3;
         tileTouchScript.Init();
@@ -144,43 +153,61 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void UpdateMoveCount(int moveCount)
     {
         MoveCountText.text = moveCount.ToString();
-        float sliderTargetValue;
+        if (moveCount < 10) MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-41, -10);
+        else MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-15, -10);
+        // float sliderTargetValue;
 
         if (moveCount <= boardSO.limitStepForThreeStar)
         {
-            sliderTargetValue = Mathf.Lerp(1, Star3SliderValue, (float)moveCount / boardSO.limitStepForThreeStar);
+            // sliderTargetValue = Mathf.Lerp(1, Star3SliderValue, (float)moveCount / boardSO.limitStepForThreeStar);
         }
         else if (moveCount <= boardSO.limitStepForTwoStar)
         {
             DropStar(3);
-            float ratio = (float)(moveCount - boardSO.limitStepForThreeStar) / (boardSO.limitStepForTwoStar - boardSO.limitStepForThreeStar);
-            sliderTargetValue = Mathf.Lerp(Star3SliderValue, Star2SliderValue, ratio);
+            // float ratio = (float)(moveCount - boardSO.limitStepForThreeStar) / (boardSO.limitStepForTwoStar - boardSO.limitStepForThreeStar);
+            // sliderTargetValue = Mathf.Lerp(Star3SliderValue, Star2SliderValue, ratio);
         }
         else if (boardSO.limitStepForOneStar > 0)
         {
             DropStar(2);
             if (moveCount <= boardSO.limitStepForOneStar)
             {
-                float ratio = (float)(moveCount - boardSO.limitStepForTwoStar) / (boardSO.limitStepForOneStar - boardSO.limitStepForTwoStar);
-                sliderTargetValue = Mathf.Lerp(Star2SliderValue, Star1SliderValue, ratio);
+                // float ratio = (float)(moveCount - boardSO.limitStepForTwoStar) / (boardSO.limitStepForOneStar - boardSO.limitStepForTwoStar);
+                // sliderTargetValue = Mathf.Lerp(Star2SliderValue, Star1SliderValue, ratio);
             }
             else
             {
                 DropStar(1);
-                sliderTargetValue = 0;
+                // sliderTargetValue = 0;
                 GameOver();
             }
         }
         else // infinite
         {
             DropStar(2);
-            moveCount = Mathf.Min(moveCount, boardSO.limitStepForTwoStar + 150);
-            float ratio = (moveCount - boardSO.limitStepForTwoStar) / 150f;
-            ratio = Mathf.Sin(ratio * Mathf.PI / 2f);
-            sliderTargetValue = Mathf.Lerp(Star2SliderValue, Star1SliderStopValue, ratio);
+            // moveCount = Mathf.Min(moveCount, boardSO.limitStepForTwoStar + 150);
+            // float ratio = (moveCount - boardSO.limitStepForTwoStar) / 150f;
+            // ratio = Mathf.Sin(ratio * Mathf.PI / 2f);
+            // sliderTargetValue = Mathf.Lerp(Star2SliderValue, Star1SliderStopValue, ratio);
         }
 
-        moveCountSlider.DOValue(sliderTargetValue, 0.3f).SetEase(Ease.OutQuad);
+        // moveCountSlider.DOValue(sliderTargetValue, 0.3f).SetEase(Ease.OutQuad);
+    }
+
+    public void HideStar()
+    {
+        for (int i = 0; i < 3; i++)
+            starImages[i].transform.parent.gameObject.SetActive(false);
+    }
+    public void ShowStar()
+    {
+        Color color = starImages[0].color;
+        for (int i = 0; i < 3; i++)
+        {
+            starImages[i].transform.parent.gameObject.SetActive(true);
+            starImages[i].color = new Color(color.r, color.g, color.b, 0);
+            starImages[i].DOColor(color, 0.8f);
+        }
     }
 
     // 3/2/1별을 떨어트리면 n을 3/2/1을 입력
@@ -190,12 +217,16 @@ public class GameManager : SingletonBehaviour<GameManager>
 
         star = n - 1;
         n = 3 - n;
-        if (star321Dropper[n].DropStar())
-        {
-            Color color = star321LimitTextColor[n];
-            color.a = 0;
-            star321LimitText[n].DOColor(color, 0.4f);
-        }
+        // if (star321Dropper[n].DropStar())
+        // {
+        //     Color color = star321LimitTextColor[n];
+        //     color.a = 0;
+        //     star321LimitText[n].DOColor(color, 0.4f);
+        // }
+        starImages[n].gameObject.SetActive(false);
+        //starParticle.anchoredPosition = starImages[n].transform.parent.GetComponent<RectTransform>().anchoredPosition + starImageToParticleOffset;
+        //starParticleSystem.Emit(8);
+        starImages[n].transform.parent.GetComponentInChildren<ParticleSystem>().Emit(9);
     }
 
     public void GameOver()
@@ -209,7 +240,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (stage == 1 && level == 1) // 튜토리얼
         {
-            TutorialController.GetComponent<TutorialController>().TutorialClearEvent(star);
+            tutorialController.TutorialClearEvent(star);
             return;
         }
         isGaming = false;
@@ -254,6 +285,17 @@ public class GameManager : SingletonBehaviour<GameManager>
         TutorialController t = FindAnyObjectByType<TutorialController>();
         if (t != null) t.RestartWhenFirstTutorial();
         Resume();
+    }
+
+    public void ShowHint()
+    {
+        if (stage == 1 && level == 1)
+        {
+            tutorialController.ShowHint();
+            return;
+        }
+        GameObject hint = Resources.Load<GameObject>("Prefabs/Hint");
+        Instantiate(hint);
     }
 
     public void SelectLevel()
@@ -341,14 +383,14 @@ public class GameManager : SingletonBehaviour<GameManager>
 
                 // rect.anchoredPosition = new Vector2(0, 0);
 
-                TutorialController.GetComponent<TutorialController>().ShowTutorialAnswerButton();
+                tutorialController.GetComponent<TutorialController>().HighlightTutorialAnswer();
             }
             color12WarningParent.SetActive(true);
             color12WarningBackground.color = new Color(1, 1, 1, 0);
             color12WarningText.color = new Color(0, 0, 0, 0);
             color12WarningRestartButton.color = new Color(1, 1, 1, 0);
             color12WarningBackground.DOColor(new Color(1, 1, 1, 0.5f), 0.6f);
-            color12WarningText.DOColor(Color.black, 0.6f);
+            color12WarningText.DOColor(color12WarningTextColor, 0.6f);
             color12WarningRestartButton.DOColor(Color.white, 0.6f);
         }
         else
