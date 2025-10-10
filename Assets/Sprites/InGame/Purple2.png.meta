@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: bf635d0f0e77af94ebe17edf2750a7da
+guid: 3e1d9f0acd674ae47a0d91b75ca1a682
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -476658043346649863
-    second: Purple2_0
+      213: -5195237125095293952
+    second: Purple2_269_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,8 +49,8 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.467626, y: 0.532374}
+  alignment: 9
+  spritePivot: {x: 0.483271, y: 0.516729}
   spritePixelsToUnits: 260
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Purple2_0
+      name: Purple2_269_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 278
-        height: 278
+        width: 269
+        height: 269
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9fc7df6f8029269f0800000000000000
-      internalID: -476658043346649863
+      spriteID: 00cf5ca3c5fc6e7b0800000000000000
+      internalID: -5195237125095293952
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Purple2_0: -476658043346649863
+      Purple2_269_0: -5195237125095293952
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

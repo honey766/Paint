@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using Unity.VisualScripting;
 
 public class EditorDropdownController : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class EditorDropdownController : MonoBehaviour
     [SerializeField] private Transform dropdownTileParent;
     [Header("Spray")]
     [SerializeField] private Toggle sprayInfiniteToggle;
+
     [Header("DirectedSpray")]
     [SerializeField] private Toggle directedSprayInfiniteToggle;
     [SerializeField] private Toggle directedSprayReverseToggle;
@@ -19,9 +21,16 @@ public class EditorDropdownController : MonoBehaviour
     private Image directedSprayTriangleImage;
     public Vector2Int directedSprayDirection { get; private set; }
     public bool directedSprayDoPaintReverse { get; private set; }
+
     [Header("Mirror")]
     [SerializeField] private Transform mirrorImage;
     private bool isMirrorBottomLeftToTopRight;
+
+    [Header("Brush")]
+    [SerializeField] private Image brushImage;
+    [SerializeField] private Toggle brushWhiteToggle;
+    [SerializeField] private Toggle brushColor1Toggle, brushColor2Toggle;
+    private Toggle[] brushToggle;
 
     private ToggleManager toggle;
 
@@ -32,12 +41,14 @@ public class EditorDropdownController : MonoBehaviour
         objectsControlledByDropdown = transform.Cast<Transform>().ToArray();
         directedSprayTriangle = transform.GetChild(1).GetChild(0).GetChild(1).GetChild(0);
         directedSprayTriangleImage = directedSprayTriangle.GetComponent<Image>();
+        brushToggle = new Toggle[] { brushWhiteToggle, brushColor1Toggle, brushColor2Toggle };
 
         DropdownObjectsInitAndSetActive(0);
     }
 
     public void DropdownOnValueChanged(int index)
     {
+        inputField.GetComponent<RectTransform>().sizeDelta = new Vector2(200, 80);
         switch (index)
         {
             case 0:
@@ -59,8 +70,11 @@ public class EditorDropdownController : MonoBehaviour
                 inputField.interactable = false;
                 break;
             case 4:
-                toggle.ToggleGroup(TileEditingTool.AddStamp);
-                inputField.gameObject.SetActive(false);
+                toggle.ToggleGroup(TileEditingTool.AddBrush);
+                inputField.gameObject.SetActive(true);
+                inputField.interactable = false;
+                OnBrushToggleClicked(0);
+                inputField.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
                 break;
             case 5:
                 toggle.ToggleGroup(TileEditingTool.AddJustBlock);
@@ -158,6 +172,23 @@ public class EditorDropdownController : MonoBehaviour
         inputField.text = isMirrorBottomLeftToTopRight ? "1" : "0";
         mirrorImage.rotation = isMirrorBottomLeftToTopRight ?
                                Quaternion.identity : Quaternion.Euler(new Vector3(0, 0, 90));
+    }
+
+    public void OnBrushToggleClicked(int idx)
+    {
+        toggle.ToggleGroup(TileEditingTool.AddBrush);
+        if (!brushToggle[idx].isOn) return;
+        for (int i = 0; i < 3; i++)
+            if (i != idx) 
+                brushToggle[i].isOn = false;
+
+        inputField.text = idx.ToString();
+        if (idx == 0)
+            brushImage.color = Color.white;
+        else if (idx == 1)
+            brushImage.color = new Color(1, 0.45f, 0.41f, 1);
+        else if (idx == 2)
+            brushImage.color = new Color(0.24f, 0.57f, 1, 1);
     }
 }
 #endif

@@ -18,7 +18,7 @@ public class BrushBlock : BlockData
         {
             if (intTileData.intValue == 1) Color = TileType.Color1;
             else if (intTileData.intValue == 2) Color = TileType.Color2;
-            Board.Instance.GetColorByType(Color);
+            ApplyColorChange(Color);
         }
         else
         {
