@@ -94,13 +94,9 @@ public class Board : SingletonBehaviour<Board>
             target[entry.pos] = entry.type;
         }
 
-        tileOutline.InitOutline(n, m, board.Keys);
+        tileOutline.InitOutlineAndShadow(n, m, board.Keys);
         purpleBorder.InitBorder(n, m, target, 1f);
         purpleBorder.InitBorder(n, m, target, 0.7f);
-        // color1Border.InitBorder(colorPaletteSO.color1, TileType.Color1, n, m, target);
-        // color2Border.InitBorder(colorPaletteSO.color2, TileType.Color2, n, m, target);
-        //color12Border.InitBorder(colorPaletteSO.color12, TileType.Color12, n, m, target);
-        // blackBorder.InitBorder(black, TileType.Black, n, m, target);
     }
 
     public void InitBoardWhenRestart(BoardSO boardSO)
@@ -183,8 +179,6 @@ public class Board : SingletonBehaviour<Board>
                 return colorPaletteSO.color12;
             case TileType.Black:
                 return black;
-            // case TileType.ReversePaint:
-            //     return (colorPaletteSO.color12 + 2 * Color.white) / 3f;
             default:
                 Logger.LogWarning($"No color defined for tile type: {type}");
                 return white;

@@ -101,11 +101,10 @@ public class TutorialController : MonoBehaviour
         else tutorialTouchAnimationObj.SetActive(false);
             
         firstTutorialArrowStatus = 0;
-        Transform touchAnimationTr = tutorialTouchAnimationObj.transform;
         Transform arrowTr = tutorialArrowObj.transform;
         Vector2 touchOffset = new Vector2(0.1f, 0.6f);
 
-        touchAnimationTr.position = Board.Instance.GetTilePos(0, -1) + touchOffset;
+        tutorialTouchAnimationObj.transform.position = Board.Instance.GetTilePos(0, -1) + touchOffset;
         arrowTr.position = Board.Instance.GetTilePos(0, -1);
 
         PlayerController.Instance.MoveEvent += (pos) =>
@@ -124,7 +123,12 @@ public class TutorialController : MonoBehaviour
                 {
                     firstTutorialArrowStatus = 1;
 
-                    touchAnimationTr.position = Board.Instance.GetTilePos(4, -1) + touchOffset;
+                    if (PersistentDataManager.Instance.isTileTouch)
+                    {
+                        Destroy(tutorialTouchAnimationObj);
+                        tutorialTouchAnimationObj = Instantiate(tutorialTouchAnimation);
+                    }
+                    tutorialTouchAnimationObj.transform.position = Board.Instance.GetTilePos(4, -1) + touchOffset;
                     if (!PersistentDataManager.Instance.isTileTouch)
                         arrowTr.DOMove(Board.Instance.GetTilePos(4, -1), 0.2f);
                     else
@@ -138,7 +142,12 @@ public class TutorialController : MonoBehaviour
                 {
                     firstTutorialArrowStatus = 2;
 
-                    touchAnimationTr.position = Board.Instance.GetTilePos(1, -1) + touchOffset;
+                    if (PersistentDataManager.Instance.isTileTouch)
+                    {
+                        Destroy(tutorialTouchAnimationObj);
+                        tutorialTouchAnimationObj = Instantiate(tutorialTouchAnimation);
+                    }
+                    tutorialTouchAnimationObj.transform.position = Board.Instance.GetTilePos(1, -1) + touchOffset;
                     if (!PersistentDataManager.Instance.isTileTouch)
                         arrowTr.DOMove(Board.Instance.GetTilePos(1, -1), 0.2f);
                     else
@@ -152,7 +161,12 @@ public class TutorialController : MonoBehaviour
                 {
                     firstTutorialArrowStatus = 11;
 
-                    touchAnimationTr.position = Board.Instance.GetTilePos(3, -1) + touchOffset;
+                    if (PersistentDataManager.Instance.isTileTouch)
+                    {
+                        Destroy(tutorialTouchAnimationObj);
+                        tutorialTouchAnimationObj = Instantiate(tutorialTouchAnimation);
+                    }
+                    tutorialTouchAnimationObj.transform.position = Board.Instance.GetTilePos(3, -1) + touchOffset;
                     if (!PersistentDataManager.Instance.isTileTouch)
                         arrowTr.DOMove(Board.Instance.GetTilePos(3, -1), 0.2f);
                     else
@@ -178,8 +192,8 @@ public class TutorialController : MonoBehaviour
     {
         moveTutorialCanvasObj.SetActive(true);
         moveTutorialCanvasObj.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text =
-            "<color=#A600FF>보라색 테두리</color> 안에만 <color=#A600FF>보라색</color>을 칠해야 해요.\n"
-          + "<color=#992525>빨강</color>, <color=#222288>파랑</color>은 어떤 곳에든 칠할 수 있어요.";
+            "<color=#D64EF5>보라색 테두리</color> 안에만 <color=#D64EF5>보라색</color>을 칠해야 해요.\n"
+          + "<color=#FF736A>빨강</color>, <color=#3C91FF>파랑</color>은 어떤 곳에든 칠할 수 있어요.";
         tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
         tutorialColor12BorderTempObj.transform.position = Board.Instance.GetTilePos(2, 1);
         if (tutorialArrowObj != null) tutorialArrowObj.SetActive(true);

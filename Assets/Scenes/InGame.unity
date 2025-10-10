@@ -23811,6 +23811,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileOutlineDrawer
   outlinePrefab: {fileID: 2027016407075962624, guid: aaf2002d3a64f4f45b449da41558aa50, type: 3}
+  shadowLeft: {fileID: 2027016407075962624, guid: 3acffd8f7c7b4d94b97ca2dc64707e66, type: 3}
+  shadowLeftCorner: {fileID: 2027016407075962624, guid: c5b279ab091c02f4f8168649ef23b724, type: 3}
+  shadowBottom: {fileID: 2027016407075962624, guid: f2fa37aeae1724741bc827027321568b, type: 3}
+  shadowBottomLeftVoid: {fileID: 21300000, guid: fbbb1b4067f88714e8c75944cb6f7fdc, type: 3}
+  shadowBottomBothVoid: {fileID: 21300000, guid: 9b7135d644dbbe541aed368a3539d8ac, type: 3}
 --- !u!1 &1727480912
 GameObject:
   m_ObjectHideFlags: 0
