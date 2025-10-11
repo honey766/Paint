@@ -153,8 +153,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void UpdateMoveCount(int moveCount)
     {
         MoveCountText.text = moveCount.ToString();
-        if (moveCount < 10) MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-41, -10);
-        else MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-15, -10);
+        if (moveCount < 10) MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(590, -2);
+        else MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(630, -2);
         // float sliderTargetValue;
 
         if (moveCount <= boardSO.limitStepForThreeStar)
