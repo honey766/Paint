@@ -69,12 +69,16 @@ public class CharacterItem : MonoBehaviour
         int numOfExtraLevel = PersistentDataManager.Instance.stageSO.numOfExtraLevelOfStage[stage - 1];
 
         int x = -257, y = 575, diff = 256, i;
+        int clearCnt = 0;
         for (i = 0; i < numOfLevel; i++)
         {
+            if (PersistentDataManager.Instance.GetStageClearData(stage, i + 1) > 0)
+                clearCnt++;
             InstantiateButton(levelButtonPrefab,
                               new Vector2(x + diff * (i % 3), y - diff * (i / 3)),
                               i + 1,
-                              i == 0 || PersistentDataManager.Instance.GetStageClearData(stage, i) > 0);
+                              i == 0 || clearCnt > i / 3);
+                              //i == 0 || PersistentDataManager.Instance.GetStageClearData(stage, i) > 0);
         }
 
         //y = 575 - 128 * 9;

@@ -73,6 +73,9 @@ public class TutorialController : MonoBehaviour
         else if (tutorialLevel == 2)
         {
             PersistentDataManager.Instance.LoadTutorialLevel(3);
+            Transform blackLineParent = GameObject.Find("BlackLines").transform;
+            foreach (Transform child in blackLineParent)
+                child.gameObject.SetActive(false);
             GameManager.Instance.Start();
             ThirdTutorialEvent();
         }
@@ -212,7 +215,7 @@ public class TutorialController : MonoBehaviour
         moveTutoText.offsetMax = new Vector2(-130, moveTutoText.offsetMax.y); // Right
         moveTutoText.GetComponent<TextMeshProUGUI>().text =
             "플레이어의 이동횟수가 적을수록 ↗\n"
-          + "더 많은 <color=#B6A33F>별</color>을 획득해요.";
+          + "더 많은 <color=#B6A33F>별</color>을 획득해요.  ";
         moveCountTutoRect = moveTutoText.transform.parent.GetChild(2).GetComponent<RectTransform>();
         moveCountTutoRect.gameObject.SetActive(true);
         GameManager.Instance.highlightHintObj.SetActive(false);
