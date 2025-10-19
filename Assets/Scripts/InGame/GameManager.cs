@@ -262,7 +262,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         gameClearObj.SetActive(true);
         PersistentDataManager.Instance.SetStageClearData(star);
 
-        if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfExtraLevelOfStage[stage - 1])
+        if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
             goToNextLevelText.text = "다음 스테이지";
         else if (level < 0)
             goToNextLevelText.text = "다음 Ex단계";
@@ -270,7 +270,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             goToNextLevelText.text = "다음 단계";
         goToExtraObj.SetActive(
             level == stageSO.numOfLevelOfStage[stage - 1]
-            && stageSO.numOfExtraLevelOfStage[stage - 1] > 0
+            && stageSO.numOfLevelOfExtraStage[stage - 1] > 0
             && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= stageSO.numOfLevelOfStage[stage - 1] * 3
         );
         
@@ -324,7 +324,7 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     public void GoToNextStage()
     {
-        if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfExtraLevelOfStage[stage - 1])
+        if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
         {
             if (stageSO.numOfStage == stage || PersistentDataManager.Instance.totalStar < stageSO.numOfStarToUnlockStage[stage])
             {
@@ -342,12 +342,12 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         else // 엑스트라 레벨일 때
         {
-            nextStage = level == -stageSO.numOfExtraLevelOfStage[stage - 1] ? stage + 1 : stage;
-            nextLevel = level == -stageSO.numOfExtraLevelOfStage[stage - 1] ? 1 : level - 1;
+            nextStage = level == -stageSO.numOfLevelOfExtraStage[stage - 1] ? stage + 1 : stage;
+            nextLevel = level == -stageSO.numOfLevelOfExtraStage[stage - 1] ? 1 : level - 1;
         }
         if (PersistentDataManager.Instance.LoadStageAndLevel(nextStage, nextLevel))
         {
-            if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfExtraLevelOfStage[stage - 1])
+            if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
                 PlayerPrefs.SetInt("LastSelectedCard", stage);
             UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
         }

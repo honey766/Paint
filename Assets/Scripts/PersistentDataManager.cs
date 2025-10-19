@@ -72,7 +72,7 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
         for (int i = 0; i < stageNum; i++)
         {
             maxLevelNum = Mathf.Max(maxLevelNum, stageSO.numOfLevelOfStage[i]);
-            maxExtraLevelNum = Mathf.Max(maxExtraLevelNum, stageSO.numOfExtraLevelOfStage[i]);
+            maxExtraLevelNum = Mathf.Max(maxExtraLevelNum, stageSO.numOfLevelOfExtraStage[i]);
         }
 
         stageClearData = new int[stageNum, maxLevelNum];
@@ -88,7 +88,7 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
             stagePlayerPrefsData[i] = new List<int>();
             extraStagePlayerPrefsData[i] = new List<int>();
             LoadCertainStageClearData(stagePlayerPrefsData[i], stageSO.numOfLevelOfStage[i], i, false);
-            LoadCertainStageClearData(extraStagePlayerPrefsData[i], stageSO.numOfExtraLevelOfStage[i], i, true);
+            LoadCertainStageClearData(extraStagePlayerPrefsData[i], stageSO.numOfLevelOfExtraStage[i], i, true);
             totalStar += stageTotalStarData[i] + extraStageTotalStarData[i];
         }
 
@@ -96,7 +96,7 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
             for (int j = 0; j < stageSO.numOfLevelOfStage[i]; j++)
                 Logger.Log($"stage{i + 1}-{j + 1}:{stageClearData[i, j]}");
         for (int i = 0; i < stageNum; i++)
-            for (int j = 0; j < stageSO.numOfExtraLevelOfStage[i]; j++)
+            for (int j = 0; j < stageSO.numOfLevelOfExtraStage[i]; j++)
                 Logger.Log($"extraStage{i + 1}-{j + 1}:{extraStageClearData[i, j]}");
         for (int i = 0; i < stageNum; i++)
         {
