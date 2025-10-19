@@ -17,9 +17,6 @@ public abstract class BlockData : MonoBehaviour
     protected WaitForSeconds moveWaitForSeconds;
     protected Coroutine moveCoroutine;
 
-
-    protected abstract void ApplyColorChange(TileType color);
-
     protected virtual void Awake()
     {
         moveWaitForSeconds = new WaitForSeconds(moveTime);
@@ -32,6 +29,7 @@ public abstract class BlockData : MonoBehaviour
     }
 
     #region Color
+    protected abstract void ApplyColorChange(TileType color);
     public void ChangeColor(TileType color)
     {
         if (!HasMutableColor)
@@ -42,6 +40,7 @@ public abstract class BlockData : MonoBehaviour
         ApplyColorChange(color);
     }
     #endregion
+    
     #region Move
     public void StartSliding(Vector2Int startPos, Vector2Int slidingDirection)
     {

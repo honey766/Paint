@@ -139,32 +139,32 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
     public void SetStageClearData(int stage, int level, int star)
     {
         Logger.Log($"update star - stage:{stage},level{level},star{star}");
+
         bool isExtra = level < 0;
         level = Mathf.Abs(level);
         stage--; level--;
 
-        if (isExtra && extraStageClearData[stage, level] < star)
-        {
-            Logger.Log($"extra, star : {extraStageClearData[stage, level]} -> {star}");
-            extraStageTotalStarData[stage] += star - extraStageClearData[stage, level];
-            totalStar += star - extraStageClearData[stage, level];
-            extraStageClearData[stage, level] = star;
-            int data = extraStagePlayerPrefsData[stage][level / 16];
-            data = data & ~(3 << 2 * (level % 16)) | (star << 2 * (level % 16));
-            extraStagePlayerPrefsData[stage][level / 16] = data;
-            PlayerPrefs.SetInt($"ExtraStage{stage + 1}ClearData{1 + level / 16}", data);
-        }
-        else if (!isExtra && stageClearData[stage, level] < star)
-        {
-            Logger.Log($"not extra, star : {stageClearData[stage, level]} -> {star}");
-            stageTotalStarData[stage] += star - stageClearData[stage, level];
-            totalStar += star - stageClearData[stage, level];
-            stageClearData[stage, level] = star;
-            int data = stagePlayerPrefsData[stage][level / 16];
-            data = data & ~(3 << 2 * (level % 16)) | (star << 2 * (level % 16));
-            stagePlayerPrefsData[stage][level / 16] = data;
-            PlayerPrefs.SetInt($"Stage{stage + 1}ClearData{1 + level / 16}", data);
-        }
+        var clearData = isExtra ? extraStageClearData : stageClearData;
+        var totalStarData = isExtra ? extraStageTotalStarData : stageTotalStarData;
+        var prefsData = isExtra ? extraStagePlayerPrefsData : stagePlayerPrefsData;
+        string keyPrefix = isExtra ? "ExtraStage" : "Stage";
+
+        if (clearData[stage, level] >= star) return;
+
+        Logger.Log($"{(isExtra ? "extra" : "normal")}, star : {clearData[stage, level]} -> {star}");
+
+        int delta = star - clearData[stage, level];
+        totalStarData[stage] += delta;
+        totalStar += delta;
+        clearData[stage, level] = star;
+
+        int index = level / 16;
+        int shift = 2 * (level % 16);
+        int data = prefsData[stage][index];
+        data = (data & ~(3 << shift)) | (star << shift);
+        prefsData[stage][index] = data;
+
+        PlayerPrefs.SetInt($"{keyPrefix}{stage + 1}ClearData{index + 1}", data);
     }
 
     #endregion

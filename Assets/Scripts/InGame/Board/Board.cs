@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 using Random = UnityEngine.Random;
 
 public class Board : SingletonBehaviour<Board>
@@ -11,6 +12,8 @@ public class Board : SingletonBehaviour<Board>
     public Dictionary<Vector2Int, TileData> board; // 보드 상태
     public Dictionary<Vector2Int, BlockData> blocks; // 블록 위치와 상태
     public Dictionary<Vector2Int, TileType> target; // 목표 보드
+    public HashSet<TileData> sprays; // 현재 보드에 있는 스프레이 타일
+    public Dictionary<Vector2Int, TileType> boardTypeForRedo;
     private int n, m; // 세로, 가로 크기
     private bool existsEraser;
 
@@ -19,8 +22,6 @@ public class Board : SingletonBehaviour<Board>
     public Color black;
     [SerializeField] private PurpleBorderDrawer purpleBorder;
     [SerializeField] private TileOutlineDrawer tileOutline;
-    //public GridBorderDrawer color1Border, color2Border, color12Border, blackBorder;
-
 
     private BoardSO boardSO;
     [SerializeField] private TileFactoryConfigSO tileFactoryConfig;
@@ -69,6 +70,8 @@ public class Board : SingletonBehaviour<Board>
         board = new Dictionary<Vector2Int, TileData>();
         blocks = new Dictionary<Vector2Int, BlockData>();
         target = new Dictionary<Vector2Int, TileType>();
+        sprays = new HashSet<TileData>();
+        boardTypeForRedo = new Dictionary<Vector2Int, TileType>();
     }
 
     private void InitBoard()
@@ -79,8 +82,11 @@ public class Board : SingletonBehaviour<Board>
             if (!entry.type.IsBlock())
             {
                 board[entry.pos] = TileFactory.CreateTile<TileData>(entry);
+                boardTypeForRedo[entry.pos] = entry.type;
                 if (entry.type == TileType.WhitePaint)
                     existsEraser = true;
+                if (entry.type == TileType.Spray || entry.type == TileType.DirectedSpray)
+                    sprays.Add(board[entry.pos]);
             }
         }
         foreach (var entry in boardSO.boardTileList)
@@ -158,11 +164,6 @@ public class Board : SingletonBehaviour<Board>
         return matchingTileWithTargetCount == target.Count;
     }
 
-    // public bool IsInBounds(int i, int j)
-    // {
-    //     return 0 <= i && i < n && 0 <= j && j < m;
-    // }
-
     public Color GetColorByType(TileType type)
     {
         switch (type)
@@ -182,6 +183,43 @@ public class Board : SingletonBehaviour<Board>
             default:
                 Logger.LogWarning($"No color defined for tile type: {type}");
                 return white;
+        }
+    }
+
+    public void StopSpraying()
+    {
+        foreach (var spray in sprays)
+            if (spray is SprayTile sprayT && sprayT.isSpraying)
+                sprayT.StopSpraying();
+    }
+    public void RedoBoard(Dictionary<Vector2Int, TileType> normalBoard)
+    {
+        foreach (var entry in normalBoard)
+        {
+            if (board.TryGetValue(entry.Key, out TileData tileData) && tileData.Type != entry.Value)
+            {
+                if (tileData is NormalTile normalTile)
+                    normalTile.SetTileColor(entry.Value, 0);
+            }
+        }
+    }
+    public void RedoPlayer(Vector2Int destPos, Vector2Int moveDirection)
+    {
+        blocks[destPos - moveDirection] = PlayerController.Instance;
+        if (blocks.ContainsKey(destPos))
+            blocks.Remove(destPos);
+    }
+    public void RedoBlocks(Dictionary<Vector2Int, BlockMoveData> blockMoveData)
+    {
+        foreach (var entry in blockMoveData)
+        {
+            if (blocks.TryGetValue(entry.Value.destPos, out BlockData blockData))
+            {
+                blockData.ChangeColor(entry.Value.prevColor);
+                blockData.MoveAnimation(entry.Key);
+                blocks.Remove(entry.Value.destPos);
+                blocks[entry.Key] = blockData;
+            }
         }
     }
 }

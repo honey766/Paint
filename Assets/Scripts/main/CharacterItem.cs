@@ -77,6 +77,7 @@ public class CharacterItem : MonoBehaviour
             InstantiateButton(levelButtonPrefab,
                               new Vector2(x + diff * (i % 3), y - diff * (i / 3)),
                               i + 1,
+                              //true);
                               i == 0 || clearCnt > i / 3);
                               //i == 0 || PersistentDataManager.Instance.GetStageClearData(stage, i) > 0);
         }
@@ -87,6 +88,7 @@ public class CharacterItem : MonoBehaviour
             InstantiateButton(levelButtonPrefab,
                     new Vector2(x + diff * ((i + j) % 3), y - diff * ((i + j) / 3)),
                     -j - 1,
+                    //true);
                     PersistentDataManager.Instance.GetStageTotalStarData(stage) >= numOfLevel * 3);
                     // && (i == 0 || PersistentDataManager.Instance.GetExtraStageClearData(stage, i) > 0));
         }
@@ -175,6 +177,7 @@ public class CharacterItem : MonoBehaviour
 
     public void OnStageButtonClick(int level)
     {
+        // stage, level 데이터 호출 후 PersistentDataManager에 저장
         if (PersistentDataManager.Instance.LoadStageAndLevel(stage, level))
         {
             Logger.Log($"Going To Stage {stage} - {level}");

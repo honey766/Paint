@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using UnityEngine.Rendering;
 
 public class GameManager : SingletonBehaviour<GameManager>
 {
@@ -153,8 +154,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void UpdateMoveCount(int moveCount)
     {
         MoveCountText.text = moveCount.ToString();
-        if (moveCount < 10) MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(590, -2);
-        else MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(630, -2);
+        // if (moveCount < 10) MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(590, -2);
+        // else MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(630, -2);
         // float sliderTargetValue;
 
         if (moveCount <= boardSO.limitStepForThreeStar)
@@ -199,7 +200,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         for (int i = 0; i < 3; i++)
             starImages[i].transform.parent.gameObject.SetActive(false);
     }
-    public void ShowStar()
+    public void ShowStarForTutorial()
     {
         Color color = starImages[0].color;
         for (int i = 0; i < 3; i++)
@@ -207,6 +208,20 @@ public class GameManager : SingletonBehaviour<GameManager>
             starImages[i].transform.parent.gameObject.SetActive(true);
             starImages[i].color = new Color(color.r, color.g, color.b, 0);
             starImages[i].DOColor(color, 0.8f);
+        }
+    }
+    public void RedoStar(int moveCount)
+    {
+        Color color = starImages[0].color;
+        int[] limitStep = new int[] { boardSO.limitStepForThreeStar, boardSO.limitStepForTwoStar, boardSO.limitStepForOneStar };
+        for (int i = 2; i >= 0; i--)
+        {
+            if (limitStep[i] != -1 && moveCount > limitStep[i] || starImages[i].gameObject.activeSelf)
+                continue;
+            starImages[i].gameObject.SetActive(true);
+            starImages[i].color = new Color(color.r, color.g, color.b, 0);
+            starImages[i].DOColor(color, 0.8f);
+            star = 3 - i;
         }
     }
 

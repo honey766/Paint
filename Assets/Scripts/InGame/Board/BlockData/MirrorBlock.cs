@@ -34,7 +34,7 @@ public class MirrorBlock : BlockData
     public void OnMirrorEnter(TileType color)
     {
         mirrorSpriter.DOKill();
-        mirrorSpriter.color = Board.Instance.GetColorByType(color);
+        mirrorSpriter.color = (UnityEngine.Color.white + Board.Instance.GetColorByType(color)) / 2f;
         mirrorSpriter.DOColor(defaultColor, mirrorColorChangeTime);
     }
 }

@@ -178,15 +178,21 @@ public abstract class TileData : MonoBehaviour
 
     protected SpriteRenderer spriter;
     protected float paintTime = 0.25f;
+    public Vector2Int pos { get; private set; }
+    private static readonly int AddColorID = Shader.PropertyToID("_AddColor");
+    private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor");
+    private static readonly int RatioID = Shader.PropertyToID("_ratio");
+    private static readonly int RandomNoiseID = Shader.PropertyToID("_randomNoise");
 
     public abstract void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime);
 
     public virtual void Initialize(BoardSOTileData boardSOTileData)
     {
         Type = boardSOTileData.type;
+        pos = boardSOTileData.pos;
         spriter = gameObject.GetComponent<SpriteRenderer>();
-        spriter.material.SetColor("_BaseColor", Board.Instance.white);
-        spriter.material.SetColor("_AddColor", Board.Instance.white);
+        spriter.material.SetColor(BaseColorID, Board.Instance.white);
+        spriter.material.SetColor(AddColorID, Board.Instance.white);
 
         ValidateInitialization();
         if (Type.ShouldDrawTile())
@@ -223,15 +229,17 @@ public abstract class TileData : MonoBehaviour
             return;
         }
 
-        Color curColor = spriter.material.GetColor("_AddColor");
-        spriter.material.SetColor("_BaseColor", curColor);
-        spriter.material.SetFloat("_ratio", 0);
-        spriter.material.SetFloat("_randomNoise", Random.Range(0f, 1.2f));
-
-        spriter.material.SetColor("_AddColor", Board.Instance.GetColorByType(Type));
+        Board.Instance.boardTypeForRedo[pos] = Type;
+        Color curColor = spriter.material.GetColor(AddColorID);
+        spriter.material.SetColor(BaseColorID, curColor);
+        spriter.material.SetColor(AddColorID, Board.Instance.GetColorByType(Type));
+        spriter.material.SetFloat(RatioID, 0);
+        spriter.material.SetFloat(RandomNoiseID, Random.Range(0f, 1.2f));
 
         if (gameObject.activeInHierarchy)
             StartCoroutine(DrawTileCoroutine());
+        else
+		    spriter.material.SetFloat(RatioID, 1);
     }
 
     protected IEnumerator DrawTileCoroutine()
@@ -240,7 +248,7 @@ public abstract class TileData : MonoBehaviour
         {
             yield return MyCoroutine.WaitFor(paintTime * Random.Range(0.85f, 1f), (t) =>
             {
-                spriter.material.SetFloat("_ratio", t + 0.01f);
+                spriter.material.SetFloat(RatioID, t + 0.01f);
             });
         }
     }

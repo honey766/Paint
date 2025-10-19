@@ -86,7 +86,7 @@ public class BlockMoveController : SingletonBehaviour<BlockMoveController>
     //         }
     //     }
     // }
-    
+
     public bool CanMove(Vector2Int curPos, Vector2Int direction)
     {
         curPos += direction;
@@ -111,6 +111,7 @@ public class BlockMoveController : SingletonBehaviour<BlockMoveController>
         if (blocks.TryGetValue(curPos, out BlockData block) && block == originBlock)
             blocks.Remove(curPos);
         else Logger.LogWarning($"내 자리에 내가 없어요; {curPos}, {block}, {direction}, origin:{originBlock}");
+
         Vector2Int tempPos = curPos + direction;
         int blockCount = 1;
 
@@ -121,24 +122,24 @@ public class BlockMoveController : SingletonBehaviour<BlockMoveController>
             blockCount++;
         }
         blocks[tempPos] = originBlock;
-            
+
         // ice타일 검사
         tempPos = curPos;
         for (int i = 0; i < blockCount; i++)
         {
             tempPos += direction;
-            if (board[tempPos].Type == TileType.Ice)
+            if (board[tempPos].Type != TileType.Ice)
+                return;
+    
+            block = blocks[tempPos];
+            if (block.slidingDirection != direction)
             {
-                block = blocks[tempPos];
-                if (block.slidingDirection != direction)
+                if (block.Type == TileType.Player)
                 {
-                    if (block.Type == TileType.Player)
-                    {
-                        tileClickScript.lastTile = null;
-                        PlayerController.Instance.ClearMoveQueue();
-                    }
-                    block.StartSliding(tempPos, direction);
+                    tileClickScript.lastTile = null;
+                    PlayerController.Instance.ClearMoveQueue();
                 }
+                block.StartSliding(tempPos, direction);
             }
         }
     }

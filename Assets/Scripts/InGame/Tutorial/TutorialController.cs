@@ -40,12 +40,12 @@ public class TutorialController : MonoBehaviour
         GameManager.Instance.HideStar();
     }
 
-    private void Update()
-    {
-        if (tutorialLevel < 2 || moveCountTutoRect == null) return;
-        int digits = Mathf.Clamp(PlayerController.Instance.moveCount.ToString().Length, 2, 7);
-        moveCountTutoRect.anchoredPosition = new Vector2(-71 * digits, 15.7f);
-    }
+    // private void Update()
+    // {
+    //     if (tutorialLevel < 2 || moveCountTutoRect == null) return;
+    //     int digits = Mathf.Clamp(PlayerController.Instance.moveCount.ToString().Length, 2, 7);
+    //     moveCountTutoRect.anchoredPosition = new Vector2(-71 * digits, 15.7f);
+    // }
 
     public void TutorialClearEvent(int star)
     {
@@ -221,7 +221,7 @@ public class TutorialController : MonoBehaviour
         GameManager.Instance.highlightHintObj.SetActive(false);
         if (tutorial1_1_2AnswerObj != null)
             Destroy(tutorial1_1_2AnswerObj);
-        GameManager.Instance.ShowStar();
+        GameManager.Instance.ShowStarForTutorial();
     }
     private void ThirdTutorialEventAfterSeconds()
     {

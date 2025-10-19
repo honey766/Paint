@@ -11,15 +11,12 @@ public class UIManager : SingletonBehaviour<UIManager>
     [SerializeField] float transitionDuration;
     [SerializeField] float waitDuration;
     [SerializeField] Color red, blue, purple;
-
     [SerializeField] private bool doingTransition;
-
-
-    [Header("실험")]
     [SerializeField] private Transform transitionRectsParent;
-    RectTransform[] transitionRects;
-    Image[] transitionImages;
-    float rectWidth;
+
+    private RectTransform[] transitionRects;
+    private Image[] transitionImages;
+    private float rectWidth;
 
     private void Start()
     {
@@ -50,6 +47,7 @@ public class UIManager : SingletonBehaviour<UIManager>
         if (doingTransition) return;
         doingTransition = true;
 
+        // 트랜지션 색 랜덤 결정
         Color color;
         int random = UnityEngine.Random.Range(0, 3);
         if (random == 0) color = red;
@@ -74,9 +72,7 @@ public class UIManager : SingletonBehaviour<UIManager>
         action();
         yield return new WaitForSeconds(waitDuration);
         for (int i = 0; i < transitionRects.Length; i++)
-        {
             transitionRects[i].DOAnchorPosY(-Screen.height * Random.Range(1.3f, 2f), transitionDuration - Random.Range(0f, 0.25f));
-        }
         yield return new WaitForSeconds(transitionDuration);
         doingTransition = false;
     }

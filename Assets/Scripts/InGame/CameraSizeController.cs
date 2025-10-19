@@ -129,13 +129,13 @@ public class CameraSizeController : MonoBehaviour
         //Logger.Log($"aspect board: {boardAspect}, boardArea:{boardAreaAspect}");
         if (boardAspect > boardAreaAspect) // 보드를 그릴 수 있는 영역보다 실제 보드의 세로비율이 더 긺
         {
-            // 2*size*(MaxY-minY) = m
+            // 2 * size * (MaxY-minY) = m
             cameraSize = m / 2f / (maxYRate - minYRate);
             //Logger.Log($"zzz m:{m}, min:{minYRate}, max:{maxYRate}");
         }
         else // 보드의 가로비율이 더 긺
         {
-            // 2*size/canvasAspect*(MaxX-minX) = n
+            // 2 * size / canvasAspect * (MaxX-minX) = n
             cameraSize = n / 2f * canvasAspect / (maxXRate - minXRate);
             //Logger.Log($"zzz m:{n}, min:{minXRate}, max:{maxXRate}");
         }
