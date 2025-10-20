@@ -472,6 +472,7 @@ public class PlayerController : BlockData
         Board.Instance.RedoBoard(moveData.normalBoard);
         Board.Instance.RedoPlayer(destPos, moveData.moveDir);
         Board.Instance.RedoBlocks(moveData.blockMoveData);
+        Board.Instance.CheckGameClear();
 
         moveDataListToRedo.RemoveLast();
         destPos -= moveData.moveDir;

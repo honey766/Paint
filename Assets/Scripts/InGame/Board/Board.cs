@@ -156,11 +156,12 @@ public class Board : SingletonBehaviour<Board>
                 }
                 else // 엄한 데에다 보라색을 칠함
                 {
-                    if (!existsEraser) GameManager.Instance.Color12Warning();
+                    if (!existsEraser) GameManager.Instance.Color12Warning(true);
                     return false;
                 }
             }
         }
+        GameManager.Instance.Color12Warning(false);
         return matchingTileWithTargetCount == target.Count;
     }
 

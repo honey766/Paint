@@ -18,8 +18,7 @@ public class TutorialController : MonoBehaviour
     private GameObject tutorialArrowObj;
     private GameObject tutorialTouchAnimationObj;
     private GameObject tutorial1_1_2AnswerObj, tutorial1_1_3AnswerObj;
-    private RectTransform hintButton, restartButton;
-    private Vector2 restartButtonPos;
+    private RectTransform hintButton;
     // private bool tutorialIsOpenedAnswerButton;
     private int firstTutorialArrowStatus;
     private RectTransform moveCountTutoRect;
@@ -30,10 +29,7 @@ public class TutorialController : MonoBehaviour
         //color12Border = GameObject.Find("Color12BorderDrawer").GetComponent<MeshRenderer>();
         color12Lines = GameObject.Find("PurpleLines");
         hintButton = GameObject.Find("HintButton").GetComponent<RectTransform>();
-        restartButton = GameObject.Find("RestartButton").GetComponent<RectTransform>();
         hintButton.gameObject.SetActive(false);
-        restartButtonPos = restartButton.anchoredPosition;
-        restartButton.anchoredPosition = new Vector2(0, restartButtonPos.y);
         tutorialArrowObj = null;
         tutorialTouchAnimationObj = null;
         moveCountTutoRect = null;
@@ -68,7 +64,6 @@ public class TutorialController : MonoBehaviour
             GameManager.Instance.isGaming = false; // Start에서 isGaming이 true가 되므로 한 번 더 false
             PlayerController.Instance.MoveEvent = null;
             hintButton.gameObject.SetActive(true);
-            restartButton.anchoredPosition = restartButtonPos;
         }
         else if (tutorialLevel == 2)
         {

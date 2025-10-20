@@ -45,7 +45,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private Image color12WarningBackground;
     private TextMeshProUGUI color12WarningText;
     private Image color12WarningRestartButton;
-    private readonly Color color12WarningTextColor = new Color(0.3803922f, 0.3921569f, 0.4f, 1f);
+    private Color color12WarningTextColor = new Color(0.3803922f, 0.3921569f, 0.4f, 1f);
 
     [Header("Movement Mode")]
     [SerializeField] private TileClickEvent tileTouchScript;
@@ -402,24 +402,29 @@ public class GameManager : SingletonBehaviour<GameManager>
             }
             color12WarningParent.SetActive(true);
             color12WarningBackground.color = new Color(1, 1, 1, 0);
-            color12WarningText.color = new Color(0, 0, 0, 0);
+            color12WarningTextColor.a = 0;
+            color12WarningText.color = color12WarningTextColor;
             color12WarningRestartButton.color = new Color(1, 1, 1, 0);
             color12WarningBackground.DOColor(new Color(1, 1, 1, 0.5f), 0.6f);
+            color12WarningTextColor.a = 1;
             color12WarningText.DOColor(color12WarningTextColor, 0.6f);
             color12WarningRestartButton.DOColor(Color.white, 0.6f);
         }
         else
         {
-            color12WarningBackground.transform.parent.gameObject.SetActive(false);
+            color12WarningBackground.DOColor(new Color(1, 1, 1, 0), 0.3f);
+            color12WarningTextColor.a = 0;
+            color12WarningText.DOColor(color12WarningTextColor, 0.3f);
+            color12WarningRestartButton.DOColor(new Color(1, 1, 1, 0), 0.3f).OnComplete(
+                () => color12WarningBackground.transform.parent.gameObject.SetActive(false));
         }
     }
 
-    public void Color12Warning()
+    public void Color12Warning(bool isActive)
     {
-        if (color12WarningBackground.transform.parent.gameObject.activeSelf)
+        if (isActive == color12WarningBackground.transform.parent.gameObject.activeSelf)
             return;
-
-        SetColor12Warning(true);
+        SetColor12Warning(isActive);
         // RectTransform rect = color12Warning.GetComponent<RectTransform>();
         // rect.anchoredPosition = new Vector2(0, -310);
         // rect.DOAnchorPosY(115, rectDuration).SetEase(gogoEase);
