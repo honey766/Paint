@@ -70,11 +70,12 @@ public abstract class BlockData : MonoBehaviour
         this.slidingDirection = Vector2Int.zero;
     }
 
-    public bool MoveAnimation(Vector2Int nextPos)
+    public bool MoveAnimation(Vector2Int nextPos, bool isRedo = false)
     {
         Vector2 nextRealPos = Board.Instance.GetTilePos(nextPos.x, nextPos.y);
         transform.DOMove(nextRealPos, moveTime).SetEase(Ease.Linear);
-        Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, nextPos - curPos, Color, moveTime);
+        if (!isRedo)
+            Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, nextPos - curPos, Color, moveTime);
         curPos = nextPos;
         return Board.Instance.CheckGameClear();
     }

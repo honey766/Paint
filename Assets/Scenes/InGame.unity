@@ -27420,7 +27420,7 @@ PrefabInstance:
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: boardSO
       value: 
-      objectReference: {fileID: 11400000, guid: 16032c930931ee641acae088bf661525, type: 2}
+      objectReference: {fileID: 11400000, guid: 0cf6dc022310c144db1dbca6fb5a43ae, type: 2}
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: stageSO
       value: 

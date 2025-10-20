@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using System.Collections;
 using UnityEngine.EventSystems;
+using System.Linq;
 
 // JSON 데이터 구조
 [Serializable]
@@ -49,6 +50,9 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     private float canvasScaleFactor;
     private float extraContentHeight;
 
+    [Header("Other")]
+    private const float ContentSpacing = 600;
+
     private List<RectTransform>[] cardRects = new List<RectTransform>[2];
     private List<CharacterItem>[] characterItems = new List<CharacterItem>[2];
 
@@ -56,10 +60,10 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     {
         canvas = GetComponentInParent<Canvas>();
         canvasScaleFactor = canvas.scaleFactor;
-        extraContentHeight = canvas.GetComponent<RectTransform>().rect.height + 600;
+        extraContentHeight = canvas.GetComponent<RectTransform>().rect.height + ContentSpacing;
         contents[1].anchoredPosition = new Vector2(0, -extraContentHeight);
         extraBackground.offsetMin = new Vector2(-extraContentHeight, -extraContentHeight); // Bottom
-        extraBackground.offsetMax = new Vector2(extraContentHeight, 500);  // Top
+        extraBackground.offsetMax = new Vector2(extraContentHeight, ContentSpacing);  // Top
 
         LoadAndSetupCharacters();
         StartCoroutine(InitSnapToCard(GetSavedIndex()));
@@ -79,15 +83,21 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     {
         // 한 프레임 기다렸다가 레이아웃 계산이 끝난 뒤 실행
         yield return null;
-
+        
+        parentContent.sizeDelta = new Vector2(contents[0].sizeDelta.x, 0);
         LayoutRebuilder.ForceRebuildLayoutImmediate(parentContent);
+
+        yield return null;
 
         if (cardRects[0].Count > 0 && index.Item1 >= 0 && index.Item1 < cardRects[0].Count)
         {
             float centerX = viewport.position.x;
             float offset = (centerX - cardRects[0][index.Item1].position.x) / canvasScaleFactor;
             float positionY = index.Item2 * extraContentHeight;
+            //Logger.Log($"centerX {centerX}, offset;{offset}, posY:{positionY}, anchorX:{parentContent.anchoredPosition.x}");
+            //Logger.Log($"add:{parentContent.anchoredPosition.x + offset}");
             parentContent.anchoredPosition = new Vector2(parentContent.anchoredPosition.x + offset, positionY);
+            //Logger.Log($"anchor:{parentContent.anchoredPosition}");
 
             UpdateCardTransforms();
         }

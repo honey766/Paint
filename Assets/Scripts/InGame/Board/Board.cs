@@ -217,7 +217,7 @@ public class Board : SingletonBehaviour<Board>
             if (blocks.TryGetValue(entry.Value.destPos, out BlockData blockData))
             {
                 blockData.ChangeColor(entry.Value.prevColor);
-                blockData.MoveAnimation(entry.Key);
+                blockData.MoveAnimation(entry.Key, true);
                 blocks.Remove(entry.Value.destPos);
                 blocks[entry.Key] = blockData;
             }
