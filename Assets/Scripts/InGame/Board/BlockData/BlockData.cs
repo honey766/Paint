@@ -54,10 +54,10 @@ public abstract class BlockData : MonoBehaviour
 
         if (moveCoroutine != null)
             StopCoroutine(moveCoroutine);
-        moveCoroutine = StartCoroutine(StartMoveCoroutine(startPos, slidingDirection));
+        moveCoroutine = StartCoroutine(StartSlidingCoroutine(startPos, slidingDirection));
     }
 
-    protected virtual IEnumerator StartMoveCoroutine(Vector2Int curPos, Vector2Int slidingDirection)
+    protected virtual IEnumerator StartSlidingCoroutine(Vector2Int curPos, Vector2Int slidingDirection)
     {
         while (BlockMoveController.Instance.CanMove(curPos, slidingDirection))
         {

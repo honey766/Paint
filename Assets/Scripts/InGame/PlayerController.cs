@@ -328,7 +328,7 @@ public class PlayerController : BlockData
         }
     }
 
-    protected override IEnumerator StartMoveCoroutine(Vector2Int curPos, Vector2Int slidingDirection)
+    protected override IEnumerator StartSlidingCoroutine(Vector2Int curPos, Vector2Int slidingDirection)
     {
         while (BlockMoveController.Instance.CanMove(curPos, slidingDirection))
         {
@@ -376,9 +376,13 @@ public class PlayerController : BlockData
         Dictionary<Vector2Int, TileType> normalBoard = new Dictionary<Vector2Int, TileType>();
         Dictionary<Vector2Int, BlockMoveData> blockMoveData = new Dictionary<Vector2Int, BlockMoveData>();
         // normalBoard
+        Logger.Log("Record Record");
         foreach (var entry in Board.Instance.boardTypeForRedo)
             if (entry.Value.IsNormalTile())
+            {
+                Logger.Log($"Record {entry.Key} : {entry.Value}");
                 normalBoard[entry.Key] = entry.Value;
+            }
         // blockMoveData
         foreach (var entry in Board.Instance.blocks)
             if (curPos + moveDirection == entry.Key)

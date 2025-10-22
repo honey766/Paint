@@ -33,7 +33,7 @@ public class DirectedSprayTile : SprayTile
         Color c = Board.Instance.GetColorByType(colorType);
         StartCoroutine(MyTileColorChange(c));
         if (colorType == TileType.Color1 || colorType == TileType.Color2)
-            StartCoroutine(DoSprayTile(this.direction, colorType));
+            doSprayTileCoroutine = StartCoroutine(DoSprayTile(this.direction, colorType));
     }
 
     public void OnColorEnter(TileType colorType)

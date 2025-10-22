@@ -190,16 +190,18 @@ public class Board : SingletonBehaviour<Board>
     public void StopSpraying()
     {
         foreach (var spray in sprays)
-            if (spray is SprayTile sprayT && sprayT.isSpraying)
+            if (spray is SprayTile sprayT)
                 sprayT.StopSpraying();
     }
     public void RedoBoard(Dictionary<Vector2Int, TileType> normalBoard)
     {
         foreach (var entry in normalBoard)
         {
-            if (board.TryGetValue(entry.Key, out TileData tileData) && tileData.Type != entry.Value)
+            if (board.TryGetValue(entry.Key, out TileData tileData))
             {
-                if (tileData is NormalTile normalTile)
+                if (tileData.Type == entry.Value) // 실제 타일과 boardTypeForRedo가 동기화되지 않을 수 있으므로 값만 할당해주고 애니메이션은 X
+                    boardTypeForRedo[entry.Key] = entry.Value;
+                else if (tileData is NormalTile normalTile)
                     normalTile.SetTileColor(entry.Value, 0);
             }
         }
