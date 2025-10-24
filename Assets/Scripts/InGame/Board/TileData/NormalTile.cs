@@ -36,9 +36,11 @@ public class NormalTile : TileData
 
         Color curColor;
         float paintTimeRate = 1f;
+        float noiseRate = 1f;
         if (prevType == Type)
         {
-            paintTimeRate = 1.4f;
+            paintTimeRate = 1.6f;
+            noiseRate = 0.7f;
             if (Type == TileType.Color12)
             {
                 float weight = addType == TileType.Color1 ? 2.5f : 3.5f;
@@ -51,7 +53,7 @@ public class NormalTile : TileData
         {
             curColor = spriter.material.GetColor(AddColorID);
         }   
-        DrawTile(curColor, paintTimeRate, 0.7f);
+        DrawTile(curColor, paintTimeRate, noiseRate);
     }
 
     public void WaitAndDrawTile(float waitTime)
@@ -83,6 +85,7 @@ public class NormalTile : TileData
 
         StopAllCoroutines();
         Board.Instance.boardTypeForRedo[pos] = Type;
+        //AudioManager.Instance.PlaySfx(SfxType.ColorTile);
 
         Color prevAddColor = spriter.material.GetColor(AddColorID);
         //spriter.material.SetColor(BaseColorID, curColor);
@@ -90,7 +93,7 @@ public class NormalTile : TileData
 
         spriter.material.SetColor(AddColorID, Board.Instance.GetColorByType(Type));
         spriter.material.SetFloat(RatioID, 0);
-        spriter.material.SetFloat(RandomNoiseID, Random.Range(0f, 1.2f));
+        spriter.material.SetFloat(RandomNoiseID, Random.Range(0f, 1.2f * noiseRate));
 
         if (gameObject.activeInHierarchy)
             StartCoroutine(DrawTileCoroutine(paintTimeRate));

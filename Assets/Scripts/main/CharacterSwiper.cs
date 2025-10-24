@@ -132,7 +132,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
                 cardRects[i].Add(cardObject.GetComponent<RectTransform>());
 
                 // 카드의 버튼에 OnCardClick 이벤트 연결
-                cardObject.GetComponent<Button>().onClick.AddListener(item.OnCardClick);
+                cardObject.GetComponent<Button>().onClick.AddListener(item.OnCardClickWithSfx);
             }
         }
     }
@@ -200,19 +200,20 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
         if (isHorizontal && curHorIndex == nearestHorIndex)
         {
-            if (scrollRect.velocity.x > 50)
+            if (scrollRect.velocity.x > 200)
                 nearestHorIndex = Mathf.Max(nearestHorIndex - 1, 0);
-            else if (scrollRect.velocity.x < -50)
+            else if (scrollRect.velocity.x < -200)
                 nearestHorIndex = Mathf.Min(nearestHorIndex + 1, cardRects[0].Count - 1);
         }
         else if (!isHorizontal && curVerIndex == nearestVerIndex)
         {
-            if (scrollRect.velocity.y < -50)
+            if (scrollRect.velocity.y < -200)
                 nearestVerIndex = Mathf.Max(nearestVerIndex - 1, 0);
-            else if (scrollRect.velocity.y > 50)
+            else if (scrollRect.velocity.y > 200)
                 nearestVerIndex = Mathf.Min(nearestVerIndex + 1, 1);
         }
 
+        AudioManager.Instance.PlaySfx(SfxType.SelectCard);
         scrollRect.StopMovement();
         scrollRect.velocity = Vector2.zero;
 
@@ -251,6 +252,6 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
     public void FlipCardImmediately()
     {
-        characterItems[PlayerPrefs.GetInt("LastSelectedCardVertical", 0)][PlayerPrefs.GetInt("LastSelectedCardHorizontal", 0)].OnCardClick(0);
+        characterItems[PlayerPrefs.GetInt("LastSelectedCardVertical", 0)][PlayerPrefs.GetInt("LastSelectedCardHorizontal", 0)].OnCardClick(0, true);
     }
 }

@@ -72,6 +72,7 @@ public abstract class BlockData : MonoBehaviour
 
     public bool MoveAnimation(Vector2Int nextPos, bool isRedo = false)
     {
+        AudioManager.Instance.PlaySfx(SfxType.PushBlock);
         Vector2 nextRealPos = Board.Instance.GetTilePos(nextPos.x, nextPos.y);
         transform.DOMove(nextRealPos, moveTime).SetEase(Ease.Linear);
         if (!isRedo)

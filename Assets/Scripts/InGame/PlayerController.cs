@@ -60,6 +60,9 @@ public class PlayerController : BlockData
     private const int MAX_REDOLIST_COUNT = 20;
     private int redoing;
 
+    [SerializeField] private float colorTileAudioCooldown = 0.1f;
+    private float colorTileAudioLastTime;
+
     // 캐싱
     private SpriteRenderer spriter;
     private Transform player;
@@ -87,6 +90,7 @@ public class PlayerController : BlockData
         halfMoveWaitForSeconds = new WaitForSeconds(moveTime / 2f);
         savedMoveCount = 0;
         redoing = 0;
+        colorTileAudioLastTime = 0;
     }
 
     //삭제 시 실행되는 함수
@@ -107,20 +111,20 @@ public class PlayerController : BlockData
     private void Update()
     {
         // 화살표 방향 입력 (좌우/상하 합쳐서 Vector2)
-        Vector2 dir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        // Vector2 dir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-        if ((dir.x == 0 && dir.y != 0) || (dir.x != 0 && dir.y == 0)) // 방향키 눌림
-        {
-            if (Time.time >= keyboardNextFireTime)
-            {
-                TryMoveTo(destPos.x + (int)dir.x, destPos.y + (int)dir.y);
-                keyboardNextFireTime = Time.time + moveTime * 2;
-            }
-        }
-        else
-        {
-            keyboardNextFireTime = 0f; // 키 뗐을 때 초기화
-        }
+        // if ((dir.x == 0 && dir.y != 0) || (dir.x != 0 && dir.y == 0)) // 방향키 눌림
+        // {
+        //     if (Time.time >= keyboardNextFireTime)
+        //     {
+        //         TryMoveTo(destPos.x + (int)dir.x, destPos.y + (int)dir.y);
+        //         keyboardNextFireTime = Time.time + moveTime * 2;
+        //     }
+        // }
+        // else
+        // {
+        //     keyboardNextFireTime = 0f; // 키 뗐을 때 초기화
+        // }
     }
 #endif
     public void MoveOnce(Vector2Int dir)
@@ -131,6 +135,7 @@ public class PlayerController : BlockData
     public void InitPlayer(BoardSO boardSO, bool saveMoveCount = false)
     {
         if (saveMoveCount) this.savedMoveCount = moveCount;
+        player.DOScale(1, moveTime / 1.2f);
         moveToQueue.Clear();
         moveDataListToRedo.Clear();
         ApplyColorChange(boardSO.startPlayerColor);
@@ -144,10 +149,9 @@ public class PlayerController : BlockData
     // (i, j) 좌표로 이동 시도
     public void TryMoveTo(int i, int j)
     {
-        Logger.Log($"go to {i}, {j}");
         if (!CanMoveTo(ref i, ref j) || !GameManager.Instance.isGaming || slidingDirection != Vector2Int.zero)
             return;
-        Logger.Log($"go to {i}, {j}");
+
         // 같은 행, 열 중 어디인지에 따라 분기
         if (destPos.x == i) // j 방향(가로 이동)
         {
@@ -167,7 +171,6 @@ public class PlayerController : BlockData
 
         // 이동 중이 아니라면 이동 시작
         if (!isMoving) inputMoveCoroutine = StartCoroutine(Move());
-        Logger.Log($"go to {i}, {j}");
     }
 
     public void ClearMoveQueue()
@@ -298,6 +301,8 @@ public class PlayerController : BlockData
     private IEnumerator Move()
     {
         isMoving = true;
+        AudioManager.Instance.StartLoopSfx(SfxType.ColorTile);
+        float moveStartTime = Time.time;
 
         while (moveToQueue.Count > 0 && GameManager.Instance.isGaming)
         {
@@ -312,8 +317,15 @@ public class PlayerController : BlockData
             IncreaseMoveCount();
             RecordMoveData(movingDirection);
             curPos = nextPos;
+            // if (Time.time > colorTileAudioLastTime + colorTileAudioCooldown)
+            // {
+            //     colorTileAudioLastTime = Time.time;
+            //     AudioManager.Instance.PlaySfx(SfxType.ColorTile);
+            // }
             BlockMoveController.Instance.MoveBlocks(this, nextPos - movingDirection, movingDirection);
             PlayerMoveAnimation(nextPos, movingDirection, moveTime);
+            if (!GameManager.Instance.isGaming) break; // 게임오버라면 즉시 종료
+
             Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, movingDirection, Color, moveTime);
             yield return halfMoveWaitForSeconds;
 
@@ -325,6 +337,9 @@ public class PlayerController : BlockData
         {
             player.DOScale(1, moveTime / 1.2f);
             isMoving = false;
+            if (Time.time - moveStartTime < moveTime)
+                yield return new WaitForSeconds(moveTime - (Time.time - moveStartTime));
+            AudioManager.Instance.StopLoopSfx(SfxType.ColorTile);
         }
     }
 
@@ -347,6 +362,7 @@ public class PlayerController : BlockData
         this.slidingDirection = Vector2Int.zero;
         player.DOScale(1, moveTime / 1.2f);
         isMoving = false;
+        AudioManager.Instance.StopLoopSfx(SfxType.ColorTile);
     }
 
     private void PlayerMoveAnimation(Vector2Int nextPos, Vector2Int direction, float moveTime)
@@ -376,13 +392,9 @@ public class PlayerController : BlockData
         Dictionary<Vector2Int, TileType> normalBoard = new Dictionary<Vector2Int, TileType>();
         Dictionary<Vector2Int, BlockMoveData> blockMoveData = new Dictionary<Vector2Int, BlockMoveData>();
         // normalBoard
-        Logger.Log("Record Record");
         foreach (var entry in Board.Instance.boardTypeForRedo)
             if (entry.Value.IsNormalTile())
-            {
-                Logger.Log($"Record {entry.Key} : {entry.Value}");
                 normalBoard[entry.Key] = entry.Value;
-            }
         // blockMoveData
         foreach (var entry in Board.Instance.blocks)
             if (curPos + moveDirection == entry.Key)
@@ -468,6 +480,7 @@ public class PlayerController : BlockData
             yield break;
 
         //lastRedoTime = Time.time;
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
         redoing++;
         Board.Instance.StopSpraying();
         DecreaseMoveCount();

@@ -31,7 +31,7 @@ public class TileClickEvent : MonoBehaviour
 
         if (isMouseDown)
         {
-            Logger.Log("MOUSEDOWN");
+            // Logger.Log("MOUSEDOWN");
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0, layerMask); // 마우스 위치에서 2D 레이캐스트
 
@@ -39,7 +39,7 @@ public class TileClickEvent : MonoBehaviour
             if (hit.collider != null && lastTile != hit.collider.gameObject)
             {
                 lastTile = hit.collider.gameObject;
-                Logger.Log("Click" + hit.collider.gameObject.name);
+                // Logger.Log("Click" + hit.collider.gameObject.name);
 
                 // 타일의 좌표 알아내기
                 string name = lastTile.name; // "Color2Paint(5,5)"

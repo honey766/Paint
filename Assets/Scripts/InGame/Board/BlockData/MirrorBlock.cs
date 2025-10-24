@@ -39,6 +39,7 @@ public class MirrorBlock : BlockData
     {
         mirrorSpriter.DOKill();
         glassSpriter.DOKill();
+        AudioManager.Instance.PlaySfx(SfxType.MirrorActivation, 0.5f);
 
         Color colorByType = Board.Instance.GetColorByType(color);
         mirrorSpriter.color = (UnityEngine.Color.white * 2f + colorByType) / 3f;

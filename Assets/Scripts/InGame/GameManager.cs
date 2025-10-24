@@ -51,9 +51,6 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private TileClickEvent tileTouchScript;
     [SerializeField] private JoyStickInputController joyStickScript;
 
-    [Header("Hint")]
-    public GameObject highlightHintObj;
-
     private int stage, level, star;
 
     private void Awake()
@@ -86,7 +83,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         cameraSizeController.AdjustCameraSize(boardSO, isTutorial);
 
         star = 3;
- 
+
         Invoke("InitializeUISetup", 0.05f);
 
         SetMovementMode();
@@ -100,6 +97,14 @@ public class GameManager : SingletonBehaviour<GameManager>
                 tutorialController = Instantiate(tutorialControllerPrefab).GetComponent<TutorialController>();
                 tutorialController.FirstTutorialEvent();
             }
+        }
+    }
+    
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && isGaming)
+        {
+            Pause();
         }
     }
 
@@ -280,6 +285,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void Pause()
     {
         isGaming = false;
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
         UIManager.Instance.OpenMenu(true);
     }
 
@@ -291,6 +297,7 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     public void Restart()
     {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
         Board.Instance.InitBoardWhenRestart(boardSO);
         PlayerController.Instance.InitPlayer(boardSO);
         InitStatus();
@@ -304,6 +311,7 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     public void ShowHint()
     {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
         if (stage == 1 && level == 1)
         {
             tutorialController.ShowHint();
@@ -348,7 +356,10 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (PersistentDataManager.Instance.LoadStageAndLevel(nextStage, nextLevel))
         {
             if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
-                PlayerPrefs.SetInt("LastSelectedCard", stage);
+            {
+                PlayerPrefs.SetInt("LastSelectedCardHorizontal", stage);
+                PlayerPrefs.SetInt("LastSelectedCardVertical", 0);
+            }
             UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
         }
         else
@@ -361,6 +372,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (PersistentDataManager.Instance.LoadStageAndLevel(stage, -1))
         {
+            PlayerPrefs.SetInt("LastSelectedCardVertical", 1);
             UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
         }
         else

@@ -18,7 +18,8 @@ public class TutorialController : MonoBehaviour
     private GameObject tutorialArrowObj;
     private GameObject tutorialTouchAnimationObj;
     private GameObject tutorial1_1_2AnswerObj, tutorial1_1_3AnswerObj;
-    private RectTransform hintButton;
+    //private GameObject highlightHintTextObj;
+    private GameObject hintButton, hintExplainText, redoButton, redoExplainText, restartExplainText;
     // private bool tutorialIsOpenedAnswerButton;
     private int firstTutorialArrowStatus;
     private RectTransform moveCountTutoRect;
@@ -28,8 +29,20 @@ public class TutorialController : MonoBehaviour
     {
         //color12Border = GameObject.Find("Color12BorderDrawer").GetComponent<MeshRenderer>();
         color12Lines = GameObject.Find("PurpleLines");
-        hintButton = GameObject.Find("HintButton").GetComponent<RectTransform>();
-        hintButton.gameObject.SetActive(false);
+
+        hintButton = GameObject.Find("HintButton");
+        hintExplainText = hintButton.transform.GetChild(1).gameObject;
+        hintButton.SetActive(false);
+        hintExplainText.SetActive(true);
+
+        redoButton = GameObject.Find("RedoButton");
+        redoExplainText = redoButton.transform.GetChild(2).gameObject;
+        redoButton.SetActive(false);
+        redoExplainText.SetActive(true);
+
+        restartExplainText = GameObject.Find("RestartButton").transform.GetChild(2).gameObject;
+        restartExplainText.SetActive(true);
+
         tutorialArrowObj = null;
         tutorialTouchAnimationObj = null;
         moveCountTutoRect = null;
@@ -64,6 +77,7 @@ public class TutorialController : MonoBehaviour
             GameManager.Instance.isGaming = false; // Start에서 isGaming이 true가 되므로 한 번 더 false
             PlayerController.Instance.MoveEvent = null;
             hintButton.gameObject.SetActive(true);
+            redoButton.SetActive(true);
         }
         else if (tutorialLevel == 2)
         {
@@ -213,7 +227,7 @@ public class TutorialController : MonoBehaviour
           + "더 많은 <color=#B6A33F>별</color>을 획득해요.  ";
         moveCountTutoRect = moveTutoText.transform.parent.GetChild(2).GetComponent<RectTransform>();
         moveCountTutoRect.gameObject.SetActive(true);
-        GameManager.Instance.highlightHintObj.SetActive(false);
+        //highlightHintTextObj.SetActive(false);
         if (tutorial1_1_2AnswerObj != null)
             Destroy(tutorial1_1_2AnswerObj);
         GameManager.Instance.ShowStarForTutorial();
@@ -226,7 +240,7 @@ public class TutorialController : MonoBehaviour
 
     public void HighlightTutorialAnswer()
     {
-        GameManager.Instance.highlightHintObj.SetActive(true);
+        // highlightHintTextObj.SetActive(true);
     }
 
     public void ShowHint()

@@ -53,6 +53,7 @@ public class SprayTile : TileData
     protected IEnumerator DoSprayTile(Vector2Int direction, TileType colorType)
     {
         Vector2Int curPos = pos;
+        AudioManager.Instance.PlaySfx(SfxType.EnterSpray);
 
         // DoParticleEffect(curPos, direction, colorType);
         // particle.transform.position = transform.position;

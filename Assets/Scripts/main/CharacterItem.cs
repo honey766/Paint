@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using System.Collections;
 using UnityEngine.SceneManagement;
 using TMPro;
 
@@ -58,7 +57,7 @@ public class CharacterItem : MonoBehaviour
         {
             SetButtonOfBackUI(levelButtonPrefab);
         }
-        else if (isExtra)//&& PersistentDataManager.Instance.GetStageTotalStarData(stage) >= 3 * PersistentDataManager.Instance.stageSO.numOfLevelOfStage[stage - 1])
+        else if (isExtra) //&& PersistentDataManager.Instance.GetStageTotalStarData(stage) >= 3 * PersistentDataManager.Instance.stageSO.numOfLevelOfStage[stage - 1])
         {
             SetButtonOfBackUIExtra(levelButtonPrefab);
         }
@@ -67,7 +66,10 @@ public class CharacterItem : MonoBehaviour
             GameObject obj = Resources.Load<GameObject>("Prefabs/BackUILocked");
             obj = Instantiate(obj, backUI.transform);
             if (!isExtra)
+            {
+                obj.transform.GetChild(0).gameObject.SetActive(true);
                 obj.GetComponentInChildren<TextMeshProUGUI>().text = $"x {PersistentDataManager.Instance.stageSO.numOfStarToUnlockStage[stage - 1]}";
+            }
         }
     }
     private void SetButtonOfBackUI(GameObject levelButtonPrefab)
@@ -136,14 +138,21 @@ public class CharacterItem : MonoBehaviour
         }
     }
 
-    public void OnCardClick(float duration)
+    public void OnCardClick(float duration, bool playSfx)
     {
         float originalFlipDuration = flipDuration;
         flipDuration = duration;
-        OnCardClick();
+        if (playSfx) OnCardClickWithSfx();
+        else OnCardClickWithNoSfx();
         flipDuration = originalFlipDuration;
     }
-    public void OnCardClick()
+    public void OnCardClickWithSfx()
+    {
+        if (!isSelected || isAnimating) return;
+        AudioManager.Instance.PlaySfx(SfxType.FlipCard);
+        OnCardClickWithNoSfx();
+    }
+    private void OnCardClickWithNoSfx()
     {
         if (!isSelected || isAnimating) return;
 
@@ -180,7 +189,7 @@ public class CharacterItem : MonoBehaviour
             isSelected = true;
             isAnimating = false;
             transform.DOKill();
-            OnCardClick(flipDuration / 2f);
+            OnCardClick(flipDuration / 2f, false);
         }
         isSelected = false;
     }
