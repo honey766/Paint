@@ -309,21 +309,14 @@ public class PlayerController : BlockData
             Vector2Int nextPos = moveToQueue.Dequeue(); // 큐에서 하나 꺼내기
             movingDirection = nextPos - curPos;
             if (!BlockMoveController.Instance.CanMove(curPos, movingDirection))
-            {
-                destPos = curPos;
                 break;
-            }
 
             IncreaseMoveCount();
             RecordMoveData(movingDirection);
             curPos = nextPos;
-            // if (Time.time > colorTileAudioLastTime + colorTileAudioCooldown)
-            // {
-            //     colorTileAudioLastTime = Time.time;
-            //     AudioManager.Instance.PlaySfx(SfxType.ColorTile);
-            // }
             BlockMoveController.Instance.MoveBlocks(this, nextPos - movingDirection, movingDirection);
             PlayerMoveAnimation(nextPos, movingDirection, moveTime);
+            Logger.Log($"Player Move to {curPos}");
             if (!GameManager.Instance.isGaming) break; // 게임오버라면 즉시 종료
 
             Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, movingDirection, Color, moveTime);
@@ -335,6 +328,7 @@ public class PlayerController : BlockData
         }
         if (slidingDirection == Vector2Int.zero)
         {
+            destPos = curPos;
             player.DOScale(1, moveTime / 1.2f);
             isMoving = false;
             if (Time.time - moveStartTime < moveTime)
@@ -362,6 +356,7 @@ public class PlayerController : BlockData
         this.slidingDirection = Vector2Int.zero;
         player.DOScale(1, moveTime / 1.2f);
         isMoving = false;
+        destPos = curPos;
         AudioManager.Instance.StopLoopSfx(SfxType.ColorTile);
     }
 
@@ -421,8 +416,8 @@ public class PlayerController : BlockData
         switch (Color)
         {
             case TileType.None:
-                spriter.color = none;
-                main.startColor = none;
+                spriter.color = Board.Instance.none;
+                main.startColor = Board.Instance.none;
                 break;
             case TileType.White:
                 spriter.color = white;

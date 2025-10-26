@@ -20,6 +20,7 @@ public class Board : SingletonBehaviour<Board>
     [Header("색칠 색")]
     public Color white;
     public Color black;
+    public Color none;
     [SerializeField] private PurpleBorderDrawer purpleBorder;
     [SerializeField] private TileOutlineDrawer tileOutline;
 
@@ -169,6 +170,8 @@ public class Board : SingletonBehaviour<Board>
     {
         switch (type)
         {
+            case TileType.None:
+                return none;
             case TileType.White:
                 return white;
             case TileType.Color1:

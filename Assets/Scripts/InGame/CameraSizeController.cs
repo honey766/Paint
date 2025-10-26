@@ -119,8 +119,8 @@ public class CameraSizeController : MonoBehaviour
         float canvasAspect = canvasRect.rect.height / canvasRect.rect.width;
         float xPixel = (maxXRate - minXRate) * canvasRect.rect.width;
         float yPixel = (maxYRate - minYRate) * canvasRect.rect.height;
-        float n = boardSO.n;
-        float m = boardSO.m + (isTutorial ? 2 : 0);
+        float n = Mathf.Max(6, boardSO.n);
+        float m = Mathf.Max(6, boardSO.m + (isTutorial ? 2 : 0));
         float boardAreaAspect = yPixel / xPixel;
         float boardAspect = m / n;
         centerRate = new Vector2((minXRate + maxXRate) / 2f, (minYRate + maxYRate) / 2f);
