@@ -1,13 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using System.Collections;
 using UnityEngine.SceneManagement;
 using TMPro;
 
 public class CharacterItem : MonoBehaviour
 {
     public int stage; // 1부터 시작
+    public bool isExtra;
 
     [Header("UI References")]
     public Image frontUI; // 카드의 앞면 UI 그룹
@@ -33,9 +33,10 @@ public class CharacterItem : MonoBehaviour
 
     // 초기 데이터 세팅 (이름, 이미지 등)
 
-    public void Setup(Character character, GameObject levelButtonPrefab)
+    public void Setup(Character character, GameObject levelButtonPrefab, bool isExtra)
     {
         stage = character.Index;
+        this.isExtra = isExtra;
 
         // 앞면 이미지 불러오기
         Sprite spriteFront = Resources.Load<Sprite>("Images/" + character.PicName);
@@ -52,39 +53,56 @@ public class CharacterItem : MonoBehaviour
         backUI.sprite = backUISprite;
 
         // 스테이지 진입 가능
-        if (PersistentDataManager.Instance.totalStar >= PersistentDataManager.Instance.stageSO.numOfStarToUnlockStage[stage - 1])
+        if (!isExtra && PersistentDataManager.Instance.totalStar >= PersistentDataManager.Instance.stageSO.numOfStarToUnlockStage[stage - 1])
         {
             SetButtonOfBackUI(levelButtonPrefab);
+        }
+        else if (isExtra) //&& PersistentDataManager.Instance.GetStageTotalStarData(stage) >= 3 * PersistentDataManager.Instance.stageSO.numOfLevelOfStage[stage - 1])
+        {
+            SetButtonOfBackUIExtra(levelButtonPrefab);
         }
         else // 스테이지 진입 불가능
         {
             GameObject obj = Resources.Load<GameObject>("Prefabs/BackUILocked");
             obj = Instantiate(obj, backUI.transform);
-            obj.GetComponentInChildren<TextMeshProUGUI>().text = $"x {PersistentDataManager.Instance.stageSO.numOfStarToUnlockStage[stage - 1]}";
+            if (!isExtra)
+            {
+                obj.transform.GetChild(0).gameObject.SetActive(true);
+                obj.GetComponentInChildren<TextMeshProUGUI>().text = $"x {PersistentDataManager.Instance.stageSO.numOfStarToUnlockStage[stage - 1]}";
+            }
         }
     }
     private void SetButtonOfBackUI(GameObject levelButtonPrefab)
     {
         int numOfLevel = PersistentDataManager.Instance.stageSO.numOfLevelOfStage[stage - 1];
-        int numOfExtraLevel = PersistentDataManager.Instance.stageSO.numOfExtraLevelOfStage[stage - 1];
+
+        int x = -257, y = 575, diff = 256, i;
+        int clearCnt = 0;
+        for (i = 0; i < numOfLevel; i++)
+        {
+            if (PersistentDataManager.Instance.GetStageClearData(stage, i + 1) > 0)
+                clearCnt++;
+            InstantiateButton(levelButtonPrefab,
+                              new Vector2(x + diff * (i % 3), y - diff * (i / 3)),
+                              i + 1,
+                              //true);
+                              i == 0 || clearCnt > i / 3);
+            //i == 0 || PersistentDataManager.Instance.GetStageClearData(stage, i) > 0);
+        }
+    }
+    private void SetButtonOfBackUIExtra(GameObject levelButtonPrefab)
+    {
+        int numOfLevel = PersistentDataManager.Instance.stageSO.numOfLevelOfExtraStage[stage - 1];
 
         int x = -257, y = 575, diff = 256, i;
         for (i = 0; i < numOfLevel; i++)
         {
             InstantiateButton(levelButtonPrefab,
                               new Vector2(x + diff * (i % 3), y - diff * (i / 3)),
-                              i + 1,
-                              i == 0 || PersistentDataManager.Instance.GetStageClearData(stage, i) > 0);
-        }
-
-        //y = 575 - 128 * 9;
-        for (int j = 0; j < numOfExtraLevel; j++)
-        {
-            InstantiateButton(levelButtonPrefab,
-                    new Vector2(x + diff * ((i + j) % 3), y - diff * ((i + j) / 3)),
-                    -j - 1,
-                    PersistentDataManager.Instance.GetStageTotalStarData(stage) >= numOfLevel * 3);
-                    // && (i == 0 || PersistentDataManager.Instance.GetExtraStageClearData(stage, i) > 0));
+                              -i - 1,
+                              true);
+                              //i == 0 || clearCnt > i / 3);
+                              //i == 0 || PersistentDataManager.Instance.GetStageClearData(stage, i) > 0);
         }
     }
     private void InstantiateButton(GameObject levelButtonPrefab, Vector2 anchoredPos, int level, bool canEnter)
@@ -98,7 +116,7 @@ public class CharacterItem : MonoBehaviour
             if (level < 0)
                 button.GetComponent<Image>().sprite = extraButtonSprite;
 
-            string levelStr = (level < 0 ? "Ex" : "") + Mathf.Abs(level).ToString();
+            string levelStr = Mathf.Abs(level).ToString();
             button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = levelStr;
             button.GetComponent<Button>().onClick.AddListener(() => OnStageButtonClick(level));
             // 별 표시
@@ -120,14 +138,21 @@ public class CharacterItem : MonoBehaviour
         }
     }
 
-    public void OnCardClick(float duration)
+    public void OnCardClick(float duration, bool playSfx)
     {
         float originalFlipDuration = flipDuration;
         flipDuration = duration;
-        OnCardClick();
+        if (playSfx) OnCardClickWithSfx();
+        else OnCardClickWithNoSfx();
         flipDuration = originalFlipDuration;
     }
-    public void OnCardClick()
+    public void OnCardClickWithSfx()
+    {
+        if (!isSelected || isAnimating) return;
+        AudioManager.Instance.PlaySfx(SfxType.FlipCard);
+        OnCardClickWithNoSfx();
+    }
+    private void OnCardClickWithNoSfx()
     {
         if (!isSelected || isAnimating) return;
 
@@ -164,13 +189,14 @@ public class CharacterItem : MonoBehaviour
             isSelected = true;
             isAnimating = false;
             transform.DOKill();
-            OnCardClick(flipDuration / 2f);
+            OnCardClick(flipDuration / 2f, false);
         }
         isSelected = false;
     }
 
     public void OnStageButtonClick(int level)
     {
+        // stage, level 데이터 호출 후 PersistentDataManager에 저장
         if (PersistentDataManager.Instance.LoadStageAndLevel(stage, level))
         {
             Logger.Log($"Going To Stage {stage} - {level}");

@@ -5,7 +5,7 @@ public class BrushBlock : BlockData
     public override TileType Type { get; protected set; } = TileType.Brush;
     public override bool HasMutableColor { get; protected set; } = true;
     public override bool HasColor { get; protected set; } = true;
-    public override TileType Color { get; protected set; } = TileType.White;
+    public override TileType Color { get; protected set; } = TileType.None;
 
     private SpriteRenderer spriter;
 

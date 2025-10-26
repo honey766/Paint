@@ -12,117 +12,256 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83fed35bb4bd84548b0da6262a7d9a29, type: 3}
   m_Name: Stage7-2
   m_EditorClassIdentifier: Assembly-CSharp::BoardSO
-  n: 5
-  m: 3
-  startPos: {x: 0, y: 2}
+  n: 7
+  m: 5
+  startPos: {x: 1, y: 0}
   boardTileList:
-  - rid: 83688393860710435
-  - rid: 83688393860710436
-  - rid: 83688393860710437
-  - rid: 83688393860710438
-  - rid: 83688393860710439
-  - rid: 83688393860710440
-  - rid: 83688393860710441
-  - rid: 83688393860710442
-  - rid: 83688393860710443
-  - rid: 83688393860710444
-  - rid: 83688393860710445
-  - rid: 83688393860710446
-  - rid: 83688393860710447
-  - rid: 83688393860710448
-  - rid: 83688393860710449
+  - rid: 83688697783910580
+  - rid: 83688697783910581
+  - rid: 83688697783910582
+  - rid: 83688697783910583
+  - rid: 83688697783910584
+  - rid: 83688697783910585
+  - rid: 83688697783910586
+  - rid: 83688697783910587
+  - rid: 83688697783910588
+  - rid: 83688697783910589
+  - rid: 83688697783910590
+  - rid: 83688697783910591
+  - rid: 83688697783910592
+  - rid: 83688697783910593
+  - rid: 83688697783910594
+  - rid: 83688697783910595
+  - rid: 83688697783910596
+  - rid: 83688697783910597
+  - rid: 83688697783910598
+  - rid: 83688697783910599
+  - rid: 83688697783910600
+  - rid: 83688697783910601
+  - rid: 83688697783910602
+  - rid: 83688697783910603
+  - rid: 83688697783910604
+  - rid: 83688697783910605
+  - rid: 83688697783910606
+  - rid: 83688697783910607
+  - rid: 83688697783910608
+  - rid: 83688697783910609
+  - rid: 83688697783910610
+  - rid: 83688697783910611
+  - rid: 83688697783910612
+  - rid: 83688697783910613
+  - rid: 83688697783910614
+  - rid: 83688697783910615
   targetTileList:
-  - rid: 83688393860710450
-  - rid: 83688393860710451
+  - rid: 83688697783910616
+  - rid: 83688697783910617
+  - rid: 83688697783910618
+  - rid: 83688697783910619
   limitStepForOneStar: -1
-  limitStepForTwoStar: 17
-  limitStepForThreeStar: 13
+  limitStepForTwoStar: 45
+  limitStepForThreeStar: 35
   startPlayerColor: 0
   references:
     version: 2
     RefIds:
-    - rid: 83688393860710435
+    - rid: 83688697783910580
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 0, y: 0}
         type: 1
-    - rid: 83688393860710436
+    - rid: 83688697783910581
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 0, y: 1}
-        type: 7
-    - rid: 83688393860710437
+        type: 1
+    - rid: 83688697783910582
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 0, y: 2}
         type: 1
-    - rid: 83688393860710438
+    - rid: 83688697783910583
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 0, y: 3}
+        type: 1
+    - rid: 83688697783910584
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 1, y: 0}
         type: 1
-    - rid: 83688393860710439
+    - rid: 83688697783910585
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 1, y: 1}
         type: 1
-    - rid: 83688393860710440
+    - rid: 83688697783910586
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 1, y: 2}
-        type: 1
-    - rid: 83688393860710441
+        type: 8
+    - rid: 83688697783910587
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
-        pos: {x: 4, y: 0}
+        pos: {x: 1, y: 3}
         type: 1
-    - rid: 83688393860710442
+    - rid: 83688697783910588
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 2, y: 0}
         type: 1
-    - rid: 83688393860710443
+    - rid: 83688697783910589
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 2, y: 1}
         type: 1
-    - rid: 83688393860710444
+    - rid: 83688697783910590
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 2, y: 2}
         type: 1
-    - rid: 83688393860710445
+    - rid: 83688697783910591
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
-        pos: {x: 4, y: 1}
-        type: 6
-    - rid: 83688393860710446
+        pos: {x: 2, y: 3}
+        type: 1
+    - rid: 83688697783910592
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 3, y: 0}
         type: 1
-    - rid: 83688393860710447
+    - rid: 83688697783910593
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 3, y: 1}
         type: 1
-    - rid: 83688393860710448
+    - rid: 83688697783910594
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 3, y: 2}
         type: 1
-    - rid: 83688393860710449
+    - rid: 83688697783910595
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 3, y: 3}
+        type: 1
+    - rid: 83688697783910596
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 4, y: 3}
+        type: 1
+    - rid: 83688697783910597
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 5, y: 3}
+        type: 1
+    - rid: 83688697783910598
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 5, y: 2}
+        type: 12
+    - rid: 83688697783910599
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 5, y: 1}
+        type: 1
+    - rid: 83688697783910600
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 5, y: 0}
+        type: 1
+    - rid: 83688697783910601
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 4, y: 0}
+        type: 1
+    - rid: 83688697783910602
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 4, y: 1}
+        type: 1
+    - rid: 83688697783910603
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 4, y: 2}
         type: 1
-    - rid: 83688393860710450
+    - rid: 83688697783910604
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
       data:
-        pos: {x: 1, y: 0}
-        type: 4
-    - rid: 83688393860710451
+        pos: {x: 5, y: 4}
+        type: 1
+    - rid: 83688697783910605
       type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 4, y: 4}
+        type: 1
+    - rid: 83688697783910606
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 3, y: 4}
+        type: 1
+    - rid: 83688697783910607
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 2, y: 4}
+        type: 1
+    - rid: 83688697783910608
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 1, y: 4}
+        type: 1
+    - rid: 83688697783910609
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 0, y: 4}
+        type: 1
+    - rid: 83688697783910610
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 6, y: 4}
+        type: 1
+    - rid: 83688697783910611
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 6, y: 3}
+        type: 4
+    - rid: 83688697783910612
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 6, y: 2}
+        type: 4
+    - rid: 83688697783910613
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 6, y: 1}
+        type: 1
+    - rid: 83688697783910614
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 6, y: 0}
+        type: 1
+    - rid: 83688697783910615
+      type: {class: BoardSOIntTileData, ns: , asm: Assembly-CSharp}
       data:
         pos: {x: 2, y: 1}
+        type: 10002
+        intValue: 1
+    - rid: 83688697783910616
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 2, y: 2}
+        type: 4
+    - rid: 83688697783910617
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 3, y: 2}
+        type: 4
+    - rid: 83688697783910618
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 2, y: 3}
+        type: 4
+    - rid: 83688697783910619
+      type: {class: BoardSOTileData, ns: , asm: Assembly-CSharp}
+      data:
+        pos: {x: 3, y: 3}
         type: 4

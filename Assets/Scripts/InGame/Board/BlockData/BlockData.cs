@@ -17,9 +17,6 @@ public abstract class BlockData : MonoBehaviour
     protected WaitForSeconds moveWaitForSeconds;
     protected Coroutine moveCoroutine;
 
-
-    protected abstract void ApplyColorChange(TileType color);
-
     protected virtual void Awake()
     {
         moveWaitForSeconds = new WaitForSeconds(moveTime);
@@ -32,6 +29,7 @@ public abstract class BlockData : MonoBehaviour
     }
 
     #region Color
+    protected abstract void ApplyColorChange(TileType color);
     public void ChangeColor(TileType color)
     {
         if (!HasMutableColor)
@@ -42,6 +40,7 @@ public abstract class BlockData : MonoBehaviour
         ApplyColorChange(color);
     }
     #endregion
+    
     #region Move
     public void StartSliding(Vector2Int startPos, Vector2Int slidingDirection)
     {
@@ -55,10 +54,10 @@ public abstract class BlockData : MonoBehaviour
 
         if (moveCoroutine != null)
             StopCoroutine(moveCoroutine);
-        moveCoroutine = StartCoroutine(StartMoveCoroutine(startPos, slidingDirection));
+        moveCoroutine = StartCoroutine(StartSlidingCoroutine(startPos, slidingDirection));
     }
 
-    protected virtual IEnumerator StartMoveCoroutine(Vector2Int curPos, Vector2Int slidingDirection)
+    protected virtual IEnumerator StartSlidingCoroutine(Vector2Int curPos, Vector2Int slidingDirection)
     {
         while (BlockMoveController.Instance.CanMove(curPos, slidingDirection))
         {
@@ -71,11 +70,13 @@ public abstract class BlockData : MonoBehaviour
         this.slidingDirection = Vector2Int.zero;
     }
 
-    public bool MoveAnimation(Vector2Int nextPos)
+    public bool MoveAnimation(Vector2Int nextPos, bool isRedo = false)
     {
+        AudioManager.Instance.PlaySfx(SfxType.PushBlock);
         Vector2 nextRealPos = Board.Instance.GetTilePos(nextPos.x, nextPos.y);
         transform.DOMove(nextRealPos, moveTime).SetEase(Ease.Linear);
-        Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, nextPos - curPos, Color, moveTime);
+        if (!isRedo)
+            Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, nextPos - curPos, Color, moveTime);
         curPos = nextPos;
         return Board.Instance.CheckGameClear();
     }

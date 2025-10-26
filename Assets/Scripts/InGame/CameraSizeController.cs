@@ -119,8 +119,8 @@ public class CameraSizeController : MonoBehaviour
         float canvasAspect = canvasRect.rect.height / canvasRect.rect.width;
         float xPixel = (maxXRate - minXRate) * canvasRect.rect.width;
         float yPixel = (maxYRate - minYRate) * canvasRect.rect.height;
-        float n = boardSO.n;
-        float m = boardSO.m + (isTutorial ? 2 : 0);
+        float n = Mathf.Max(6, boardSO.n);
+        float m = Mathf.Max(6, boardSO.m + (isTutorial ? 2 : 0));
         float boardAreaAspect = yPixel / xPixel;
         float boardAspect = m / n;
         centerRate = new Vector2((minXRate + maxXRate) / 2f, (minYRate + maxYRate) / 2f);
@@ -129,13 +129,13 @@ public class CameraSizeController : MonoBehaviour
         //Logger.Log($"aspect board: {boardAspect}, boardArea:{boardAreaAspect}");
         if (boardAspect > boardAreaAspect) // 보드를 그릴 수 있는 영역보다 실제 보드의 세로비율이 더 긺
         {
-            // 2*size*(MaxY-minY) = m
+            // 2 * size * (MaxY-minY) = m
             cameraSize = m / 2f / (maxYRate - minYRate);
             //Logger.Log($"zzz m:{m}, min:{minYRate}, max:{maxYRate}");
         }
         else // 보드의 가로비율이 더 긺
         {
-            // 2*size/canvasAspect*(MaxX-minX) = n
+            // 2 * size / canvasAspect * (MaxX-minX) = n
             cameraSize = n / 2f * canvasAspect / (maxXRate - minXRate);
             //Logger.Log($"zzz m:{n}, min:{minXRate}, max:{maxXRate}");
         }

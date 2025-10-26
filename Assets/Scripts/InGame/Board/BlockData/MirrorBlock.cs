@@ -10,8 +10,9 @@ public class MirrorBlock : BlockData
     protected override void ApplyColorChange(TileType color) { }
 
     public bool isBottomLeftToTopRight;
-    private SpriteRenderer mirrorSpriter;
-    private Color defaultColor = new Color(0.44f, 0.71f, 0.62f, 0.65f);
+    private SpriteRenderer mirrorSpriter, glassSpriter;
+    private Color mirrorDefaultColor = new Color(0.44f, 0.71f, 0.62f, 0.65f);
+    private Color glassDefaultColor;
     protected const float mirrorColorChangeTime = 1.2f;
 
     public override void Initialize(BoardSOTileData boardSOTileData)
@@ -19,6 +20,9 @@ public class MirrorBlock : BlockData
         base.Initialize(boardSOTileData);
 
         mirrorSpriter = transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>();
+        glassSpriter = transform.GetChild(0).GetChild(1).GetComponent<SpriteRenderer>();
+        glassDefaultColor = glassSpriter.color;
+
         if (boardSOTileData is BoardSOIntTileData intTileData)
         {
             isBottomLeftToTopRight = intTileData.intValue == 1;
@@ -34,7 +38,16 @@ public class MirrorBlock : BlockData
     public void OnMirrorEnter(TileType color)
     {
         mirrorSpriter.DOKill();
-        mirrorSpriter.color = Board.Instance.GetColorByType(color);
-        mirrorSpriter.DOColor(defaultColor, mirrorColorChangeTime);
+        glassSpriter.DOKill();
+        AudioManager.Instance.PlaySfx(SfxType.MirrorActivation, 0.5f);
+
+        Color colorByType = Board.Instance.GetColorByType(color);
+        mirrorSpriter.color = (UnityEngine.Color.white * 2f + colorByType) / 3f;
+        Color glassColor = (glassDefaultColor * 1.5f + colorByType) / 2.5f;
+        glassColor.a = 0.35f;
+        glassSpriter.color = glassColor;
+        
+        mirrorSpriter.DOColor(mirrorDefaultColor, mirrorColorChangeTime);
+        glassSpriter.DOColor(glassDefaultColor, mirrorColorChangeTime);
     }
 }

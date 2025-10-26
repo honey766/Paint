@@ -4,6 +4,8 @@ using DG.Tweening;
 using System.Collections.Generic;
 using System;
 using System.Collections;
+using UnityEngine.EventSystems;
+using System.Linq;
 
 // JSON 데이터 구조
 [Serializable]
@@ -22,11 +24,14 @@ public class Characters
 }
 
 
-public class CharacterSwiper : MonoBehaviour
+public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 {
     [Header("Core Components")]
+    private Canvas canvas;
     public ScrollRect scrollRect;
-    public RectTransform content;
+    public RectTransform parentContent;
+    public RectTransform[] contents;
+    public RectTransform extraBackground;
     public RectTransform viewport;
     public GameObject characterCardPrefab;
     public GameObject levelButtonPrefab;
@@ -39,16 +44,27 @@ public class CharacterSwiper : MonoBehaviour
     [Header("Snap Settings")]
     public float snapDuration = 0.3f;
     private bool isSnapping = false;
+    private bool isHorizontal = false;
     private Tween snapTween;
-    private int curIndex;
+    private int curHorIndex, curVerIndex;
     private float canvasScaleFactor;
+    private float extraContentHeight;
 
-    private List<RectTransform> cardRects = new List<RectTransform>();
-    private List<CharacterItem> characterItems = new List<CharacterItem>();
+    [Header("Other")]
+    private const float ContentSpacing = 600;
+
+    private List<RectTransform>[] cardRects = new List<RectTransform>[2];
+    private List<CharacterItem>[] characterItems = new List<CharacterItem>[2];
 
     void Start()
     {
-        canvasScaleFactor = GetComponentInParent<Canvas>().scaleFactor;
+        canvas = GetComponentInParent<Canvas>();
+        canvasScaleFactor = canvas.scaleFactor;
+        extraContentHeight = canvas.GetComponent<RectTransform>().rect.height + ContentSpacing;
+        contents[1].anchoredPosition = new Vector2(0, -extraContentHeight);
+        extraBackground.offsetMin = new Vector2(-extraContentHeight, -extraContentHeight); // Bottom
+        extraBackground.offsetMax = new Vector2(extraContentHeight, ContentSpacing);  // Top
+
         LoadAndSetupCharacters();
         StartCoroutine(InitSnapToCard(GetSavedIndex()));
     }
@@ -58,23 +74,30 @@ public class CharacterSwiper : MonoBehaviour
         //if (isSnapping) return;
         UpdateCardTransforms();
     }
-    private int GetSavedIndex()
+    private (int, int) GetSavedIndex()
     {
         // 저장된 인덱스 불러오기 (없으면 0으로 기본값)
-        return PlayerPrefs.GetInt("LastSelectedCard", 0);
+        return (PlayerPrefs.GetInt("LastSelectedCardHorizontal", 0), PlayerPrefs.GetInt("LastSelectedCardVertical", 0));
     }
-    private IEnumerator InitSnapToCard(int index)
+    private IEnumerator InitSnapToCard((int, int) index)
     {
         // 한 프레임 기다렸다가 레이아웃 계산이 끝난 뒤 실행
         yield return null;
+        
+        parentContent.sizeDelta = new Vector2(contents[0].sizeDelta.x, 0);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(parentContent);
 
-        LayoutRebuilder.ForceRebuildLayoutImmediate(content);
+        yield return null;
 
-        if (cardRects.Count > 0 && index >= 0 && index < cardRects.Count)
+        if (cardRects[0].Count > 0 && index.Item1 >= 0 && index.Item1 < cardRects[0].Count)
         {
             float centerX = viewport.position.x;
-            float offset = (centerX - cardRects[index].position.x) / canvasScaleFactor;
-            content.anchoredPosition = new Vector2(content.anchoredPosition.x + offset, content.anchoredPosition.y);
+            float offset = (centerX - cardRects[0][index.Item1].position.x) / canvasScaleFactor;
+            float positionY = index.Item2 * extraContentHeight;
+            //Logger.Log($"centerX {centerX}, offset;{offset}, posY:{positionY}, anchorX:{parentContent.anchoredPosition.x}");
+            //Logger.Log($"add:{parentContent.anchoredPosition.x + offset}");
+            parentContent.anchoredPosition = new Vector2(parentContent.anchoredPosition.x + offset, positionY);
+            //Logger.Log($"anchor:{parentContent.anchoredPosition}");
 
             UpdateCardTransforms();
         }
@@ -92,56 +115,70 @@ public class CharacterSwiper : MonoBehaviour
 
         Characters characterData = JsonUtility.FromJson<Characters>(characterJson.text);
 
-        // JSON 데이터 기반으로 카드 프리팹 생성
-        foreach (var character in characterData.characters)
+        for (int i = 0; i < 2; i++)
         {
-            GameObject cardObject = Instantiate(characterCardPrefab, content);
-            CharacterItem item = cardObject.GetComponent<CharacterItem>();
-            item.Setup(character, levelButtonPrefab);
+            characterItems[i] = new List<CharacterItem>();
+            cardRects[i] = new List<RectTransform>();
+                
+            // JSON 데이터 기반으로 카드 프리팹 생성
+            foreach (var character in characterData.characters)
+            {
+                GameObject cardObject = Instantiate(characterCardPrefab, contents[i]);
+                CharacterItem item = cardObject.GetComponent<CharacterItem>();
+                item.Setup(character, levelButtonPrefab, i == 1);
 
-            // 생성된 카드와 컴포넌트들을 리스트에 저장
-            characterItems.Add(item);
-            cardRects.Add(cardObject.GetComponent<RectTransform>());
+                // 생성된 카드와 컴포넌트들을 리스트에 저장
+                characterItems[i].Add(item);
+                cardRects[i].Add(cardObject.GetComponent<RectTransform>());
 
-            // 카드의 버튼에 OnCardClick 이벤트 연결
-            cardObject.GetComponent<Button>().onClick.AddListener(item.OnCardClick);
+                // 카드의 버튼에 OnCardClick 이벤트 연결
+                cardObject.GetComponent<Button>().onClick.AddListener(item.OnCardClickWithSfx);
+            }
         }
     }
 
     private void UpdateCardTransforms()
     {
-        float centerX = viewport.position.x; //-content.anchoredPosition.x; // 뷰포트의 중심 X좌표
+        float centerX = viewport.position.x;
 
-        for (int i = 0; i < cardRects.Count; i++)
+        for (int j = 0; j < 2; j++)
         {
-            float cardCenterX = cardRects[i].position.x; //cardRects[i].anchoredPosition.x + content.anchoredPosition.x;
-            float distance = Mathf.Abs(cardCenterX - centerX);
-
-            // 거리에 따라 스케일과 Y축 회전값 계산
-            float t = Mathf.Clamp01(distance / spacing);
-            float t2 = 1 - Mathf.Cos(t * Mathf.PI / 2f);
-            float scale = Mathf.Lerp(1f, scaleFactor, t2);//distance / spacing);
-            float rotationY = Mathf.Lerp(0, rotationFactor, distance / spacing) * Mathf.Sign(cardCenterX - centerX);
-
-            // 적용
-            cardRects[i].localScale = Vector3.one * scale;
-            // cardRects[i].localRotation = Quaternion.Euler(0, rotationY, 0);
-
-            // 중앙에 가장 가까운 카드(스케일이 거의 1)를 '선택된' 상태로 만듦
-            if (scale > 0.99f)
+            for (int i = 0; i < cardRects[j].Count; i++)
             {
-                characterItems[i].SetSelected();
-            }
-            else
-            {
-                characterItems[i].SetUnselected();
+                float cardCenterX = cardRects[j][i].position.x;
+                float distance = Mathf.Abs(cardCenterX - centerX);
+
+                // 거리에 따라 스케일과 Y축 회전값 계산
+                float t = Mathf.Clamp01(distance / spacing);
+                float t2 = 1 - Mathf.Cos(t * Mathf.PI / 2f);
+                float scale = Mathf.Lerp(1f, scaleFactor, t2);//distance / spacing);
+                float rotationY = Mathf.Lerp(0, rotationFactor, distance / spacing) * Mathf.Sign(cardCenterX - centerX);
+
+                // 적용
+                cardRects[j][i].localScale = Vector3.one * scale;
+                // cardRects[i].localRotation = Quaternion.Euler(0, rotationY, 0);
+
+                // 중앙에 가장 가까운 카드(스케일이 거의 1)를 '선택된' 상태로 만듦
+                if (scale > 0.99f)
+                {
+                    characterItems[j][i].SetSelected();
+                }
+                else
+                {
+                    characterItems[j][i].SetUnselected();
+                }
             }
         }
     }
 
-    public void OnBeginDrag()
+    public void OnBeginDrag(PointerEventData eventData)
     {
-        curIndex = GetNearestIndex();
+        isHorizontal = Mathf.Abs(eventData.delta.x) > Mathf.Abs(eventData.delta.y);
+        scrollRect.horizontal = isHorizontal;
+        scrollRect.vertical = !isHorizontal;
+
+        (curHorIndex, curVerIndex) = GetNearestIndex();
+        Logger.Log($"({curHorIndex}, {curVerIndex})");
 
         if (snapTween != null && snapTween.IsActive())
         {
@@ -158,51 +195,63 @@ public class CharacterSwiper : MonoBehaviour
     private void SnapToClosest()
     {
         float centerX = viewport.position.x; //-content.anchoredPosition.x;
-        int nearestIndex = GetNearestIndex();
+        float centerY = viewport.position.y;
+        (int nearestHorIndex, int nearestVerIndex) = GetNearestIndex();
 
-        if (curIndex == nearestIndex)
+        if (isHorizontal && curHorIndex == nearestHorIndex)
         {
-            if (scrollRect.velocity.x > 500)
-                nearestIndex = Mathf.Max(nearestIndex - 1, 0);
-            else if (scrollRect.velocity.x < -500)
-                nearestIndex = Mathf.Min(nearestIndex + 1, cardRects.Count - 1);
+            if (scrollRect.velocity.x > 200)
+                nearestHorIndex = Mathf.Max(nearestHorIndex - 1, 0);
+            else if (scrollRect.velocity.x < -200)
+                nearestHorIndex = Mathf.Min(nearestHorIndex + 1, cardRects[0].Count - 1);
+        }
+        else if (!isHorizontal && curVerIndex == nearestVerIndex)
+        {
+            if (scrollRect.velocity.y < -200)
+                nearestVerIndex = Mathf.Max(nearestVerIndex - 1, 0);
+            else if (scrollRect.velocity.y > 200)
+                nearestVerIndex = Mathf.Min(nearestVerIndex + 1, 1);
         }
 
+        AudioManager.Instance.PlaySfx(SfxType.SelectCard);
         scrollRect.StopMovement();
         scrollRect.velocity = Vector2.zero;
 
-        float offset = (centerX - cardRects[nearestIndex].position.x) / canvasScaleFactor;
-        Vector2 targetPos = new Vector2(content.anchoredPosition.x + offset, content.anchoredPosition.y);
+        float offset = (centerX - cardRects[0][nearestHorIndex].position.x) / canvasScaleFactor;
+        Vector2 targetPos = new Vector2(parentContent.anchoredPosition.x + offset, nearestVerIndex * extraContentHeight);
 
         isSnapping = true;
-        snapTween = content.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
+        snapTween = parentContent.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
         {
             isSnapping = false;
-            PlayerPrefs.SetInt("LastSelectedCard", nearestIndex);
+            PlayerPrefs.SetInt("LastSelectedCardHorizontal", nearestHorIndex);
+            PlayerPrefs.SetInt("LastSelectedCardVertical", nearestVerIndex);
             PlayerPrefs.Save();
         });
     }
 
-    private int GetNearestIndex()
+    private (int, int) GetNearestIndex()
     {
-        float centerX = viewport.position.x; //-content.anchoredPosition.x;
+        float centerX = viewport.position.x;
         float minDistance = float.MaxValue;
-        int nearestIndex = 0;
 
-        for (int i = 0; i < cardRects.Count; i++)
+        int nearestHorIndex = 0;
+        int nearestVerIndex = cardRects[0][0].position.y / canvasScaleFactor < extraContentHeight ? 0 : 1;
+
+        for (int i = 0; i < cardRects[0].Count; i++)
         {
-            float distance = Mathf.Abs(cardRects[i].position.x - centerX); //Mathf.Abs(cardRects[i].anchoredPosition.x - centerX);
+            float distance = Mathf.Abs(cardRects[0][i].position.x - centerX); //Mathf.Abs(cardRects[i].anchoredPosition.x - centerX);
             if (distance < minDistance)
             {
                 minDistance = distance;
-                nearestIndex = i;
+                nearestHorIndex = i;
             }
         }
-        return nearestIndex;
+        return (nearestHorIndex, nearestVerIndex);
     }
 
     public void FlipCardImmediately()
     {
-        characterItems[PlayerPrefs.GetInt("LastSelectedCard", 0)].OnCardClick(0);
+        characterItems[PlayerPrefs.GetInt("LastSelectedCardVertical", 0)][PlayerPrefs.GetInt("LastSelectedCardHorizontal", 0)].OnCardClick(0, true);
     }
 }

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using UnityEngine.Rendering;
 
 public class GameManager : SingletonBehaviour<GameManager>
 {
@@ -44,14 +45,11 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private Image color12WarningBackground;
     private TextMeshProUGUI color12WarningText;
     private Image color12WarningRestartButton;
-    private readonly Color color12WarningTextColor = new Color(0.3803922f, 0.3921569f, 0.4f, 1f);
+    private Color color12WarningTextColor = new Color(0.3803922f, 0.3921569f, 0.4f, 1f);
 
     [Header("Movement Mode")]
     [SerializeField] private TileClickEvent tileTouchScript;
     [SerializeField] private JoyStickInputController joyStickScript;
-
-    [Header("Hint")]
-    public GameObject highlightHintObj;
 
     private int stage, level, star;
 
@@ -85,7 +83,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         cameraSizeController.AdjustCameraSize(boardSO, isTutorial);
 
         star = 3;
- 
+
         Invoke("InitializeUISetup", 0.05f);
 
         SetMovementMode();
@@ -99,6 +97,14 @@ public class GameManager : SingletonBehaviour<GameManager>
                 tutorialController = Instantiate(tutorialControllerPrefab).GetComponent<TutorialController>();
                 tutorialController.FirstTutorialEvent();
             }
+        }
+    }
+    
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && isGaming)
+        {
+            Pause();
         }
     }
 
@@ -153,8 +159,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void UpdateMoveCount(int moveCount)
     {
         MoveCountText.text = moveCount.ToString();
-        if (moveCount < 10) MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-41, -10);
-        else MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(-15, -10);
+        // if (moveCount < 10) MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(590, -2);
+        // else MoveCountText.GetComponent<RectTransform>().anchoredPosition = new Vector2(630, -2);
         // float sliderTargetValue;
 
         if (moveCount <= boardSO.limitStepForThreeStar)
@@ -199,7 +205,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         for (int i = 0; i < 3; i++)
             starImages[i].transform.parent.gameObject.SetActive(false);
     }
-    public void ShowStar()
+    public void ShowStarForTutorial()
     {
         Color color = starImages[0].color;
         for (int i = 0; i < 3; i++)
@@ -207,6 +213,20 @@ public class GameManager : SingletonBehaviour<GameManager>
             starImages[i].transform.parent.gameObject.SetActive(true);
             starImages[i].color = new Color(color.r, color.g, color.b, 0);
             starImages[i].DOColor(color, 0.8f);
+        }
+    }
+    public void RedoStar(int moveCount)
+    {
+        Color color = starImages[0].color;
+        int[] limitStep = new int[] { boardSO.limitStepForThreeStar, boardSO.limitStepForTwoStar, boardSO.limitStepForOneStar };
+        for (int i = 2; i >= 0; i--)
+        {
+            if (limitStep[i] != -1 && moveCount > limitStep[i] || starImages[i].gameObject.activeSelf)
+                continue;
+            starImages[i].gameObject.SetActive(true);
+            starImages[i].color = new Color(color.r, color.g, color.b, 0);
+            starImages[i].DOColor(color, 0.8f);
+            star = 3 - i;
         }
     }
 
@@ -247,7 +267,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         gameClearObj.SetActive(true);
         PersistentDataManager.Instance.SetStageClearData(star);
 
-        if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfExtraLevelOfStage[stage - 1])
+        if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
             goToNextLevelText.text = "다음 스테이지";
         else if (level < 0)
             goToNextLevelText.text = "다음 Ex단계";
@@ -255,7 +275,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             goToNextLevelText.text = "다음 단계";
         goToExtraObj.SetActive(
             level == stageSO.numOfLevelOfStage[stage - 1]
-            && stageSO.numOfExtraLevelOfStage[stage - 1] > 0
+            && stageSO.numOfLevelOfExtraStage[stage - 1] > 0
             && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= stageSO.numOfLevelOfStage[stage - 1] * 3
         );
         
@@ -265,6 +285,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void Pause()
     {
         isGaming = false;
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
         UIManager.Instance.OpenMenu(true);
     }
 
@@ -276,6 +297,7 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     public void Restart()
     {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
         Board.Instance.InitBoardWhenRestart(boardSO);
         PlayerController.Instance.InitPlayer(boardSO);
         InitStatus();
@@ -289,6 +311,7 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     public void ShowHint()
     {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
         if (stage == 1 && level == 1)
         {
             tutorialController.ShowHint();
@@ -309,7 +332,7 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     public void GoToNextStage()
     {
-        if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfExtraLevelOfStage[stage - 1])
+        if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
         {
             if (stageSO.numOfStage == stage || PersistentDataManager.Instance.totalStar < stageSO.numOfStarToUnlockStage[stage])
             {
@@ -327,13 +350,16 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         else // 엑스트라 레벨일 때
         {
-            nextStage = level == -stageSO.numOfExtraLevelOfStage[stage - 1] ? stage + 1 : stage;
-            nextLevel = level == -stageSO.numOfExtraLevelOfStage[stage - 1] ? 1 : level - 1;
+            nextStage = level == -stageSO.numOfLevelOfExtraStage[stage - 1] ? stage + 1 : stage;
+            nextLevel = level == -stageSO.numOfLevelOfExtraStage[stage - 1] ? 1 : level - 1;
         }
         if (PersistentDataManager.Instance.LoadStageAndLevel(nextStage, nextLevel))
         {
-            if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfExtraLevelOfStage[stage - 1])
-                PlayerPrefs.SetInt("LastSelectedCard", stage);
+            if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
+            {
+                PlayerPrefs.SetInt("LastSelectedCardHorizontal", stage);
+                PlayerPrefs.SetInt("LastSelectedCardVertical", 0);
+            }
             UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
         }
         else
@@ -346,6 +372,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (PersistentDataManager.Instance.LoadStageAndLevel(stage, -1))
         {
+            PlayerPrefs.SetInt("LastSelectedCardVertical", 1);
             UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
         }
         else
@@ -387,24 +414,29 @@ public class GameManager : SingletonBehaviour<GameManager>
             }
             color12WarningParent.SetActive(true);
             color12WarningBackground.color = new Color(1, 1, 1, 0);
-            color12WarningText.color = new Color(0, 0, 0, 0);
+            color12WarningTextColor.a = 0;
+            color12WarningText.color = color12WarningTextColor;
             color12WarningRestartButton.color = new Color(1, 1, 1, 0);
             color12WarningBackground.DOColor(new Color(1, 1, 1, 0.5f), 0.6f);
+            color12WarningTextColor.a = 1;
             color12WarningText.DOColor(color12WarningTextColor, 0.6f);
             color12WarningRestartButton.DOColor(Color.white, 0.6f);
         }
         else
         {
-            color12WarningBackground.transform.parent.gameObject.SetActive(false);
+            color12WarningBackground.DOColor(new Color(1, 1, 1, 0), 0.3f);
+            color12WarningTextColor.a = 0;
+            color12WarningText.DOColor(color12WarningTextColor, 0.3f);
+            color12WarningRestartButton.DOColor(new Color(1, 1, 1, 0), 0.3f).OnComplete(
+                () => color12WarningBackground.transform.parent.gameObject.SetActive(false));
         }
     }
 
-    public void Color12Warning()
+    public void Color12Warning(bool isActive)
     {
-        if (color12WarningBackground.transform.parent.gameObject.activeSelf)
+        if (isActive == color12WarningBackground.transform.parent.gameObject.activeSelf)
             return;
-
-        SetColor12Warning(true);
+        SetColor12Warning(isActive);
         // RectTransform rect = color12Warning.GetComponent<RectTransform>();
         // rect.anchoredPosition = new Vector2(0, -310);
         // rect.DOAnchorPosY(115, rectDuration).SetEase(gogoEase);

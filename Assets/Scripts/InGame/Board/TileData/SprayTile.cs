@@ -7,19 +7,9 @@ public class SprayTile : TileData
     protected const float myTileColorChangeTime = 0.5f;
     protected const float colorOneTileSpeed = 0.06f;
     protected int paintCount;
-    protected Vector2Int pos;
     protected WaitForSeconds waitColorOneTile;
     protected ParticleSystem particle;
-
-    public override void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)
-    {
-        if (!block.HasColor)
-            return;
-        Color c = Board.Instance.GetColorByType(color);
-        StartCoroutine(MyTileColorChange(c));
-        if (color == TileType.Color1 || color == TileType.Color2)
-            StartCoroutine(DoSprayTile(direction, color));
-    }
+    protected Coroutine doSprayTileCoroutine;
 
     public override void Initialize(BoardSOTileData boardSOTileData)
     {
@@ -27,9 +17,10 @@ public class SprayTile : TileData
 
         // particle = GetComponentInChildren<ParticleSystem>();
         // particle.Stop();
+        doSprayTileCoroutine = null;
+
         if (boardSOTileData is BoardSOIntTileData intTileData)
         {
-            pos = intTileData.pos;
             paintCount = intTileData.intValue < 0 ? 1_000_000_000 : intTileData.intValue;
             waitColorOneTile = new WaitForSeconds(colorOneTileSpeed);
         }
@@ -37,6 +28,17 @@ public class SprayTile : TileData
         {
             Logger.LogError($"SprayTile에 잘못된 데이터 타입이 전달되었습니다. : {boardSOTileData}");
         }
+    }
+
+    public override void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)
+    {
+        if (!block.HasColor)
+            return;
+        Color c = Board.Instance.GetColorByType(color);
+        ColorDirectlyForRedo(direction, color);
+        StartCoroutine(MyTileColorChange(c));
+        if (color == TileType.Color1 || color == TileType.Color2)
+            doSprayTileCoroutine = StartCoroutine(DoSprayTile(direction, color));
     }
 
     protected IEnumerator MyTileColorChange(Color color)
@@ -51,7 +53,8 @@ public class SprayTile : TileData
     protected IEnumerator DoSprayTile(Vector2Int direction, TileType colorType)
     {
         Vector2Int curPos = pos;
-        
+        AudioManager.Instance.PlaySfx(SfxType.EnterSpray);
+
         // DoParticleEffect(curPos, direction, colorType);
         // particle.transform.position = transform.position;
         // particle.Play();
@@ -67,9 +70,10 @@ public class SprayTile : TileData
             // DoParticleEffect(curPos, direction, colorType);
 
             if (tileData is NormalTile normalTile)
-                normalTile.AddTileColor(colorType, 0);
-            else if (tileData is DirectedSprayTile directedSprayTile)
-                directedSprayTile.OnColorEnter(colorType);
+                normalTile.AddTileColorForSprayTile(colorType);
+            // else if (tileData is DirectedSprayTile directedSprayTile)
+            //     directedSprayTile.OnColorEnter(colorType);
+            // 다시 살린다면 아래 함수도 신경쓸 것
             else if (tileData is ReversePaintTile)
                 colorType = colorType.GetOppositeColor();
 
@@ -86,7 +90,44 @@ public class SprayTile : TileData
                 break;
             yield return waitColorOneTile;
         }
+
+
         // particle.Stop();
+    }
+
+    protected void ColorDirectlyForRedo(Vector2Int direction, TileType colorType)
+    {
+        Vector2Int curPos = pos;
+
+        for (int i = 0; i < paintCount; i++)
+        {
+            Logger.Log($"{i} {i}");
+            curPos += direction;
+            // 타일이 없으면 즉시 종료
+            if (!Board.Instance.board.TryGetValue(curPos, out TileData tileData))
+                break;
+
+            if (tileData is NormalTile)
+            {
+                Board.Instance.boardTypeForRedo[curPos] = Board.Instance.boardTypeForRedo[curPos].AddColorToNormalTile(colorType);
+                Logger.Log($"{Board.Instance.boardTypeForRedo[curPos]}");
+            }
+            else if (tileData is ReversePaintTile)
+                colorType = colorType.GetOppositeColor();
+
+            if (Board.Instance.blocks.TryGetValue(curPos, out BlockData blockData))
+                if (blockData is MirrorBlock mirrorBlock)
+                    ChangeDirectionDueToMirror(ref direction, mirrorBlock.isBottomLeftToTopRight);
+        }
+    }
+
+    public void StopSpraying()
+    {
+        if (doSprayTileCoroutine != null)
+        {
+            StopCoroutine(doSprayTileCoroutine);
+            doSprayTileCoroutine = null;
+        }
     }
 
     private void DoParticleEffect(Vector2Int curPos, Vector2Int direction, TileType color)

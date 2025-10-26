@@ -18,8 +18,8 @@ public class TutorialController : MonoBehaviour
     private GameObject tutorialArrowObj;
     private GameObject tutorialTouchAnimationObj;
     private GameObject tutorial1_1_2AnswerObj, tutorial1_1_3AnswerObj;
-    private RectTransform hintButton, restartButton;
-    private Vector2 restartButtonPos;
+    //private GameObject highlightHintTextObj;
+    private GameObject hintButton, hintExplainText, redoButton, redoExplainText, restartExplainText;
     // private bool tutorialIsOpenedAnswerButton;
     private int firstTutorialArrowStatus;
     private RectTransform moveCountTutoRect;
@@ -29,23 +29,32 @@ public class TutorialController : MonoBehaviour
     {
         //color12Border = GameObject.Find("Color12BorderDrawer").GetComponent<MeshRenderer>();
         color12Lines = GameObject.Find("PurpleLines");
-        hintButton = GameObject.Find("HintButton").GetComponent<RectTransform>();
-        restartButton = GameObject.Find("RestartButton").GetComponent<RectTransform>();
-        hintButton.gameObject.SetActive(false);
-        restartButtonPos = restartButton.anchoredPosition;
-        restartButton.anchoredPosition = new Vector2(0, restartButtonPos.y);
+
+        hintButton = GameObject.Find("HintButton");
+        hintExplainText = hintButton.transform.GetChild(1).gameObject;
+        hintButton.SetActive(false);
+        hintExplainText.SetActive(true);
+
+        redoButton = GameObject.Find("RedoButton");
+        redoExplainText = redoButton.transform.GetChild(2).gameObject;
+        redoButton.SetActive(false);
+        redoExplainText.SetActive(true);
+
+        restartExplainText = GameObject.Find("RestartButton").transform.GetChild(2).gameObject;
+        restartExplainText.SetActive(true);
+
         tutorialArrowObj = null;
         tutorialTouchAnimationObj = null;
         moveCountTutoRect = null;
         GameManager.Instance.HideStar();
     }
 
-    private void Update()
-    {
-        if (tutorialLevel < 2 || moveCountTutoRect == null) return;
-        int digits = Mathf.Clamp(PlayerController.Instance.moveCount.ToString().Length, 2, 7);
-        moveCountTutoRect.anchoredPosition = new Vector2(-71 * digits, 15.7f);
-    }
+    // private void Update()
+    // {
+    //     if (tutorialLevel < 2 || moveCountTutoRect == null) return;
+    //     int digits = Mathf.Clamp(PlayerController.Instance.moveCount.ToString().Length, 2, 7);
+    //     moveCountTutoRect.anchoredPosition = new Vector2(-71 * digits, 15.7f);
+    // }
 
     public void TutorialClearEvent(int star)
     {
@@ -68,11 +77,14 @@ public class TutorialController : MonoBehaviour
             GameManager.Instance.isGaming = false; // Start에서 isGaming이 true가 되므로 한 번 더 false
             PlayerController.Instance.MoveEvent = null;
             hintButton.gameObject.SetActive(true);
-            restartButton.anchoredPosition = restartButtonPos;
+            redoButton.SetActive(true);
         }
         else if (tutorialLevel == 2)
         {
             PersistentDataManager.Instance.LoadTutorialLevel(3);
+            Transform blackLineParent = GameObject.Find("BlackLines").transform;
+            foreach (Transform child in blackLineParent)
+                child.gameObject.SetActive(false);
             GameManager.Instance.Start();
             ThirdTutorialEvent();
         }
@@ -212,13 +224,13 @@ public class TutorialController : MonoBehaviour
         moveTutoText.offsetMax = new Vector2(-130, moveTutoText.offsetMax.y); // Right
         moveTutoText.GetComponent<TextMeshProUGUI>().text =
             "플레이어의 이동횟수가 적을수록 ↗\n"
-          + "더 많은 <color=#B6A33F>별</color>을 획득해요.";
+          + "더 많은 <color=#B6A33F>별</color>을 획득해요.  ";
         moveCountTutoRect = moveTutoText.transform.parent.GetChild(2).GetComponent<RectTransform>();
         moveCountTutoRect.gameObject.SetActive(true);
-        GameManager.Instance.highlightHintObj.SetActive(false);
+        //highlightHintTextObj.SetActive(false);
         if (tutorial1_1_2AnswerObj != null)
             Destroy(tutorial1_1_2AnswerObj);
-        GameManager.Instance.ShowStar();
+        GameManager.Instance.ShowStarForTutorial();
     }
     private void ThirdTutorialEventAfterSeconds()
     {
@@ -228,7 +240,7 @@ public class TutorialController : MonoBehaviour
 
     public void HighlightTutorialAnswer()
     {
-        GameManager.Instance.highlightHintObj.SetActive(true);
+        // highlightHintTextObj.SetActive(true);
     }
 
     public void ShowHint()

@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 #region TileType
@@ -178,19 +177,25 @@ public abstract class TileData : MonoBehaviour
 
     protected SpriteRenderer spriter;
     protected float paintTime = 0.25f;
+    public Vector2Int pos { get; private set; }
+    private static readonly int AddColorID = Shader.PropertyToID("_AddColor");
+    private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor");
+    // private static readonly int RatioID = Shader.PropertyToID("_ratio");
+    // private static readonly int RandomNoiseID = Shader.PropertyToID("_randomNoise");
 
     public abstract void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime);
 
     public virtual void Initialize(BoardSOTileData boardSOTileData)
     {
         Type = boardSOTileData.type;
+        pos = boardSOTileData.pos;
         spriter = gameObject.GetComponent<SpriteRenderer>();
-        spriter.material.SetColor("_BaseColor", Board.Instance.white);
-        spriter.material.SetColor("_AddColor", Board.Instance.white);
+        spriter.material.SetColor(BaseColorID, Board.Instance.white);
+        spriter.material.SetColor(AddColorID, Board.Instance.white);
 
         ValidateInitialization();
-        if (Type.ShouldDrawTile())
-            DrawTile();
+        if (this is NormalTile normalTile)
+            normalTile.DrawTile();
     }
 
     // 초기화 검증 메서드
@@ -199,49 +204,6 @@ public abstract class TileData : MonoBehaviour
         if (spriter == null)
         {
             Logger.LogError($"SpriteRenderer component not found on {GetType().Name}");
-        }
-    }
-
-    public void WaitAndDrawTile(float waitTime)
-    {
-        Invoke(nameof(DrawTile), waitTime);
-    }
-
-    public void DrawTile()
-    {
-        // 필수 컴포넌트 검증
-        if (spriter == null)
-        {
-            Debug.LogWarning($"Cannot draw tile: SpriteRenderer is null for {Type}");
-            return;
-        }
-
-        // 이 타일 타입이 그려져야 하는지 확인
-        if (!Type.ShouldDrawTile())
-        {
-            Debug.LogWarning($"DrawTile called for {Type}, but this type doesn't support drawing");
-            return;
-        }
-
-        Color curColor = spriter.material.GetColor("_AddColor");
-        spriter.material.SetColor("_BaseColor", curColor);
-        spriter.material.SetFloat("_ratio", 0);
-        spriter.material.SetFloat("_randomNoise", Random.Range(0f, 1.2f));
-
-        spriter.material.SetColor("_AddColor", Board.Instance.GetColorByType(Type));
-
-        if (gameObject.activeInHierarchy)
-            StartCoroutine(DrawTileCoroutine());
-    }
-
-    protected IEnumerator DrawTileCoroutine()
-    {
-        if (spriter != null)
-        {
-            yield return MyCoroutine.WaitFor(paintTime * Random.Range(0.85f, 1f), (t) =>
-            {
-                spriter.material.SetFloat("_ratio", t + 0.01f);
-            });
         }
     }
 }
