@@ -26,14 +26,18 @@ public class DirectedSprayTile : SprayTile
 
     public override void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)
     {
+        base.OnBlockEnter(block, pos, direction, color, moveTime);
+        
         if (!block.HasColor)
             return;
+        if (color != TileType.Color1 && color != TileType.Color2)
+            return;
+
         TileType colorType = doPaintReverse ? color.GetOppositeColor() : color;
         ColorDirectlyForRedo(this.direction, colorType);
         Color c = Board.Instance.GetColorByType(colorType);
         StartCoroutine(MyTileColorChange(c));
-        if (colorType == TileType.Color1 || colorType == TileType.Color2)
-            doSprayTileCoroutine = StartCoroutine(DoSprayTile(this.direction, colorType));
+        doSprayTileCoroutine = StartCoroutine(DoSprayTile(this.direction, colorType));
     }
 
     public void OnColorEnter(TileType colorType)

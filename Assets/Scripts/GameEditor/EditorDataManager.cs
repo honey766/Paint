@@ -304,6 +304,7 @@ public class EditorDataManager : MonoBehaviour
             case TileType.Color1Paint:
             case TileType.Color2Paint:
             case TileType.ReversePaint:
+            case TileType.WhitePaint:
                 tileDrawer.ChangeTileColor(tileInfo);
                 break;
             case TileType.Spray:

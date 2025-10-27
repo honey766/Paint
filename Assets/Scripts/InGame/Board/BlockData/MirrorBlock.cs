@@ -7,6 +7,7 @@ public class MirrorBlock : BlockData
     public override bool HasMutableColor { get; protected set; } = false;
     public override bool HasColor { get; protected set; } = false;
     public override TileType Color { get; protected set; } = TileType.None;
+    public override bool IsTransparent { get; protected set; } = true;
     protected override void ApplyColorChange(TileType color) { }
 
     public bool isBottomLeftToTopRight;

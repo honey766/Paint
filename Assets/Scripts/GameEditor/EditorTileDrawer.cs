@@ -30,6 +30,7 @@ public class EditorTileDrawer : MonoBehaviour
         switch (tileInfo.type)
         {
             case TileType.White:
+            case TileType.WhitePaint:
                 tileInfo.spriter.color = white;
                 break;
             case TileType.Color1:

@@ -42,6 +42,7 @@ public class PlayerController : BlockData
     public override bool HasMutableColor { get; protected set; } = true;
     public override bool HasColor { get; protected set; } = true;
     public override TileType Color { get; protected set; } = TileType.White;
+    public override bool IsTransparent { get; protected set; } = false;
 
     public Action<Vector2Int> MoveEvent;
 

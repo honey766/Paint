@@ -32,13 +32,17 @@ public class SprayTile : TileData
 
     public override void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)
     {
+        base.OnBlockEnter(block, pos, direction, color, moveTime);
+        
         if (!block.HasColor)
             return;
+        if (color != TileType.Color1 && color != TileType.Color2)
+            return;
+            
         Color c = Board.Instance.GetColorByType(color);
         ColorDirectlyForRedo(direction, color);
         StartCoroutine(MyTileColorChange(c));
-        if (color == TileType.Color1 || color == TileType.Color2)
-            doSprayTileCoroutine = StartCoroutine(DoSprayTile(direction, color));
+        doSprayTileCoroutine = StartCoroutine(DoSprayTile(direction, color));
     }
 
     protected IEnumerator MyTileColorChange(Color color)
