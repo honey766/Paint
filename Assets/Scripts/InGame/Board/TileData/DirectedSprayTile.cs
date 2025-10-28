@@ -37,17 +37,17 @@ public class DirectedSprayTile : SprayTile
         ColorDirectlyForRedo(this.direction, colorType);
         Color c = Board.Instance.GetColorByType(colorType);
         StartCoroutine(MyTileColorChange(c));
-        doSprayTileCoroutine = StartCoroutine(DoSprayTile(this.direction, colorType));
+        StartSpray(this.direction, colorType);
     }
 
-    public void OnColorEnter(TileType colorType)
-    {
-        colorType = doPaintReverse ? colorType.GetOppositeColor() : colorType;
-        Color color = Board.Instance.GetColorByType(colorType);
-        StartCoroutine(MyTileColorChange(color));
-        if (colorType == TileType.Color1 || colorType == TileType.Color2)
-            StartCoroutine(DoSprayTile(direction, colorType));
-    }
+    // public void OnColorEnter(TileType colorType)
+    // {
+    //     colorType = doPaintReverse ? colorType.GetOppositeColor() : colorType;
+    //     Color color = Board.Instance.GetColorByType(colorType);
+    //     StartCoroutine(MyTileColorChange(color));
+    //     if (colorType == TileType.Color1 || colorType == TileType.Color2)
+    //         StartCoroutine(DoSprayTile(direction, colorType));
+    // }
 
     private void SetChildTriangleRotationAndColor()
     {

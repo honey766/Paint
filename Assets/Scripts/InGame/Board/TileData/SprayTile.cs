@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ public class SprayTile : TileData
     protected int paintCount;
     protected WaitForSeconds waitColorOneTile;
     protected ParticleSystem particle;
-    protected Coroutine doSprayTileCoroutine;
+    protected HashSet<IEnumerator> doSprayTileCoroutines = new();
 
     public override void Initialize(BoardSOTileData boardSOTileData)
     {
@@ -17,7 +18,7 @@ public class SprayTile : TileData
 
         // particle = GetComponentInChildren<ParticleSystem>();
         // particle.Stop();
-        doSprayTileCoroutine = null;
+        doSprayTileCoroutines.Clear();
 
         if (boardSOTileData is BoardSOIntTileData intTileData)
         {
@@ -42,7 +43,8 @@ public class SprayTile : TileData
         Color c = Board.Instance.GetColorByType(color);
         ColorDirectlyForRedo(direction, color);
         StartCoroutine(MyTileColorChange(c));
-        doSprayTileCoroutine = StartCoroutine(DoSprayTile(direction, color));
+        // doSprayTileCoroutines.Add(StartCoroutine(DoSprayTile(direction, color)));
+        StartSpray(direction, color);
     }
 
     protected IEnumerator MyTileColorChange(Color color)
@@ -54,7 +56,20 @@ public class SprayTile : TileData
         });
     }
 
-    protected IEnumerator DoSprayTile(Vector2Int direction, TileType colorType)
+    protected void StartSpray(Vector2Int direction, TileType colorType)
+    {
+        IEnumerator routine = DoSprayTile(direction, colorType);
+        doSprayTileCoroutines.Add(routine);
+        StartCoroutine(SprayTileWrapper(routine));
+    }
+
+    private IEnumerator SprayTileWrapper(IEnumerator routine)
+    {
+        yield return StartCoroutine(routine);
+        doSprayTileCoroutines.Remove(routine);
+    }
+
+    private IEnumerator DoSprayTile(Vector2Int direction, TileType colorType)
     {
         Vector2Int curPos = pos;
         AudioManager.Instance.PlaySfx(SfxType.EnterSpray);
@@ -127,10 +142,11 @@ public class SprayTile : TileData
 
     public void StopSpraying()
     {
-        if (doSprayTileCoroutine != null)
+        if (doSprayTileCoroutines != null)
         {
-            StopCoroutine(doSprayTileCoroutine);
-            doSprayTileCoroutine = null;
+            foreach (var entry in doSprayTileCoroutines)
+                StopCoroutine(entry);
+            doSprayTileCoroutines.Clear();
         }
     }
 
