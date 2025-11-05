@@ -95,14 +95,14 @@ public class BlockMoveController : SingletonBehaviour<BlockMoveController>
         if (!board.ContainsKey(curPos))
             return false;
         // 블록이 없다면 이동 가능
-        if (!blocks.ContainsKey(curPos))
+        if (!(blocks.TryGetValue(curPos, out BlockData block) && !IsFakePlayerBlock(curPos, block)))
             return true;
 
         // 한 칸 더 갔을 때 블록이 있다면 이동 불가능
         curPos += direction;
         if (!board.ContainsKey(curPos))
             return false;
-        return !blocks.ContainsKey(curPos);
+        return !(blocks.TryGetValue(curPos, out block) && !IsFakePlayerBlock(curPos, block));
     }
 
     // 밀 수 있는 상태를 가정
@@ -115,7 +115,7 @@ public class BlockMoveController : SingletonBehaviour<BlockMoveController>
         Vector2Int tempPos = curPos + direction;
         int blockCount = 1;
 
-        if (blocks.TryGetValue(tempPos, out block) && block.slidingDirection != direction)
+        if (blocks.TryGetValue(tempPos, out block) && !IsFakePlayerBlock(tempPos, block) && block.slidingDirection != direction)
         {
             block.MoveAnimation(tempPos + direction);
             blocks[tempPos + direction] = block;
@@ -124,23 +124,34 @@ public class BlockMoveController : SingletonBehaviour<BlockMoveController>
         blocks[tempPos] = originBlock;
 
         // ice타일 검사
-        tempPos = curPos;
-        for (int i = 0; i < blockCount; i++)
-        {
-            tempPos += direction;
-            if (board[tempPos].Type != TileType.Ice)
-                return;
+        // tempPos = curPos;
+        // for (int i = 0; i < blockCount; i++)
+        // {
+        //     tempPos += direction;
+        //     if (board[tempPos].Type != TileType.Ice)
+        //         return;
+
+        //     block = blocks[tempPos];
+        //     if (block.slidingDirection != direction)
+        //     {
+        //         if (block.Type == TileType.Player)
+        //         {
+        //             tileClickScript.lastTile = null;
+        //             PlayerController.Instance.ClearMoveQueue();
+        //         }
+        //         block.StartSliding(tempPos, direction);
+        //     }
+        // }
+    }
     
-            block = blocks[tempPos];
-            if (block.slidingDirection != direction)
-            {
-                if (block.Type == TileType.Player)
-                {
-                    tileClickScript.lastTile = null;
-                    PlayerController.Instance.ClearMoveQueue();
-                }
-                block.StartSliding(tempPos, direction);
-            }
+    // 혹시라도 잘못되어 현재 플레이어가 위치한 곳이 아닌 곳에 플레이어 블록이라고 남아있는지 체크
+    private bool IsFakePlayerBlock(Vector2Int pos, BlockData block)
+    {
+        if (block.Type == TileType.Player && pos != PlayerController.Instance.curPos)
+        {
+            blocks.Remove(pos);
+            return true;
         }
+        return false;
     }
 }

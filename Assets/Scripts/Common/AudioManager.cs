@@ -300,8 +300,6 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         }
         
         currentSrc.Play();
-
-        Logger.Log($"{sfxType} loop start (Crossfade mode) from {currentSrc.time:F2}s");
         
         while (loopingFlags.Contains(sfxType))
         {
@@ -338,7 +336,6 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         }
 
         // 3. 끝맺음
-        Logger.Log($"{sfxType} end fade out");
 
         if (clip.outroClip != null)
         {

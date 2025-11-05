@@ -7,6 +7,7 @@ public class SprayTile : TileData
 {
     protected const float myTileColorChangeTime = 0.5f;
     protected const float colorOneTileSpeed = 0.06f;
+    protected const int maxSprayCount = 1000;
     protected int paintCount;
     protected WaitForSeconds waitColorOneTile;
     protected ParticleSystem particle;
@@ -22,7 +23,7 @@ public class SprayTile : TileData
 
         if (boardSOTileData is BoardSOIntTileData intTileData)
         {
-            paintCount = intTileData.intValue < 0 ? 1_000_000_000 : intTileData.intValue;
+            paintCount = intTileData.intValue < 0 ? maxSprayCount : intTileData.intValue;
             waitColorOneTile = new WaitForSeconds(colorOneTileSpeed);
         }
         else
@@ -58,6 +59,7 @@ public class SprayTile : TileData
 
     protected void StartSpray(Vector2Int direction, TileType colorType)
     {
+        Logger.Log($"STartSpray {direction}");
         IEnumerator routine = DoSprayTile(direction, colorType);
         doSprayTileCoroutines.Add(routine);
         StartCoroutine(SprayTileWrapper(routine));
@@ -120,7 +122,7 @@ public class SprayTile : TileData
 
         for (int i = 0; i < paintCount; i++)
         {
-            Logger.Log($"{i} {i}");
+            //Logger.Log($"{i} {i}");
             curPos += direction;
             // 타일이 없으면 즉시 종료
             if (!Board.Instance.board.TryGetValue(curPos, out TileData tileData))
@@ -129,7 +131,7 @@ public class SprayTile : TileData
             if (tileData is NormalTile)
             {
                 Board.Instance.boardTypeForRedo[curPos] = Board.Instance.boardTypeForRedo[curPos].AddColorToNormalTile(colorType);
-                Logger.Log($"{Board.Instance.boardTypeForRedo[curPos]}");
+                //Logger.Log($"{Board.Instance.boardTypeForRedo[curPos]}");
             }
             else if (tileData is ReversePaintTile)
                 colorType = colorType.GetOppositeColor();

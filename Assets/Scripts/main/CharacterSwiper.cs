@@ -49,6 +49,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     private int curHorIndex, curVerIndex;
     private float canvasScaleFactor;
     private float extraContentHeight;
+    [SerializeField] private Transform goUpDownButtonImage;
 
     [Header("Other")]
     private const float ContentSpacing = 600;
@@ -65,8 +66,11 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         extraBackground.offsetMin = new Vector2(-extraContentHeight, -extraContentHeight); // Bottom
         extraBackground.offsetMax = new Vector2(extraContentHeight, ContentSpacing);  // Top
 
+        (int savedHorIndex, int savedVerIndex) = GetSavedIndex();
         LoadAndSetupCharacters();
-        StartCoroutine(InitSnapToCard(GetSavedIndex()));
+        StartCoroutine(InitSnapToCard((savedHorIndex, savedVerIndex)));
+
+        goUpDownButtonImage.rotation = GetGoUpDownImageRotationQuaternion(savedVerIndex);
     }
 
     void Update()
@@ -194,8 +198,6 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
     private void SnapToClosest()
     {
-        float centerX = viewport.position.x; //-content.anchoredPosition.x;
-        float centerY = viewport.position.y;
         (int nearestHorIndex, int nearestVerIndex) = GetNearestIndex();
 
         if (isHorizontal && curHorIndex == nearestHorIndex)
@@ -217,17 +219,59 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         scrollRect.StopMovement();
         scrollRect.velocity = Vector2.zero;
 
-        float offset = (centerX - cardRects[0][nearestHorIndex].position.x) / canvasScaleFactor;
-        Vector2 targetPos = new Vector2(parentContent.anchoredPosition.x + offset, nearestVerIndex * extraContentHeight);
+        // float offset = (centerX - cardRects[0][nearestHorIndex].position.x) / canvasScaleFactor;
+        // Vector2 targetPos = new Vector2(parentContent.anchoredPosition.x + offset, nearestVerIndex * extraContentHeight);
+
+        // isSnapping = true;
+        // snapTween = parentContent.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
+        // {
+        //     isSnapping = false;
+        //     PlayerPrefs.SetInt("LastSelectedCardHorizontal", nearestHorIndex);
+        //     PlayerPrefs.SetInt("LastSelectedCardVertical", nearestVerIndex);
+        //     PlayerPrefs.Save();
+        // });
+
+        isSnapping = false;
+        DoSnapping(nearestHorIndex, nearestVerIndex);
+    }
+
+    private void DoSnapping(int hor, int ver)
+    {
+        if (isSnapping) return;
+
+        float centerX = viewport.position.x;
+        float offset = (centerX - cardRects[0][hor].position.x) / canvasScaleFactor;
+        Vector2 targetPos = new Vector2(parentContent.anchoredPosition.x + offset, ver * extraContentHeight);
+
+        PlayerPrefs.SetInt("LastSelectedCardHorizontal", hor);
+        PlayerPrefs.SetInt("LastSelectedCardVertical", ver);
+        PlayerPrefs.Save();
 
         isSnapping = true;
         snapTween = parentContent.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
         {
             isSnapping = false;
-            PlayerPrefs.SetInt("LastSelectedCardHorizontal", nearestHorIndex);
-            PlayerPrefs.SetInt("LastSelectedCardVertical", nearestVerIndex);
-            PlayerPrefs.Save();
         });
+    }
+
+    public void DoSnappingButton()
+    {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
+        if (isSnapping) return;
+
+        (int nearestHorIndex, int nearestVerIndex) = GetNearestIndex();
+        nearestVerIndex = 1 - nearestVerIndex;
+        DoSnapping(nearestHorIndex, nearestVerIndex);
+        goUpDownButtonImage.DORotate(GetGoUpDownImageRotationVector(nearestVerIndex), 0.2f);
+    }
+
+    private Vector3 GetGoUpDownImageRotationVector(int verIndex)
+    {
+        return Vector3.forward * 90 * (1 - 2 * verIndex);
+    }
+    private Quaternion GetGoUpDownImageRotationQuaternion(int verIndex)
+    {
+        return Quaternion.Euler(Vector3.forward * 90 * (1 - 2 * verIndex));
     }
 
     private (int, int) GetNearestIndex()
