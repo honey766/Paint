@@ -771,9 +771,9 @@ MonoBehaviour:
   tuto1_2AnimImage: {fileID: 3613537465789703691}
   tutorialImg: {fileID: 61045901898350284}
   tutorialSprites:
-  - {fileID: -6302541520294977579, guid: 3411813fef69cde4cabe32ea82b56002, type: 3}
-  - {fileID: 4260311910699865513, guid: c76cc1e9b947fe9468488d445ddbb6a7, type: 3}
-  - {fileID: 5934635047848135189, guid: b6a87c701c22e314faa1b831fcc7f82a, type: 3}
+  - {fileID: 21300000, guid: cc414d1a5e00d194e8b2e4814a8ce2a4, type: 3}
+  - {fileID: 21300000, guid: 4eec7321053838b4eae36c33c26c7b0b, type: 3}
+  - {fileID: 21300000, guid: bbe1c10127512634ca899c28ad268a3c, type: 3}
   movetutorialCanvas: {fileID: 4720564441767680807, guid: ed489dbced80841448363b7b99325200, type: 3}
   slideThresholdX: 100
 --- !u!1 &4990224734790330711

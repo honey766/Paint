@@ -227,8 +227,6 @@ public class AudioManager : SingletonBehaviour<AudioManager>
             
             if (loopingFlags.Contains(sfxType))
                 loopingFlags.Remove(sfxType);
-                
-            Logger.LogWarning($"💥 {sfxType}의 기존 루프 시퀀스가 중지되고 새로 시작됩니다. (재개 시간: {lastTime:F2}s)");
         }
         
         // 2. 새로운 루프 시작 (이전 단계와 동일)

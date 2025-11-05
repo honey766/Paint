@@ -260,8 +260,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (stage == 1 && level == 1) // 튜토리얼
         {
-            tutorialController.TutorialClearEvent(star);
-            return;
+            if (!tutorialController.TutorialClearEvent(star))
+                return;
         }
         isGaming = false;
         gameClearObj.SetActive(true);
@@ -399,19 +399,6 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (isAppear)
         {
             GameObject color12WarningParent = color12WarningBackground.transform.parent.gameObject;
-            if (stage == 1 && level == 1)
-            {
-                // RectTransform rect = color12WarningParent.GetComponent<RectTransform>();
-
-                // // 가로: stretch (0~1)
-                // rect.anchorMin = new Vector2(0, 0.5f);  // 왼쪽
-                // rect.anchorMax = new Vector2(1, 0.5f);  // 오른쪽
-                // rect.pivot = new Vector2(0.5f, 0.5f);
-
-                // rect.anchoredPosition = new Vector2(0, 0);
-
-                tutorialController.GetComponent<TutorialController>().HighlightTutorialAnswer();
-            }
             color12WarningParent.SetActive(true);
             color12WarningBackground.color = new Color(1, 1, 1, 0);
             color12WarningTextColor.a = 0;

@@ -49,7 +49,6 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     private int curHorIndex, curVerIndex;
     private float canvasScaleFactor;
     private float extraContentHeight;
-    [SerializeField] private Transform goUpDownButtonImage;
 
     [Header("Other")]
     private const float ContentSpacing = 600;
@@ -70,7 +69,12 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         LoadAndSetupCharacters();
         StartCoroutine(InitSnapToCard((savedHorIndex, savedVerIndex)));
 
-        goUpDownButtonImage.rotation = GetGoUpDownImageRotationQuaternion(savedVerIndex);
+        if (PersistentDataManager.NeedToInformExtraUnlock())
+        {
+            GameObject extraUnlockInformCanvas = Resources.Load<GameObject>("Prefabs/ExtraStageUnlockInformCanvas");
+            Instantiate(extraUnlockInformCanvas);
+            PersistentDataManager.InformedExtraUnlock();
+        }
     }
 
     void Update()
@@ -177,9 +181,19 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        isHorizontal = Mathf.Abs(eventData.delta.x) > Mathf.Abs(eventData.delta.y);
-        scrollRect.horizontal = isHorizontal;
-        scrollRect.vertical = !isHorizontal;
+        // 엑스트라 스테이지 해금 조건
+        if (PersistentDataManager.Instance.GetStageClearData(2, 1) > 0)
+        {
+            isHorizontal = Mathf.Abs(eventData.delta.x) > Mathf.Abs(eventData.delta.y);
+            scrollRect.horizontal = isHorizontal;
+            scrollRect.vertical = !isHorizontal;
+        }
+        // 해금이 안 됐다면 수평 스크롤만 허용
+        else
+        {
+            scrollRect.horizontal = true;
+            scrollRect.vertical = false;
+        }   
 
         (curHorIndex, curVerIndex) = GetNearestIndex();
         Logger.Log($"({curHorIndex}, {curVerIndex})");
@@ -254,15 +268,24 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         });
     }
 
-    public void DoSnappingButton()
+    // public void DoSnappingButton()
+    // {
+    //     AudioManager.Instance.PlaySfx(SfxType.Click1);
+    //     if (isSnapping) return;
+
+    //     (int nearestHorIndex, int nearestVerIndex) = GetNearestIndex();
+    //     nearestVerIndex = 1 - nearestVerIndex;
+    //     DoSnapping(nearestHorIndex, nearestVerIndex);
+    //     goUpDownButtonImage.DORotate(GetGoUpDownImageRotationVector(nearestVerIndex), 0.2f);
+    // }
+
+    public void DoSnapToExtra()
     {
         AudioManager.Instance.PlaySfx(SfxType.Click1);
-        if (isSnapping) return;
 
         (int nearestHorIndex, int nearestVerIndex) = GetNearestIndex();
-        nearestVerIndex = 1 - nearestVerIndex;
+        nearestVerIndex = 1;
         DoSnapping(nearestHorIndex, nearestVerIndex);
-        goUpDownButtonImage.DORotate(GetGoUpDownImageRotationVector(nearestVerIndex), 0.2f);
     }
 
     private Vector3 GetGoUpDownImageRotationVector(int verIndex)
@@ -297,5 +320,11 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     public void FlipCardImmediately()
     {
         characterItems[PlayerPrefs.GetInt("LastSelectedCardVertical", 0)][PlayerPrefs.GetInt("LastSelectedCardHorizontal", 0)].OnCardClick(0, true);
+    }
+
+
+    public float GetCanvasExtraYPosition()
+    {
+        return extraContentHeight;
     }
 }
