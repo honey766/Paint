@@ -1,65 +1,67 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using DG.Tweening;
 
-public class TutorialImageController : MonoBehaviour, IPointerDownHandler, IPointerMoveHandler, IPointerUpHandler
+public class TutorialImageController : MonoBehaviour
 {
     [SerializeField] private int tutorialNum = 1;
     [Header("Only Tutorial1")]
     [SerializeField] private int page = 3;
+    [SerializeField] private GameObject leftButton, rightButton, exitButton;
     [SerializeField] private GameObject tuto1_1AnimImage;
     [SerializeField] private GameObject tuto1_2AnimImage;
-    [SerializeField] private Image tutorialImg;
-    [SerializeField] private Sprite[] tutorialSprites;
-    [SerializeField] GameObject movetutorialCanvas;
+    [SerializeField] private TextMeshProUGUI tuto1_text;
+    [SerializeField] private GameObject movetutorialCanvas;
+    [SerializeField] private RectTransform[] pageDots;
     private int curPage;
-
-    // Slide 설정
-    [SerializeField] private float slideThresholdX = 60f;
-    private struct MouseRecord
-    {
-        public float time;
-        public Vector2 pos;
-    }
-    private Queue<MouseRecord> records = new Queue<MouseRecord>();
-    private int isSlided; // 0 : no, 1 : 왼쪽으로 했음, 2 : 오른쪽으로 했음
-    bool isPointerDownInvoked;
     
+    private static readonly string[] tuto1_text_content = new string[3]
+    {
+        "페인트 통<sprite=5> 위를 지나면\n타일<sprite=0><size=60%> </size>에 <color=#FE7269>페인트</color>를 칠해요.",
+
+        "<color=#FE7269>빨간색</color><sprite=2><size=60%> </size>과 <color=#3D91FF>파란색</color><sprite=3> 모두를\n"
+        + "타일<sprite=0><size=60%> </size>에 칠하면 타일이\n"
+        + "<color=#E473FF>보라색</color><sprite=4><size=60%> </size>이 돼요.",
+
+        "<color=#E473FF>보라색 테두리</color><sprite=1><size=60%> </size>에 <color=#E473FF>보라색</color>을\n채워 넣어야 해요."
+    };
 
     private void Awake()
     {
         curPage = 0;
-        isPointerDownInvoked = false;
         SetTutoImage();
+        if (tutorialNum != 1)
+            foreach (var entry in pageDots)
+                entry.gameObject.SetActive(false);
     }
 
     public void OnLeftClick()
     {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
         if (curPage <= 0) return;
+
+        if (tutorialNum == 1)
+            pageDots[curPage].DOSizeDelta(Vector2.one * 25, 0.2f);
         curPage--;
         SetTutoImage();
     }
 
     public void OnRightClick()
     {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
+        if (tutorialNum == 1 && curPage == page - 1)
+            return;
+
+        if (tutorialNum == 1)
+            pageDots[curPage].DOSizeDelta(Vector2.one * 25, 0.2f);
         curPage++;
+
         if (curPage >= page)
         {
-            if (tutorialNum == 1)
-            {
-                GameManager.Instance.isGaming = true;
-                Instantiate(movetutorialCanvas);
-                FindAnyObjectByType<TutorialController>().FirstTutorialImageCloseEvent();
-                Destroy(gameObject);
-            }
-            else if (tutorialNum == 2)
-            {
-                FindAnyObjectByType<TutorialController>().SecondTutorialEvent();
-                GameManager.Instance.isGaming = true;
-                Destroy(gameObject);
-            }
-            else if (tutorialNum == 3)
+            if (tutorialNum == 3)
             {
                 GameManager.Instance.GoToNextStage();
             }
@@ -67,90 +69,33 @@ public class TutorialImageController : MonoBehaviour, IPointerDownHandler, IPoin
         else SetTutoImage();
     }
 
+    public void OnExitClick()
+    {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
+        GameManager.Instance.isGaming = true;
+        if (tutorialNum == 1)
+        {
+            Instantiate(movetutorialCanvas);
+            FindAnyObjectByType<TutorialController>().FirstTutorialImageCloseEvent();
+        }
+        else if (tutorialNum == 2)
+        {
+            FindAnyObjectByType<TutorialController>().SecondTutorialEvent();
+        }
+        Destroy(gameObject);
+    }
+
     private void SetTutoImage()
     {
         if (tutorialNum == 1)
         {
-            tutorialImg.sprite = tutorialSprites[curPage];
+            tuto1_text.text = tuto1_text_content[curPage];
             tuto1_1AnimImage.SetActive(curPage == 0);
             tuto1_2AnimImage.SetActive(curPage == 1);
+            leftButton.SetActive(curPage > 0);
+            rightButton.SetActive(curPage < 2);
+            exitButton.SetActive(curPage == 2);
+            pageDots[curPage].DOSizeDelta(Vector2.one * 40, 0.2f);
         }
-    }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        if (tutorialNum != 1) return;
-        isPointerDownInvoked = true;
-        isSlided = 0;
-        records.Enqueue(new MouseRecord { time = Time.time, pos = eventData.position });
-    }
-
-    public void OnPointerMove(PointerEventData eventData)
-    {
-        if (tutorialNum != 1 || !isPointerDownInvoked || !Input.GetMouseButton(0))
-            return; // 마우스가 눌려 있지 않으면 리턴
-
-        Logger.Log($"push {eventData.position.x}");
-        records.Enqueue(new MouseRecord { time = Time.time, pos = eventData.position });
-        Vector2 mousePosAgo;
-        if (!GetMousePosAgo(out mousePosAgo)) return;
-
-        if (Mathf.Abs(mousePosAgo.x - eventData.position.x) > slideThresholdX)
-        {
-            Logger.Log($"{mousePosAgo.x} -> {eventData.position.x}");
-            // 오른쪽 슬라이드
-            if (mousePosAgo.x < eventData.position.x && isSlided != 2)
-            {
-                isSlided = 2;
-                OnLeftClick();
-            }
-            // 왼쪽 슬라이드
-            else if (mousePosAgo.x > eventData.position.x && isSlided != 1)
-            {
-                isSlided = 1;
-                if (curPage < page - 1)
-                    OnRightClick();
-            }
-        }
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        if (tutorialNum != 1) return;
-        isPointerDownInvoked = false;
-        records.Clear();
-    }
-
-    private bool GetMousePosAgo(out Vector2 mousePos)
-    {
-        MouseRecord older = new MouseRecord();
-        MouseRecord newer;
-        older.time = -1;
-
-        // 0.2초 전의 입력 중 가장 최신의 입력을 받아옴
-        while (records.Count > 0 && records.Peek().time < Time.time - 0.2f)
-        {
-            older = records.Peek();
-            records.Dequeue();
-        }
-        if (records.Count == 0)
-        {
-            mousePos = Vector2.zero;
-            return false; // 0.2초 이내에 입력된 것이 없으면 종료
-        }
-
-        newer = records.Peek(); // 0.2초 이내의 입력 중 가장 과거의 입력
-        if (older.time < 0)
-        {
-            // 0.2초 이내의 입력만 있는 경우
-            mousePos = newer.pos;
-        }
-        else
-        {
-            // 0.2초 전의 입력도 있는 경우 보간함
-            float t = Mathf.InverseLerp(older.time, newer.time, 0.2f);
-            mousePos = Vector2.Lerp(older.pos, newer.pos, t);
-        }
-        return true;
     }
 }

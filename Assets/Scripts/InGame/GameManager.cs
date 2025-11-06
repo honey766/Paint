@@ -51,6 +51,9 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private TileClickEvent tileTouchScript;
     [SerializeField] private JoyStickInputController joyStickScript;
 
+    [Header("Hint")]
+    private GameObject hintObj;
+
     private int stage, level, star;
 
     private void Awake()
@@ -68,6 +71,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void Start()
     {
         isGaming = true;
+        hintObj = null;
 
         if (!startGameDirectlyAtInGameScene)
         {
@@ -317,8 +321,15 @@ public class GameManager : SingletonBehaviour<GameManager>
             tutorialController.ShowHint();
             return;
         }
-        GameObject hint = Resources.Load<GameObject>("Prefabs/Hint");
-        Instantiate(hint);
+        if (hintObj == null)
+        {
+            hintObj = Resources.Load<GameObject>("Prefabs/Hint");
+            hintObj = Instantiate(hintObj);
+        }
+        else if (!hintObj.activeSelf)
+        {
+            hintObj.SetActive(true);
+        }
     }
 
     public void SelectLevel()
