@@ -4,11 +4,13 @@ public class ApplicationQuitUI : MonoBehaviour
 {
     public void ApplicationQuit()
     {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
         Application.Quit();
     }
     
-    public void DeleteThis()
+    public void Disable()
     {
-        Destroy(gameObject);
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
+        gameObject.SetActive(false);
     }
 }

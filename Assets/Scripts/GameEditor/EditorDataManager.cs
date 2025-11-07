@@ -140,7 +140,7 @@ public class EditorDataManager : MonoBehaviour
 
         string name = (sourceBoardSO == null ? "Stage1-1" : sourceBoardSO.name) 
                       +" (Assets/Resources/ScriptableObjects/Board/Stage{N}에 저장해 주세요)";
-	    string path = "Assets/Resources/ScriptableObjects/Board/";
+	    string path = "Assets/Resources/ScriptableObjects/Hint/";
 	    string fullPath = EditorUtility.SaveFilePanelInProject(
                           "Save Board Data", name, "asset", "Save board data to an asset file.", path);
         if (!string.IsNullOrEmpty(path))
@@ -164,11 +164,11 @@ public class EditorDataManager : MonoBehaviour
             Logger.LogWarning("타일을 생성해 주세요");
             return false;
         }
-        if (targets.Count == 0)
-        {
-            Logger.LogWarning("클리어 목표(보라색 테두리)를 설정해 주세요");
-            return false;
-        }
+        // if (targets.Count == 0)
+        // {
+        //     Logger.LogWarning("클리어 목표(보라색 테두리)를 설정해 주세요");
+        //     return false;
+        // }
 
         return true;
     }

@@ -29,10 +29,17 @@ public class HintController : MonoBehaviour
         if (boardSOs.Count == 0)
             return;
 
-        backgroundImageParent.transform.GetChild(0).GetComponent<Image>().sprite 
+        backgroundImageParent.transform.GetChild(0).GetComponent<Image>().sprite
             = FindAnyObjectByType<BackgroundImageLoader>().GetComponent<Image>().sprite;
 
         hintDrawer = GetComponentInChildren<HintDrawer>();
         hintDrawer.Draw(boardSOs.ToArray());
+    }
+    
+    public void OnCloseClick()
+    {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
+        GameManager.Instance.isGaming = true;
+        gameObject.SetActive(false);
     }
 }

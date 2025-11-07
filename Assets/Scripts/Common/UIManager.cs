@@ -14,6 +14,7 @@ public class UIManager : SingletonBehaviour<UIManager>
     [SerializeField] private bool doingTransition;
     [SerializeField] private Transform transitionRectsParent;
 
+    private GameObject exitGameObj;
     private RectTransform[] transitionRects;
     private Image[] transitionImages;
     private float rectWidth;
@@ -124,16 +125,25 @@ public class UIManager : SingletonBehaviour<UIManager>
 
     }
 
-    public void OpenExitGame()
+    public void ControlExitGamePopUp()
     {
-        GameObject exitGamePrefab = Resources.Load<GameObject>("Prefabs/ApplicationQuitCanvas");
-
-        if (exitGamePrefab == null)
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
+        
+        if (exitGameObj == null)
         {
-            Debug.LogError($"프리팹 로드 실패! 경로를 확인하세요: {"Prefabs/ApplicationQuitCanvas"}");
-            return;
-        }
+            exitGameObj = Resources.Load<GameObject>("Prefabs/ApplicationQuitCanvas");
 
-        Instantiate(exitGamePrefab);
+            if (exitGameObj == null)
+            {
+                Debug.LogError($"프리팹 로드 실패! 경로를 확인하세요: {"Prefabs/ApplicationQuitCanvas"}");
+                return;
+            }
+
+            exitGameObj = Instantiate(exitGameObj);
+        }
+        else
+        {
+            exitGameObj.SetActive(!exitGameObj.activeSelf);
+        }
     }
 }

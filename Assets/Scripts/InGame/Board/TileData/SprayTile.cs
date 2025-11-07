@@ -13,12 +13,13 @@ public class SprayTile : TileData
     protected ParticleSystem particle;
     protected HashSet<IEnumerator> doSprayTileCoroutines = new();
 
+    private SpriteRenderer spraySpriter;
+
     public override void Initialize(BoardSOTileData boardSOTileData)
     {
         base.Initialize(boardSOTileData);
 
-        // particle = GetComponentInChildren<ParticleSystem>();
-        // particle.Stop();
+        spraySpriter = transform.GetChild(1).GetComponent<SpriteRenderer>();
         doSprayTileCoroutines.Clear();
 
         if (boardSOTileData is BoardSOIntTileData intTileData)
@@ -44,22 +45,23 @@ public class SprayTile : TileData
         Color c = Board.Instance.GetColorByType(color);
         ColorDirectlyForRedo(direction, color);
         StartCoroutine(MyTileColorChange(c));
-        // doSprayTileCoroutines.Add(StartCoroutine(DoSprayTile(direction, color)));
         StartSpray(direction, color);
     }
 
     protected IEnumerator MyTileColorChange(Color color)
     {
         spriter.color = color;
+        spraySpriter.color = color;
         yield return MyCoroutine.WaitFor(myTileColorChangeTime, (t) =>
         {
             spriter.color = Color.Lerp(color, Color.white, t);
+            spraySpriter.color = Color.Lerp(color, Color.white, t);
         });
     }
 
     protected void StartSpray(Vector2Int direction, TileType colorType)
     {
-        Logger.Log($"STartSpray {direction}");
+        Logger.Log($"StartSpray {direction}");
         IEnumerator routine = DoSprayTile(direction, colorType);
         doSprayTileCoroutines.Add(routine);
         StartCoroutine(SprayTileWrapper(routine));

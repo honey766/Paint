@@ -27,6 +27,7 @@ public class HintDrawer : MonoBehaviour
     private GameObject[] pageObjs;
     private RectTransform[] pageDotRects;
 
+    private const float TileOutlineOffset = 0.015f;
     private Transform tiles, blocks;
     private BoardSO curBoardSO;
     private Dictionary<Vector2Int, TileData>.KeyCollection board;
@@ -43,9 +44,10 @@ public class HintDrawer : MonoBehaviour
         {
             pageObjs[i] = Draw(boardSO[i]);
             pageObjs[i].SetActive(i == 0);
-            pageDotRects[i] = Instantiate(pageDotPrefab, pageDotsParent).GetComponent<RectTransform>();
+            if (numOfPages > 1)
+                pageDotRects[i] = Instantiate(pageDotPrefab, pageDotsParent).GetComponent<RectTransform>();
         }
-        pageDotRects[0].sizeDelta = Vector2.one * 40;
+        if (numOfPages > 1) pageDotRects[0].sizeDelta = Vector2.one * 40;
     }
 
     private void Init()
@@ -57,10 +59,11 @@ public class HintDrawer : MonoBehaviour
         foreach (var entry in prefabs)
             prefabDict[entry.type] = entry.prefab;
 
+        float widthOffset = numOfPages > 1 ? 180 : 80;
         heightOffset = numOfPages > 1 ? 60 : 0;
         parentRect = GetComponent<RectTransform>();
-        width = parentRect.rect.width - 80;
-        height = parentRect.rect.height - 120 - heightOffset;
+        width = parentRect.rect.width - widthOffset;
+        height = parentRect.rect.height - 220 - heightOffset;
         tileSize = Mathf.Min(width / Mathf.Max(6, n), height / Mathf.Max(6, m));
 
         leftButton.SetActive(false);
@@ -128,9 +131,9 @@ public class HintDrawer : MonoBehaviour
     }
 
     private Vector2 GetPosByGrid(Vector2Int pos)
-        => new Vector2((pos.x - (n - 1) / 2f) * tileSize, heightOffset / 2f + (pos.y - (m - 1) / 2f) * tileSize);
+        => new Vector2((pos.x - (n - 1) / 2f) * tileSize, (heightOffset - 100) / 2f + (pos.y - (m - 1) / 2f) * tileSize);
     private Vector2 GetPosByGrid(int i, int j)
-        => new Vector2((i - (n - 1) / 2f) * tileSize, heightOffset / 2f + (j - (m - 1) / 2f) * tileSize);
+        => new Vector2((i - (n - 1) / 2f) * tileSize, (heightOffset - 100) / 2f + (j - (m - 1) / 2f) * tileSize);
 
     public void DrawTileOutline(Transform parent)
     {
@@ -139,12 +142,12 @@ public class HintDrawer : MonoBehaviour
         for (int i = 0; i < n; i++)
             for (int j = 0; j < m + 1; j++)
                 if (ExistsTile(i, j - 1) || ExistsTile(i, j))
-                    InstantiateLine(GetPosByGrid(i, j), leftRot, parent);
+                    InstantiateLine(GetPosByGrid(i, j) + Vector2.down * TileOutlineOffset * tileSize, leftRot, parent);
 
         for (int i = 0; i < n + 1; i++)
             for (int j = 0; j < m; j++)
                 if (ExistsTile(i - 1, j) || ExistsTile(i, j))
-                    InstantiateLine(GetPosByGrid(i, j), Quaternion.identity, parent);
+                    InstantiateLine(GetPosByGrid(i, j) + Vector2.left * TileOutlineOffset * tileSize, Quaternion.identity, parent);
     }
 
     private bool ExistsTile(int i, int j)
@@ -165,37 +168,31 @@ public class HintDrawer : MonoBehaviour
     #region Button
     public void OnRightClick()
     {
-        AudioManager.Instance.PlaySfx(SfxType.Click1);
         if (curPage >= numOfPages - 1) return;
-
         OnButtonClick(1);
     }
 
     public void OnLeftClick()
     {
-        AudioManager.Instance.PlaySfx(SfxType.Click1);
         if (curPage <= 0) return;
-
         OnButtonClick(-1);
     }
 
     private void OnButtonClick(int diff)
     {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
+
         pageObjs[curPage].SetActive(false);
-        pageDotRects[curPage].DOSizeDelta(Vector2.one * 25, 0.2f);
+        if (pageDotRects.Length > curPage)
+            pageDotRects[curPage].DOSizeDelta(Vector2.one * 25, 0.2f);
 
         curPage += diff;
 
         rightButton.SetActive(curPage < numOfPages - 1);
         leftButton.SetActive(curPage > 0);
         pageObjs[curPage].SetActive(true);
-        pageDotRects[curPage].DOSizeDelta(Vector2.one * 40, 0.2f);
-        
-    }
-
-    public void PlaySfx()
-    {
-        AudioManager.Instance.PlaySfx(SfxType.Click1);
+        if (pageDotRects.Length > curPage)
+            pageDotRects[curPage].DOSizeDelta(Vector2.one * 40, 0.2f);
     }
     #endregion
 }

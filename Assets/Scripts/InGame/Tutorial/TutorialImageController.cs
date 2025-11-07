@@ -63,7 +63,7 @@ public class TutorialImageController : MonoBehaviour
         {
             if (tutorialNum == 3)
             {
-                GameManager.Instance.GoToNextStage();
+                GameManager.Instance.GoToNextLevel();
             }
         }
         else SetTutoImage();

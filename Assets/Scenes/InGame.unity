@@ -17586,7 +17586,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &449259650
 RectTransform:
   m_ObjectHideFlags: 0
@@ -27802,9 +27802,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 519420034}
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
+      propertyPath: gameOverCanvasPrefab
+      value: 
+      objectReference: {fileID: 5005343271036231630, guid: 473509b646ad2ad42a66b49c9dba5b6d, type: 3}
+    - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: tutorialArrowTooltip
       value: 
       objectReference: {fileID: 4740121860822539955, guid: 7fb94e348e4d3c54ba2aeb21cf4335e2, type: 3}
+    - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
+      propertyPath: gameClearCanvasPrefab
+      value: 
+      objectReference: {fileID: 5005343271036231630, guid: 1f6ee07c60f78af43a7bb63844dc1880, type: 3}
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: starImages.Array.size
       value: 3

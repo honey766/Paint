@@ -12,10 +12,12 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private StageSO stageSO;
 
     [Header("GameClear, GameOver")]
-    public GameObject gameClearObj;
-    [SerializeField] private TextMeshProUGUI goToNextLevelText; 
-    [SerializeField] private GameObject goToExtraObj;
-    [SerializeField] private GameObject gameOverObj;
+    [SerializeField] private GameObject gameClearCanvasPrefab;
+    private GameObject gameClearCanvasObj;
+
+    [SerializeField] private GameObject gameOverCanvasPrefab;
+    private GameObject gameOverCanvasObj;
+
 
     [Header("Tutorial")]
     [SerializeField] private GameObject tutorialControllerPrefab;
@@ -106,9 +108,31 @@ public class GameManager : SingletonBehaviour<GameManager>
     
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && isGaming)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Pause();
+            // 메뉴 오픈
+            if (isGaming)
+            {
+                Pause();
+                return;
+            }
+
+            // 메뉴 닫기
+            GameObject menu = GameObject.Find("GameMenuCanvas(Clone)");
+            if (menu != null)
+            {
+                menu.GetComponent<Menu>().Resume();
+                return;
+            }
+
+            // 힌트 닫기
+            HintController hint = FindAnyObjectByType<HintController>();
+            if (hint != null)
+            {
+                AudioManager.Instance.PlaySfx(SfxType.Click1);
+                hint.OnCloseClick();
+                return;
+            }
         }
     }
 
@@ -256,7 +280,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void GameOver()
     {
         isGaming = false;
-        gameOverObj.SetActive(true);
+        gameOverCanvasObj = Instantiate(gameOverCanvasPrefab);
+        gameOverCanvasObj.GetComponent<GameClearCanvas>().Init(0, "");
         Logger.Log("GAMEOVER!~~");
     }
 
@@ -268,20 +293,19 @@ public class GameManager : SingletonBehaviour<GameManager>
                 return;
         }
         isGaming = false;
-        gameClearObj.SetActive(true);
-        PersistentDataManager.Instance.SetStageClearData(star);
 
+        string goToNextLevelText = "";
         if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
-            goToNextLevelText.text = "다음 스테이지";
+            goToNextLevelText = "다음 스테이지";
         else if (level < 0)
-            goToNextLevelText.text = "다음 Ex단계";
+            goToNextLevelText = "다음 Ex단계";
         else
-            goToNextLevelText.text = "다음 단계";
-        goToExtraObj.SetActive(
-            level == stageSO.numOfLevelOfStage[stage - 1]
-            && stageSO.numOfLevelOfExtraStage[stage - 1] > 0
-            && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= stageSO.numOfLevelOfStage[stage - 1] * 3
-        );
+            goToNextLevelText = "다음 단계";
+
+        gameClearCanvasObj = Instantiate(gameClearCanvasPrefab);
+        gameClearCanvasObj.GetComponent<GameClearCanvas>().Init(star, goToNextLevelText);
+
+        PersistentDataManager.Instance.SetStageClearData(star);
         
         Logger.Log("Game Clear");
     }
@@ -296,7 +320,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void Resume()
     {
         isGaming = true;
-        gameClearObj.SetActive(false);
+        gameClearCanvasObj = null;
+        gameOverCanvasObj = null;
     }
 
     public void Restart()
@@ -307,7 +332,6 @@ public class GameManager : SingletonBehaviour<GameManager>
         InitStatus();
         if (color12WarningBackground.gameObject.activeSelf)
             SetColor12Warning(false);
-        if (gameOverObj.activeSelf) gameOverObj.SetActive(false);
         TutorialController t = FindAnyObjectByType<TutorialController>();
         if (t != null) t.RestartWhenFirstTutorial();
         Resume();
@@ -316,6 +340,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void ShowHint()
     {
         AudioManager.Instance.PlaySfx(SfxType.Click1);
+        isGaming = false;
+
         if (stage == 1 && level == 1)
         {
             tutorialController.ShowHint();
@@ -341,7 +367,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         });
     }
 
-    public void GoToNextStage()
+    public void GoToNextLevel()
     {
         if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
         {
