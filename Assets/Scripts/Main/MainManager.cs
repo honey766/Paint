@@ -25,22 +25,31 @@ public class MainManager : MonoBehaviour
 
     private void ControlEscapeKey()
     {
+        // 세팅 닫기
+        Settings settings = FindAnyObjectByType<Settings>();
+        if (settings != null)
+        {
+            settings.OnSettingExit();
+            return;
+        }
+
+        // 상점 닫기
+
+        // 메뉴 닫기
+        GameObject menu = GameObject.Find("MainMenuCanvas(Clone)");
+        if (menu != null)
+        {
+            menu.GetComponent<Menu>().Resume();
+            return;
+        }
+            
         if (card.activeSelf)
         {
+            // 메인 메뉴로 돌아가기
             CardToMainMenu();
         }
         else
         {
-            // 세팅 닫기
-            Settings settings = FindAnyObjectByType<Settings>();
-            if (settings != null)
-            {
-                settings.OnSettingExit();
-                return;
-            }
-
-            // 상점 닫기
-            
             // 게임 종료 팝업 열고 닫기
             UIManager.Instance.ControlExitGamePopUp();
         }

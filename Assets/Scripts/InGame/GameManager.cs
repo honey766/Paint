@@ -105,34 +105,45 @@ public class GameManager : SingletonBehaviour<GameManager>
             }
         }
     }
-    
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
+            ControlEscapeKey();
+    }
+
+    private void ControlEscapeKey()
+    {
+        // 메뉴 오픈하기
+        if (isGaming)
         {
-            // 메뉴 오픈
-            if (isGaming)
-            {
-                Pause();
-                return;
-            }
+            Pause();
+            return;
+        }
 
-            // 메뉴 닫기
-            GameObject menu = GameObject.Find("GameMenuCanvas(Clone)");
-            if (menu != null)
-            {
-                menu.GetComponent<Menu>().Resume();
-                return;
-            }
+        // 세팅 닫기
+        Settings settings = FindAnyObjectByType<Settings>();
+        if (settings != null)
+        {
+            settings.OnSettingExit();
+            return;
+        }
 
-            // 힌트 닫기
-            HintController hint = FindAnyObjectByType<HintController>();
-            if (hint != null)
-            {
-                AudioManager.Instance.PlaySfx(SfxType.Click1);
-                hint.OnCloseClick();
-                return;
-            }
+        // 메뉴 닫기
+        GameObject menu = GameObject.Find("GameMenuCanvas(Clone)");
+        if (menu != null)
+        {
+            menu.GetComponent<Menu>().Resume();
+            return;
+        }
+
+        // 힌트 닫기
+        HintController hint = FindAnyObjectByType<HintController>();
+        if (hint != null)
+        {
+            AudioManager.Instance.PlaySfx(SfxType.Click1);
+            hint.OnCloseClick();
+            return;
         }
     }
 
