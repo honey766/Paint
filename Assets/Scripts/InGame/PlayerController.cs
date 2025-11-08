@@ -314,13 +314,13 @@ public class PlayerController : BlockData
 
             IncreaseMoveCount();
             RecordMoveData(movingDirection);
+            Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, movingDirection, Color, moveTime);
             BlockMoveController.Instance.MoveBlocks(this, nextPos - movingDirection, movingDirection);
             PlayerMoveAnimation(nextPos, movingDirection, moveTime);
             curPos = nextPos;
             Logger.Log($"Player Move to {curPos}");
             if (!GameManager.Instance.isGaming) break; // 게임오버라면 즉시 종료
 
-            Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, movingDirection, Color, moveTime);
             yield return halfMoveWaitForSeconds;
 
             MoveEvent?.Invoke(curPos);

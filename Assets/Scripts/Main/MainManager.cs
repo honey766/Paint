@@ -25,6 +25,9 @@ public class MainManager : MonoBehaviour
 
     private void ControlEscapeKey()
     {
+        if (UIManager.Instance.doingTransition)
+            return;
+            
         // 세팅 닫기
         Settings settings = FindAnyObjectByType<Settings>();
         if (settings != null)

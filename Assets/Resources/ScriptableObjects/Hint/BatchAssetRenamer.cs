@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -33,10 +34,10 @@ public class BatchAssetRenamer : EditorWindow
                 if (fileName.Contains("Stage"))
                 {
                     string newName = fileName.Replace("Stage", "Hint");
-                    
+
                     // 에셋(파일) 이름 변경
                     string error = AssetDatabase.RenameAsset(assetPath, newName);
-                    
+
                     if (string.IsNullOrEmpty(error))
                     {
                         renamedCount++;
@@ -68,3 +69,4 @@ public class BatchAssetRenamer : EditorWindow
         return Selection.objects != null && Selection.objects.Length > 0;
     }
 }
+#endif

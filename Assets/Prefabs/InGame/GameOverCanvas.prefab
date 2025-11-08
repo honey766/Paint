@@ -394,7 +394,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4217726049
+    rgba: 4284834913
   m_fontColor: {r: 0.3803922, g: 0.3921569, b: 0.39607847, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -521,7 +521,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC815\uD574\uC9C4 \uC774\uB3D9\uD69F\uC218\uB97C \uBC97\uC5B4\uB0AC\uC2B5\uB2C8\uB2E4."
+  m_text: "\uC815\uD574\uC9C4 \uC774\uB3D9 \uD69F\uC218\uB97C \uBC97\uC5B4\uB0AC\uC2B5\uB2C8\uB2E4."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8e65ac83cdfaad34b945d34234f3b33f, type: 2}
   m_sharedMaterial: {fileID: -5714282466922394333, guid: 8e65ac83cdfaad34b945d34234f3b33f, type: 2}

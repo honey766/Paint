@@ -13,11 +13,12 @@ public class SprayTile : TileData
     protected ParticleSystem particle;
     protected HashSet<IEnumerator> doSprayTileCoroutines = new();
 
-    private SpriteRenderer spraySpriter;
+    protected SpriteRenderer spraySpriter;
 
     public override void Initialize(BoardSOTileData boardSOTileData)
     {
         base.Initialize(boardSOTileData);
+        if (Type != TileType.Spray) return;
 
         spraySpriter = transform.GetChild(1).GetComponent<SpriteRenderer>();
         doSprayTileCoroutines.Clear();

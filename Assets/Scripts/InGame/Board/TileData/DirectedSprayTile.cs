@@ -9,6 +9,7 @@ public class DirectedSprayTile : SprayTile
     {
         base.Initialize(boardSOTileData);
 
+        spraySpriter = transform.GetChild(0).GetChild(1).GetComponent<SpriteRenderer>();
         if (boardSOTileData is BoardSOIntTileData intTileData)
         {
             EditorDataFormat.DecodeDirectedSpray(intTileData.intValue,
@@ -54,18 +55,16 @@ public class DirectedSprayTile : SprayTile
     {
         Transform child = transform.GetChild(0);
         child.rotation = CustomTools.GetRotationByDirection(direction);
+        spraySpriter.transform.rotation = Quaternion.identity;
 
-        SpriteRenderer spriterTriangle = child.GetChild(0).GetComponent<SpriteRenderer>();
-        SpriteRenderer spriterOutline = child.GetChild(1).GetComponent<SpriteRenderer>();
-        if (doPaintReverse)
-        {
-            spriterTriangle.color = new Color(0.5f, 0.25f, 0.67f, 0.5f);
-            spriterOutline.color = new Color(0.6f, 0.45f, 0.7f, 0.9f);
-        }
-        else
-        {
-            spriterTriangle.color = new Color(0.7f, 0.7f, 0.7f, 0.5f);
-            spriterOutline.color = new Color(0.7f, 0.7f, 0.7f, 0.9f);
-        }
+        // SpriteRenderer spriterTriangle = child.GetChild(0).GetComponent<SpriteRenderer>();
+        // if (doPaintReverse)
+        // {
+        //     spriterTriangle.color = new Color(0.5f, 0.25f, 0.67f, 1f);
+        // }
+        // else
+        // {
+        //     spriterTriangle.color = new Color(0.3764706f, 0.3921569f, 0.4f, 1f);
+        // }
     }
 }

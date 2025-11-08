@@ -20,6 +20,7 @@ public class ScrollIndicator : MonoBehaviour
     private Color originalColor;
     private float currentAlpha;
     private float maxScrollPosition = UNINITIALIZED_VALUE;
+    private bool recentIsFadeOut;
     
     private const float SCROLL_THRESHOLD = 0.1f;
     private const float UNINITIALIZED_VALUE = -100000f;
@@ -30,6 +31,7 @@ public class ScrollIndicator : MonoBehaviour
             gameObject.SetActive(false);
         InitializeComponents();
         currentAlpha = 1f;
+        recentIsFadeOut = true;
     }
 
     private void Update()
@@ -91,10 +93,12 @@ public class ScrollIndicator : MonoBehaviour
 
         if (shouldFadeOut && currentAlpha > 0)
         {
+            recentIsFadeOut = true;
             FadeOut();
         }
         else if (shouldFadeIn && currentAlpha < 1)
         {
+            recentIsFadeOut = false;
             FadeIn();
         }
     }
@@ -113,13 +117,29 @@ public class ScrollIndicator : MonoBehaviour
 
     private bool ShouldFadeIn()
     {
-        if (isBottomIndicator)
+        // 사라진 상태라면
+        if (recentIsFadeOut)
         {
-            return Mathf.Abs(scrollContent.anchoredPosition.y) < SCROLL_THRESHOLD;
+            if (isBottomIndicator)
+            {
+                return Mathf.Abs(scrollContent.anchoredPosition.y) < SCROLL_THRESHOLD;
+            }
+            else
+            {
+                return Mathf.Abs(scrollContent.anchoredPosition.y - maxScrollPosition) < SCROLL_THRESHOLD;
+            }
         }
+        // 나타나고 있는 상태라면
         else
         {
-            return Mathf.Abs(scrollContent.anchoredPosition.y - maxScrollPosition) < SCROLL_THRESHOLD;
+            if (isBottomIndicator)
+            {
+                return scrollContent.anchoredPosition.y < maxScrollPosition / 5f;
+            }
+            else
+            {
+                return scrollContent.anchoredPosition.y > maxScrollPosition * 4f / 5f;
+            }
         }
     }
 

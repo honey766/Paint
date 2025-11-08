@@ -114,6 +114,9 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     private void ControlEscapeKey()
     {
+        if (UIManager.Instance.doingTransition)
+            return;
+
         // 메뉴 오픈하기
         if (isGaming)
         {
@@ -141,7 +144,6 @@ public class GameManager : SingletonBehaviour<GameManager>
         HintController hint = FindAnyObjectByType<HintController>();
         if (hint != null)
         {
-            AudioManager.Instance.PlaySfx(SfxType.Click1);
             hint.OnCloseClick();
             return;
         }

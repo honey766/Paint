@@ -11,7 +11,7 @@ public class UIManager : SingletonBehaviour<UIManager>
     [SerializeField] float transitionDuration;
     [SerializeField] float waitDuration;
     [SerializeField] Color red, blue, purple;
-    [SerializeField] private bool doingTransition;
+    public bool doingTransition;
     [SerializeField] private Transform transitionRectsParent;
 
     private GameObject exitGameObj;
@@ -128,7 +128,7 @@ public class UIManager : SingletonBehaviour<UIManager>
     public void ControlExitGamePopUp()
     {
         AudioManager.Instance.PlaySfx(SfxType.Click1);
-        
+
         if (exitGameObj == null)
         {
             exitGameObj = Resources.Load<GameObject>("Prefabs/ApplicationQuitCanvas");
