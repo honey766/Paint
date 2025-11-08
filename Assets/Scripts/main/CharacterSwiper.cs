@@ -69,17 +69,16 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         LoadAndSetupCharacters();
         StartCoroutine(InitSnapToCard((savedHorIndex, savedVerIndex)));
 
-        if (PersistentDataManager.NeedToInformExtraUnlock())
+        if (PersistentDataManager.DoWeNeedToInformExtraUnlock())
         {
             GameObject extraUnlockInformCanvas = Resources.Load<GameObject>("Prefabs/ExtraStageUnlockInformCanvas");
             Instantiate(extraUnlockInformCanvas);
-            PersistentDataManager.InformedExtraUnlock();
+            PersistentDataManager.WeInformedExtraUnlock();
         }
     }
 
     void Update()
     {
-        //if (isSnapping) return;
         UpdateCardTransforms();
     }
     private (int, int) GetSavedIndex()
@@ -216,16 +215,16 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
         if (isHorizontal && curHorIndex == nearestHorIndex)
         {
-            if (scrollRect.velocity.x > 200)
+            if (scrollRect.velocity.x > 80)
                 nearestHorIndex = Mathf.Max(nearestHorIndex - 1, 0);
-            else if (scrollRect.velocity.x < -200)
+            else if (scrollRect.velocity.x < -80)
                 nearestHorIndex = Mathf.Min(nearestHorIndex + 1, cardRects[0].Count - 1);
         }
         else if (!isHorizontal && curVerIndex == nearestVerIndex)
         {
-            if (scrollRect.velocity.y < -200)
+            if (scrollRect.velocity.y < -80)
                 nearestVerIndex = Mathf.Max(nearestVerIndex - 1, 0);
-            else if (scrollRect.velocity.y > 200)
+            else if (scrollRect.velocity.y > 80)
                 nearestVerIndex = Mathf.Min(nearestVerIndex + 1, 1);
         }
 

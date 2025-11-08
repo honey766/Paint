@@ -153,12 +153,11 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
         var prefsData = isExtra ? extraStagePlayerPrefsData : stagePlayerPrefsData;
         string keyPrefix = isExtra ? "ExtraStage" : "Stage";
 
-        // 스테이지 2-1을 최초로 클리어했으면, 엑스트라 스테이지가 해금됨
-        if (stage == 1 && level == 0 && !isExtra && clearData[stage, level] == 0 && star > 0)
+        // 스테이지 2 이상의 1레벨을 최초로 클리어했으면, 엑스트라 스테이지가 해금됨 (스테이지2를 건너뛸 가능성 고려)
+        if (stage >= 1 && level == 0 && !isExtra && clearData[stage, level] == 0 && star > 0 && !HaveWeInformedExtraUnlock())
         {
-            Logger.Log("스테이지 2-1을 깨서 엑스트라 스테이지 해금!"); NowWeNeedToInformExtraUnlock();
+            Logger.Log("엑스트라 스테이지 해금!"); NowWeNeedToInformExtraUnlock();
         }
-        else Logger.Log("스테이지 2-1을 깨서 엑스트라 스테이지 해금!일 뻔~~~");
         if (clearData[stage, level] >= star) return;
 
         Logger.Log($"{(isExtra ? "extra" : "normal")}, star : {clearData[stage, level]} -> {star}");
@@ -195,10 +194,15 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
 
     #region ExtraUnlockInform
     // 스테이지 선택 화면에서 엑스트라 스테이지 해금에 대한 안내 메시지를 띄워야 하는지
-    public static bool NeedToInformExtraUnlock() => PlayerPrefs.GetInt("hasInformedExtraUnlock", 0) == 1;
+    public static bool DoWeNeedToInformExtraUnlock() => PlayerPrefs.GetInt("haveToInformExtraUnlock", 0) == 1;
     // 다음에 스테이지 선택 화면에 들어올 때 엑스트라 스테이지 해금에 대한 안내 메시지를 띄우도록 설정
-    public static void NowWeNeedToInformExtraUnlock() => PlayerPrefs.SetInt("hasInformedExtraUnlock", 1);
+    public static void NowWeNeedToInformExtraUnlock() => PlayerPrefs.SetInt("haveToInformExtraUnlock", 1);
     // 엑스트라 스테이지 해금에 대한 안내 메시지를 띄운 뒤, 다음에 다시 띄우지 않도록 해당 함수를 호출
-    public static void InformedExtraUnlock() => PlayerPrefs.SetInt("hasInformedExtraUnlock", 0);
+    public static void WeInformedExtraUnlock()
+    {
+        PlayerPrefs.SetInt("haveToInformExtraUnlock", 0);
+        PlayerPrefs.SetInt("haveInformedExtraUnlock", 1);
+    }
+    public static bool HaveWeInformedExtraUnlock() => PlayerPrefs.GetInt("haveInformedExtraUnlock", 0) == 1;
     #endregion
 }

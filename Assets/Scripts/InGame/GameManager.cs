@@ -457,7 +457,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             color12WarningBackground.DOColor(new Color(1, 1, 1, 0.5f), 0.6f);
             color12WarningTextColor.a = 1;
             color12WarningText.DOColor(color12WarningTextColor, 0.6f);
-            color12WarningRestartButton.DOColor(Color.white, 0.6f);
+            color12WarningRestartButton.DOColor(new Color(1, 1, 1, 0.92f), 0.6f);
         }
         else
         {

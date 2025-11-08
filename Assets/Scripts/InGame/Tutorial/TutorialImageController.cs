@@ -13,6 +13,7 @@ public class TutorialImageController : MonoBehaviour
     [SerializeField] private GameObject leftButton, rightButton, exitButton;
     [SerializeField] private GameObject tuto1_1AnimImage;
     [SerializeField] private GameObject tuto1_2AnimImage;
+    [SerializeField] private GameObject tuto1_3Image;
     [SerializeField] private TextMeshProUGUI tuto1_text;
     [SerializeField] private GameObject movetutorialCanvas;
     [SerializeField] private RectTransform[] pageDots;
@@ -92,6 +93,7 @@ public class TutorialImageController : MonoBehaviour
             tuto1_text.text = tuto1_text_content[curPage];
             tuto1_1AnimImage.SetActive(curPage == 0);
             tuto1_2AnimImage.SetActive(curPage == 1);
+            tuto1_3Image.SetActive(curPage == 2);
             leftButton.SetActive(curPage > 0);
             rightButton.SetActive(curPage < 2);
             exitButton.SetActive(curPage == 2);

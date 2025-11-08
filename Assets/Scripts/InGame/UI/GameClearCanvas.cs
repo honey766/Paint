@@ -1,19 +1,26 @@
 using System.Collections;
 using DG.Tweening;
-using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameClearCanvas : MonoBehaviour
 {
     [SerializeField] private RectTransform[] stars;
     [SerializeField] private TextMeshProUGUI nextLevelText;
     [SerializeField] private float firstWait = 0.2f, afterWait = 0.4f;
+    [SerializeField] private GameObject[] visibleObjs;
+    [SerializeField] private Image eyeButtonImg;
+    [SerializeField] private Sprite eyeButtonVisibleSpr, eyeButtonInVisibleSpr;
+    
     private bool canTouch;
+    private bool isVisible; // UI가 보이는 상태인지
 
     public void Init(int star, string goToNextLevelText)
     {
         canTouch = false;
+        isVisible = true;
+
         if (nextLevelText != null)
             nextLevelText.text = goToNextLevelText;
         StartCoroutine(StarSequence(star));
@@ -42,6 +49,18 @@ public class GameClearCanvas : MonoBehaviour
         if (!canTouch) return;
         GameManager.Instance.Restart();
         FadeAndDestroy();
+    }
+
+    public void ToggleVisible()
+    {
+        if (!canTouch) return;
+
+        isVisible = !isVisible;
+        foreach (GameObject obj in visibleObjs)
+            obj.SetActive(isVisible);
+
+        eyeButtonImg.sprite = isVisible ? eyeButtonVisibleSpr : eyeButtonInVisibleSpr;
+        eyeButtonImg.color = isVisible ? Color.white : new Color(0.7509433f, 0.7904252f, 0.8126814f, 1f);
     }
 
     private void FadeAndDestroy()
