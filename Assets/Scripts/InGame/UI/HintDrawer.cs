@@ -124,6 +124,15 @@ public class HintDrawer : MonoBehaviour
                     tile.transform.rotation = CustomTools.GetRotationByDirection(direction);
                 }
                 break;
+            case TileType.Brush:
+                if (tileData is BoardSOIntTileData intTileData2)
+                {
+                    TileType bruchColor = TileType.None;
+                    if (intTileData2.intValue == 1) bruchColor = TileType.Color1;
+                    else if (intTileData2.intValue == 2) bruchColor = TileType.Color2;
+                    tile.GetComponent<Image>().color = Board.Instance.GetColorByType(bruchColor);
+                }
+                break;
             case TileType.Player:
                 tile.GetComponent<Image>().color = Board.Instance.GetColorByType(curBoardSO.startPlayerColor);
                 break;

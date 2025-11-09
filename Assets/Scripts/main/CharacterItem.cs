@@ -201,6 +201,8 @@ public class CharacterItem : MonoBehaviour
         {
             Logger.Log($"Going To Stage {stage} - {level}");
             UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
+            if (stage == 1 && level == 1) AudioManager.Instance.ChangeBgmWithTransition(BgmType.Tutorial);
+            else AudioManager.Instance.ChangeBgmWithTransition(stage);
         }
         else
         {

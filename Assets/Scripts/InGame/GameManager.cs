@@ -405,6 +405,8 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         if (PersistentDataManager.Instance.LoadStageAndLevel(nextStage, nextLevel))
         {
+            // 1-1 => 1-2도 bgm 바뀜
+            AudioManager.Instance.ChangeBgmWithTransition(nextStage);
             if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
             {
                 PlayerPrefs.SetInt("LastSelectedCardHorizontal", stage);

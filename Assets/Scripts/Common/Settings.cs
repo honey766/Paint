@@ -31,7 +31,7 @@ public class Settings : MonoBehaviour
     [SerializeField] private Image noticeImage;
 
     [Header("Email")]
-    private string recipientEmail = "honey76684@gmail.com,parkhoboy@gmail.com"; // 개발팀의 이메일 주소
+    private string recipientEmail = "parkhoboy@gmail.com,honey76684@gmail.com"; // 개발팀의 이메일 주소
     // 이메일 제목(subject)과 본문(body)을 미리 설정할 수 있습니다.
     // URL 인코딩이 필요하지만, Unity의 OpenURL은 기본적인 문자열에 대해서는 어느 정도 처리합니다.
     private string subject = "Game Support Inquiry";

@@ -23,6 +23,7 @@ public class Menu : MonoBehaviour
 
     public void SelectLevel()
     {
+        AudioManager.Instance.ChangeBgmWithTransition(BgmType.Title);
         AudioManager.Instance.PlaySfx(SfxType.Click1);
         if (isGaming) GameManager.Instance.SelectLevel();
     }
@@ -40,6 +41,7 @@ public class Menu : MonoBehaviour
 
     public void GoToMainMenu()
     {
+        AudioManager.Instance.ChangeBgmWithTransition(BgmType.Title);
         AudioManager.Instance.PlaySfx(SfxType.Click1);
         UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("Main"));
     }

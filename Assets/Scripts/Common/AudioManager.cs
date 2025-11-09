@@ -46,8 +46,15 @@ public enum SfxType
 
 public enum BgmType
 {
-    TitleBgm,
-    MainBgm
+    Title = 1000,
+    Tutorial = 2000,
+    Spring = 2001,
+    Summer,
+    Autumn,
+    Winter,
+    Desert,
+    Mountain,
+    Swamp
 }
 
 public class AudioManager : SingletonBehaviour<AudioManager>
@@ -79,6 +86,13 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     // 볼륨 설정
     public float BgmVolume { get; private set; } = 1f;
     public float SfxVolume { get; private set; } = 1f;
+
+    // 스테이지별 BGM
+    private readonly BgmType[] stageBgm = new BgmType[]
+    {
+        BgmType.Spring, BgmType.Summer, BgmType.Autumn, BgmType.Winter,
+        BgmType.Desert, BgmType.Mountain, BgmType.Swamp
+    };
 
     protected override void Init()
     {
@@ -122,6 +136,31 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         volume = Mathf.Max(volume, 0.0001f);
         masterMixer.SetFloat("BGM", Mathf.Log10(volume) * 20);
         BgmVolume = volume;
+    }
+
+    public void ChangeBgmWithTransition(BgmType bgmType)
+    {
+        if (bgmDict.TryGetValue(bgmType, out AudioClip clip))
+            if (bgmSource.clip != clip)
+                StartCoroutine(ChangeBgmCoroutine(clip));
+    }
+    public void ChangeBgmWithTransition(int stage)
+    {
+        if (stage < 1 || stage > stageBgm.Length)
+            return;
+        BgmType bgmType = stageBgm[stage - 1];
+        if (bgmDict.TryGetValue(bgmType, out AudioClip clip))
+            if (bgmSource.clip != clip)
+                StartCoroutine(ChangeBgmCoroutine(clip));
+    }
+
+    private IEnumerator ChangeBgmCoroutine(AudioClip clip)
+    {
+        bgmSource.DOFade(0, 1f).SetEase(Ease.Linear);
+        yield return new WaitForSeconds(1f);
+        bgmSource.clip = clip;
+        bgmSource.Play();
+        bgmSource.DOFade(1, 0.2f);
     }
 
     public void SetSFXVolume(float volume)

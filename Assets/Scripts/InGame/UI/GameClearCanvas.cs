@@ -79,6 +79,7 @@ public class GameClearCanvas : MonoBehaviour
         foreach (var starRect in stars)
             starRect.gameObject.SetActive(false);
         yield return new WaitForSeconds(firstWait);
+
         for (int i = 0; i < star; i++)
         {
             yield return new WaitForSeconds(afterWait);

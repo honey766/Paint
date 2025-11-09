@@ -5862,14 +5862,14 @@ PrefabInstance:
     - target: {fileID: 4699862124339260103, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: m_Resource
       value: 
-      objectReference: {fileID: 8300000, guid: 897bba93fd8539548ac2be4a94e32e5d, type: 3}
+      objectReference: {fileID: 8300000, guid: b00eeb73260f78944a0899797922e5a4, type: 3}
     - target: {fileID: 6138010889854095399, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: m_Name
       value: AudioManager
       objectReference: {fileID: 0}
     - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: bgmClips.Array.size
-      value: 2
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: sfxClips.Array.size
@@ -5880,8 +5880,44 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[0].bgmType
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: bgmClips.Array.data[1].bgmType
-      value: 1
+      value: 2000
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[2].bgmType
+      value: 2001
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[3].bgmType
+      value: 2002
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[4].bgmType
+      value: 2003
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[5].bgmType
+      value: 2004
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[6].bgmType
+      value: 2005
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[7].bgmType
+      value: 2006
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[8].bgmType
+      value: 2007
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[9].bgmType
+      value: 2007
       objectReference: {fileID: 0}
     - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: sfxClips.Array.data[5].sfxType
@@ -5893,16 +5929,68 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: sfxClips.Array.data[7].sfxType
-      value: 2001
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: sfxClips.Array.data[8].sfxType
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: sfxClips.Array.data[9].sfxType
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[10].bgmType
+      value: 2007
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[11].bgmType
+      value: 2007
+      objectReference: {fileID: 0}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[12].bgmType
+      value: 2007
       objectReference: {fileID: 0}
     - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: bgmClips.Array.data[0].audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: 6c1ae358029573c4d9491081c8c4a181, type: 3}
+      objectReference: {fileID: 8300000, guid: b00eeb73260f78944a0899797922e5a4, type: 3}
     - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: bgmClips.Array.data[1].audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: 96b41aea5dc67b7419c931ebfeb5fb4a, type: 3}
+      objectReference: {fileID: 8300000, guid: b4899b548defb4342ba57bf24df290b8, type: 3}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[2].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: a5ef2e620ee09654c9b7c6a31743d316, type: 3}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[3].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 7d9b8a44ada88584b884d4f4b184028d, type: 3}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[4].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: efc9707b110ccd446bd42ce98565d872, type: 3}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[5].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 2b06239af1e65d74b9b66054721bf062, type: 3}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[6].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: afdbfbef9e9f83e4f9355455d6ecdcb7, type: 3}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[7].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: bfc7e802ff268e544bfb1d2a920a4a7e, type: 3}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[8].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 2b06239af1e65d74b9b66054721bf062, type: 3}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[9].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 2b06239af1e65d74b9b66054721bf062, type: 3}
     - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: sfxClips.Array.data[0].audioClip
       value: 
@@ -5934,11 +6022,27 @@ PrefabInstance:
     - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: sfxClips.Array.data[7].audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: 18db493703ffc164f9a6e3ca7f013442, type: 3}
+      objectReference: {fileID: 8300000, guid: c2486f18bbc5c6041a665040fbc79b13, type: 3}
     - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: sfxClips.Array.data[8].audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: 18db493703ffc164f9a6e3ca7f013442, type: 3}
+      objectReference: {fileID: 8300000, guid: 6a9f462621b9dee469e7e7fad3735ef7, type: 3}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: sfxClips.Array.data[9].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: af1512d04327d9749b0b5d2c592eb8d2, type: 3}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[10].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 2b06239af1e65d74b9b66054721bf062, type: 3}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[11].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 2b06239af1e65d74b9b66054721bf062, type: 3}
+    - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
+      propertyPath: bgmClips.Array.data[12].audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 2b06239af1e65d74b9b66054721bf062, type: 3}
     - target: {fileID: 6472966243057893685, guid: b0c1961d56c34d749bc46028d3785b83, type: 3}
       propertyPath: loopSfxClips.Array.data[0].sfxType
       value: 1000
