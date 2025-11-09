@@ -87,6 +87,8 @@ public class GameClearCanvas : MonoBehaviour
             AudioManager.Instance.PlaySfx(SfxType.Click1);
             stars[i].GetComponentInChildren<ParticleSystem>().Emit(10);
         }
+        GameObject hint = GameObject.Find("Hint(Clone)");
+        if (hint != null) Destroy(hint);
         canTouch = true;
     }
 }
