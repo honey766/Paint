@@ -156,8 +156,8 @@ public class AudioManager : SingletonBehaviour<AudioManager>
 
     private IEnumerator ChangeBgmCoroutine(AudioClip clip)
     {
-        bgmSource.DOFade(0, 1f).SetEase(Ease.Linear);
-        yield return new WaitForSeconds(1f);
+        bgmSource.DOFade(0, 1.35f).SetEase(Ease.Linear);
+        yield return new WaitForSeconds(1.35f);
         bgmSource.clip = clip;
         bgmSource.Play();
         bgmSource.DOFade(1, 0.2f);

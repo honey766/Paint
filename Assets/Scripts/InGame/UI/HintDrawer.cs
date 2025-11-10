@@ -122,6 +122,7 @@ public class HintDrawer : MonoBehaviour
                     EditorDataFormat.DecodeDirectedSpray(intTileData.intValue,
                         out int paintCount, out Vector2Int direction, out bool doPaintReverse);
                     tile.transform.rotation = CustomTools.GetRotationByDirection(direction);
+                    tile.transform.GetChild(1).rotation = Quaternion.identity;
                 }
                 break;
             case TileType.Mirror:
