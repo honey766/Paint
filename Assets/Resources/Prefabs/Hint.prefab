@@ -340,6 +340,10 @@ MonoBehaviour:
   rightButton: {fileID: 5137729286576495675}
   pageDotPrefab: {fileID: 279304423655090360, guid: 2b4669f8b3bece94e886632023dd5ded, type: 3}
   pageDotsParent: {fileID: 6180736615425322365}
+  playerBursh: {fileID: 21300000, guid: 7f6bc4aad46dbcc4296032a68c7a67f7, type: 3}
+  playerErasor: {fileID: 21300000, guid: 8100cee9a8741ed4a8e7a850683ccd7e, type: 3}
+  brushBursh: {fileID: 21300000, guid: 9eb52fc10e0762347958180b63d3ea8e, type: 3}
+  brushErasor: {fileID: 21300000, guid: cab6213020735b947b247c9acb084acb, type: 3}
 --- !u!114 &1270456040527734033
 MonoBehaviour:
   m_ObjectHideFlags: 0

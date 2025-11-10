@@ -384,8 +384,9 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
         {
-            if (stageSO.numOfStage == stage || PersistentDataManager.Instance.totalStar < stageSO.numOfStarToUnlockStage[stage])
+            if (stageSO.numOfStage == stage)// || PersistentDataManager.Instance.totalStar < stageSO.numOfStarToUnlockStage[stage])
             {
+                AudioManager.Instance.ChangeBgmWithTransition(BgmType.Title);
                 SelectLevel();
                 return;
             }

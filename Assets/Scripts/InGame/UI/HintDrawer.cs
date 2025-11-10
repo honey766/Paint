@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using UnityEditor;
 
 [System.Serializable]
 public struct TypePrefabPair
@@ -18,6 +19,8 @@ public class HintDrawer : MonoBehaviour
     [SerializeField] private GameObject leftButton, rightButton;
     [SerializeField] private GameObject pageDotPrefab;
     [SerializeField] private Transform pageDotsParent;
+    [SerializeField] private Sprite playerBursh, playerErasor;
+    [SerializeField] private Sprite brushBursh, brushErasor;
 
     private int curPage, numOfPages;
     private RectTransform parentRect;
@@ -104,7 +107,7 @@ public class HintDrawer : MonoBehaviour
         tile.transform.localScale = Vector2.one * tileSize / 100f;
         SetTileExtraLogic(tile, myTile);
     }
-    
+
     private void SetTileExtraLogic(GameObject tile, BoardSOTileData tileData)
     {
         switch (tileData.type)
@@ -136,16 +139,34 @@ public class HintDrawer : MonoBehaviour
             case TileType.Brush:
                 if (tileData is BoardSOIntTileData intTileData3)
                 {
-                    TileType bruchColor = TileType.None;
-                    if (intTileData3.intValue == 1) bruchColor = TileType.Color1;
-                    else if (intTileData3.intValue == 2) bruchColor = TileType.Color2;
-                    tile.GetComponent<Image>().color = Board.Instance.GetColorByType(bruchColor);
+                    TileType brushColor = TileType.None;
+                    if (intTileData3.intValue == 1) brushColor = TileType.Color1;
+                    else if (intTileData3.intValue == 2) brushColor = TileType.Color2;
+                    // tile.GetComponent<Image>().color = Board.Instance.GetColorByType(bruchColor);
+                    ApplyBrushAndPlayerColor(tile.transform.GetChild(0), brushColor, false);
                 }
                 break;
             case TileType.Player:
-                tile.GetComponent<Image>().color = Board.Instance.GetColorByType(curBoardSO.startPlayerColor);
+                ApplyBrushAndPlayerColor(tile.transform.GetChild(0), curBoardSO.startPlayerColor, true);
+                // tile.transform.GetChild(1).GetComponent<Image>().color
+                //     = Board.Instance.GetColorByType(curBoardSO.startPlayerColor);
+                // Sprite toolSprite = curBoardSO.startPlayerColor == TileType.White ? playerErasor : playerBursh;
+                // tile.transform.GetChild(2).GetComponent<Image>().sprite = toolSprite;
                 break;
         }
+    }
+    
+    private void ApplyBrushAndPlayerColor(Transform tile, TileType color, bool isPlayer)
+    {
+        tile.GetChild(1).GetComponent<Image>().color
+            = Board.Instance.GetColorByType(curBoardSO.startPlayerColor);
+        Sprite toolSprite;
+        if (isPlayer)
+            toolSprite = color == TileType.White ? playerErasor : playerBursh;
+        else
+            toolSprite = color == TileType.White ? brushErasor : brushBursh;
+        int toolIdx = isPlayer ? 3 : 2;
+        tile.GetChild(toolIdx).GetComponent<Image>().sprite = toolSprite;
     }
 
     private Vector2 GetPosByGrid(Vector2Int pos)

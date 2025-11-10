@@ -64,8 +64,9 @@ public class PlayerController : BlockData
     [SerializeField] private float colorTileAudioCooldown = 0.1f;
     private float colorTileAudioLastTime;
 
+    [SerializeField] private Sprite playerBrush, playerErasor;
     // 캐싱
-    private SpriteRenderer spriter;
+    private SpriteRenderer spriter, toolSpriter;
     private Transform player;
     private Coroutine inputMoveCoroutine;
     private WaitForSeconds halfMoveWaitForSeconds;
@@ -86,8 +87,11 @@ public class PlayerController : BlockData
         else
             Destroy(gameObject);
 
-        spriter = transform.GetChild(0).GetComponent<SpriteRenderer>();
         player = transform.GetChild(0).transform;
+        transform.localScale = Vector3.one * 0.85f;
+        player.GetChild(0).localScale = Vector3.one * 0.85f;
+        spriter = player.GetChild(1).GetComponent<SpriteRenderer>();
+        toolSpriter = player.GetChild(3).GetComponent<SpriteRenderer>();
         halfMoveWaitForSeconds = new WaitForSeconds(moveTime / 2f);
         savedMoveCount = 0;
         redoing = 0;
@@ -413,6 +417,9 @@ public class PlayerController : BlockData
             colorPalette = Board.Instance.colorPaletteSO;
         else
             colorPalette = PersistentDataManager.Instance.colorPaletteSO;
+
+        if (Color == TileType.White) toolSpriter.sprite = playerErasor;
+        else toolSpriter.sprite = playerBrush;
 
         switch (Color)
         {

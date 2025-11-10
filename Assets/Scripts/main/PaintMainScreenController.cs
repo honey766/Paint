@@ -9,6 +9,7 @@ public class PaintMainScreenController : MonoBehaviour
 
     private void Awake()
     {
+        int i;
         float ratio = (float)Screen.height / Screen.width;
         float buttonWidth = 160f;
         if (ratio > 2f)
@@ -17,7 +18,7 @@ public class PaintMainScreenController : MonoBehaviour
         float dashLength = 1f / 60f * Mathf.Max(Screen.width, Screen.height);
 
         Image[] horizons = transform.Find("HorizontalLine").GetComponentsInChildren<Image>();
-        for (int i = 0; i < horizons.Length; i++)
+        for (i = 0; i < horizons.Length; i++)
         {
             horizons[i].material.SetFloat(ScreenXID, Screen.width);
             horizons[i].material.SetFloat(DashLengthID, dashLength);
@@ -27,7 +28,7 @@ public class PaintMainScreenController : MonoBehaviour
         }
 
         Image[] verticals = transform.Find("VerticalLine").GetComponentsInChildren<Image>();
-        for (int i = 0; i < verticals.Length; i++)
+        for (i = 0; i < verticals.Length; i++)
         {
             verticals[i].material.SetFloat(ScreenYID, Screen.height);
             verticals[i].material.SetFloat(DashLengthID, dashLength);
@@ -37,16 +38,26 @@ public class PaintMainScreenController : MonoBehaviour
         }
 
         RectTransform[] buttons = transform.Find("Button").GetComponentsInChildren<RectTransform>();
-        for (int i = 1; i < buttons.Length; i++)
+        for (i = 1; i < buttons.Length; i++)
         {
             buttons[i].anchoredPosition = new Vector2(2 * buttonWidth * (i - 1 - 0.5f * (buttons.Length - 2)), 0);
             buttons[i].sizeDelta = Vector2.one * (buttonWidth + 6);
         }
 
-        RectTransform[] texts = transform.Find("Paint").GetComponentsInChildren<RectTransform>();
-        for (int i = 1; i < texts.Length; i++)
+        // RectTransform[] texts = transform.Find("Paint").GetComponentsInChildren<RectTransform>();
+        // for (int i = 1; i < texts.Length; i++)
+        // {
+        //     texts[i].anchoredPosition = new Vector2(buttonWidth * (i - 1 - 0.5f * (texts.Length - 2)), 370);
+        // }
+
+        Transform texts = transform.Find("Paint");
+        int count = texts.childCount;
+
+        i = 0;
+        foreach (RectTransform childRect in texts)
         {
-            texts[i].anchoredPosition = new Vector2(buttonWidth * (i - 1 - 0.5f * (texts.Length - 2)), 370);
+            childRect.anchoredPosition = new Vector2(buttonWidth * (i - 0.5f * (count - 1)), 370);
+            i++;
         }
     }
 }

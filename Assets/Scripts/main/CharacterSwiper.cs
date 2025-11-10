@@ -181,7 +181,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     public void OnBeginDrag(PointerEventData eventData)
     {
         // 엑스트라 스테이지 해금 조건
-        if (PersistentDataManager.Instance.GetStageClearData(2, 1) > 0)
+        if (PersistentDataManager.HaveWeInformedExtraUnlock())
         {
             isHorizontal = Mathf.Abs(eventData.delta.x) > Mathf.Abs(eventData.delta.y);
             scrollRect.horizontal = isHorizontal;
@@ -215,16 +215,16 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
         if (isHorizontal && curHorIndex == nearestHorIndex)
         {
-            if (scrollRect.velocity.x > 80)
+            if (scrollRect.velocity.x > 30)
                 nearestHorIndex = Mathf.Max(nearestHorIndex - 1, 0);
-            else if (scrollRect.velocity.x < -80)
+            else if (scrollRect.velocity.x < -30)
                 nearestHorIndex = Mathf.Min(nearestHorIndex + 1, cardRects[0].Count - 1);
         }
         else if (!isHorizontal && curVerIndex == nearestVerIndex)
         {
-            if (scrollRect.velocity.y < -80)
+            if (scrollRect.velocity.y < -30)
                 nearestVerIndex = Mathf.Max(nearestVerIndex - 1, 0);
-            else if (scrollRect.velocity.y > 80)
+            else if (scrollRect.velocity.y > 30)
                 nearestVerIndex = Mathf.Min(nearestVerIndex + 1, 1);
         }
 

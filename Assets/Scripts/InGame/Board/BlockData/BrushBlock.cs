@@ -9,12 +9,15 @@ public class BrushBlock : BlockData
     public override TileType Color { get; protected set; } = TileType.None;
     public override bool IsTransparent { get; protected set; } = false;
 
+    [SerializeField] private Sprite brush, erasor;
     private SpriteRenderer spriter;
+    private SpriteRenderer toolSpriter;
 
     public override void Initialize(BoardSOTileData boardSOTileData)
     {
         base.Initialize(boardSOTileData);
-        spriter = GetComponent<SpriteRenderer>();
+        spriter = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        toolSpriter = transform.GetChild(2).GetComponent<SpriteRenderer>();
 
         if (boardSOTileData is BoardSOIntTileData intTileData)
         {
@@ -49,5 +52,8 @@ public class BrushBlock : BlockData
     {
         Color = color;
         spriter.color = Board.Instance.GetColorByType(color);
+        
+        if (Color == TileType.White) toolSpriter.sprite = erasor;
+        else toolSpriter.sprite = brush;
     }
 }

@@ -27,7 +27,7 @@ public class ScrollIndicator : MonoBehaviour
 
     private void Start()
     {
-        if (PersistentDataManager.Instance.GetStageClearData(2, 1) == 0)
+        if (!PersistentDataManager.HaveWeInformedExtraUnlock())
             gameObject.SetActive(false);
         InitializeComponents();
         currentAlpha = 1f;
