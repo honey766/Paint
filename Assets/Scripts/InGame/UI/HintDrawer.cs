@@ -165,8 +165,15 @@ public class HintDrawer : MonoBehaviour
             toolSprite = color == TileType.White ? playerErasor : playerBursh;
         else
             toolSprite = color == TileType.White ? brushErasor : brushBursh;
+        
         int toolIdx = isPlayer ? 3 : 2;
         tile.GetChild(toolIdx).GetComponent<Image>().sprite = toolSprite;
+        if (isPlayer)
+        {
+            Vector2 size = color == TileType.White ? new Vector2(82.8125f, 82.8125f) 
+                                                    : new Vector2(60.9375f, 17.1875f);
+            tile.GetChild(toolIdx).GetComponent<RectTransform>().sizeDelta = size;
+        }
     }
 
     private Vector2 GetPosByGrid(Vector2Int pos)
