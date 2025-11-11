@@ -65,8 +65,8 @@ MonoBehaviour:
   - rid: 83688461679461052
   - rid: 83688461679461053
   limitStepForOneStar: -1
-  limitStepForTwoStar: 75
-  limitStepForThreeStar: 61
+  limitStepForTwoStar: 73
+  limitStepForThreeStar: 59
   startPlayerColor: 0
   references:
     version: 2

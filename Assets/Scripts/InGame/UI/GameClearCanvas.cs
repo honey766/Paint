@@ -47,6 +47,7 @@ public class GameClearCanvas : MonoBehaviour
     public void Restart()
     {
         if (!canTouch) return;
+        GetComponent<CanvasGroup>().interactable = false;
         GameManager.Instance.Restart();
         FadeAndDestroy();
     }
