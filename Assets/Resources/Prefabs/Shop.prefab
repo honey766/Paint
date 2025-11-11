@@ -1186,7 +1186,6 @@ GameObject:
   - component: {fileID: 6033411173133130996}
   - component: {fileID: 5581409484325283285}
   - component: {fileID: 2152060732424043771}
-  - component: {fileID: 7006414339686243952}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -1319,18 +1318,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &7006414339686243952
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6878789961031897950}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1578aec44bc51654ba91069abe634fb7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorSwitcherByStage
 --- !u!1 &8479379262379638605
 GameObject:
   m_ObjectHideFlags: 0

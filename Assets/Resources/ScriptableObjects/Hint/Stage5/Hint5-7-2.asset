@@ -44,8 +44,8 @@ MonoBehaviour:
   - rid: 9079933260257034665
   targetTileList: []
   limitStepForOneStar: -1
-  limitStepForTwoStar: 90
-  limitStepForThreeStar: 70
+  limitStepForTwoStar: 76
+  limitStepForThreeStar: 55
   startPlayerColor: 0
   references:
     version: 2

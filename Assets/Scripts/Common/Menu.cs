@@ -16,7 +16,6 @@ public class Menu : MonoBehaviour
 
     public void Restart()
     {
-        AudioManager.Instance.PlaySfx(SfxType.Click1);
         if (isGaming) GameManager.Instance.Restart();
         Destroy(gameObject);
     }
