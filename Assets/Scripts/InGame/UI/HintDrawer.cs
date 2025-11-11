@@ -158,21 +158,20 @@ public class HintDrawer : MonoBehaviour
     
     private void ApplyBrushAndPlayerColor(Transform tile, TileType color, bool isPlayer)
     {
-        tile.GetChild(1).GetComponent<Image>().color
-            = Board.Instance.GetColorByType(curBoardSO.startPlayerColor);
+        tile.GetChild(1).GetComponent<Image>().color = Board.Instance.GetColorByType(color);
+
         Sprite toolSprite;
         if (isPlayer)
             toolSprite = color == TileType.White ? playerErasor : playerBursh;
         else
             toolSprite = color == TileType.White ? brushErasor : brushBursh;
         
-        int toolIdx = isPlayer ? 3 : 2;
-        tile.GetChild(toolIdx).GetComponent<Image>().sprite = toolSprite;
+        tile.GetChild(2).GetComponent<Image>().sprite = toolSprite;
         if (isPlayer)
         {
             Vector2 size = color == TileType.White ? new Vector2(82.8125f, 82.8125f) 
                                                     : new Vector2(60.9375f, 17.1875f);
-            tile.GetChild(toolIdx).GetComponent<RectTransform>().sizeDelta = size;
+            tile.GetChild(2).GetComponent<RectTransform>().sizeDelta = size;
         }
     }
 

@@ -156,7 +156,7 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
         // 스테이지 2 이상의 1레벨을 최초로 클리어했으면, 엑스트라 스테이지가 해금됨 (스테이지2를 건너뛸 가능성 고려)
         if (stage >= 1 && level == 0 && !isExtra && clearData[stage, level] == 0 && star > 0 && !HaveWeInformedExtraUnlock())
         {
-            Logger.Log("엑스트라 스테이지 해금!"); NowWeNeedToInformExtraUnlock();
+            Logger.Log("엑스트라 스테이지 해금!"); WeInformedExtraUnlock(); NowWeNeedToInformExtraUnlock();
         }
         if (clearData[stage, level] >= star) return;
 

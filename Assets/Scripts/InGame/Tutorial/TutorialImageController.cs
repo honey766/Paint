@@ -11,9 +11,9 @@ public class TutorialImageController : MonoBehaviour
     [Header("Only Tutorial1")]
     [SerializeField] private int page = 3;
     [SerializeField] private GameObject leftButton, rightButton, exitButton;
-    [SerializeField] private GameObject tuto1_1AnimImage;
-    [SerializeField] private GameObject tuto1_2AnimImage;
-    [SerializeField] private GameObject tuto1_3Image;
+    [SerializeField] private GameObject[] tuto1_1Images;
+    [SerializeField] private GameObject[] tuto1_2Images;
+    [SerializeField] private GameObject[] tuto1_3Images;
     [SerializeField] private TextMeshProUGUI tuto1_text;
     [SerializeField] private GameObject movetutorialCanvas;
     [SerializeField] private RectTransform[] pageDots;
@@ -91,9 +91,12 @@ public class TutorialImageController : MonoBehaviour
         if (tutorialNum == 1)
         {
             tuto1_text.text = tuto1_text_content[curPage];
-            tuto1_1AnimImage.SetActive(curPage == 0);
-            tuto1_2AnimImage.SetActive(curPage == 1);
-            tuto1_3Image.SetActive(curPage == 2);
+            foreach (GameObject obj in tuto1_1Images)
+                obj.SetActive(curPage == 0);
+            foreach (GameObject obj in tuto1_2Images)
+                obj.SetActive(curPage == 1);
+            foreach (GameObject obj in tuto1_3Images)
+                obj.SetActive(curPage == 2);
             leftButton.SetActive(curPage > 0);
             rightButton.SetActive(curPage < 2);
             exitButton.SetActive(curPage == 2);

@@ -315,8 +315,13 @@ public class GameManager : SingletonBehaviour<GameManager>
         else
             goToNextLevelText = "다음 단계";
 
-        gameClearCanvasObj = Instantiate(gameClearCanvasPrefab);
-        gameClearCanvasObj.GetComponent<GameClearCanvas>().Init(star, goToNextLevelText);
+        // 혹시 모를 중복을 방지
+        GameClearCanvas curGameClearObj = FindAnyObjectByType<GameClearCanvas>();
+        if (curGameClearObj == null)
+        {
+            gameClearCanvasObj = Instantiate(gameClearCanvasPrefab);
+            gameClearCanvasObj.GetComponent<GameClearCanvas>().Init(star, goToNextLevelText);
+        }
 
         PersistentDataManager.Instance.SetStageClearData(star);
         

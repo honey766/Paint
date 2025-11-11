@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using UnityEngine.EventSystems;
 using System.Linq;
+using TMPro;
 
 // JSON 데이터 구조
 [Serializable]
@@ -190,6 +191,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         // 해금이 안 됐다면 수평 스크롤만 허용
         else
         {
+            isHorizontal = true;
             scrollRect.horizontal = true;
             scrollRect.vertical = false;
         }   
@@ -212,19 +214,20 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     private void SnapToClosest()
     {
         (int nearestHorIndex, int nearestVerIndex) = GetNearestIndex();
+        float swipeThreshold = 250;
 
         if (isHorizontal && curHorIndex == nearestHorIndex)
         {
-            if (scrollRect.velocity.x > 30)
+            if (scrollRect.velocity.x > swipeThreshold)
                 nearestHorIndex = Mathf.Max(nearestHorIndex - 1, 0);
-            else if (scrollRect.velocity.x < -30)
+            else if (scrollRect.velocity.x < -swipeThreshold)
                 nearestHorIndex = Mathf.Min(nearestHorIndex + 1, cardRects[0].Count - 1);
         }
         else if (!isHorizontal && curVerIndex == nearestVerIndex)
         {
-            if (scrollRect.velocity.y < -30)
+            if (scrollRect.velocity.y < -swipeThreshold)
                 nearestVerIndex = Mathf.Max(nearestVerIndex - 1, 0);
-            else if (scrollRect.velocity.y > 30)
+            else if (scrollRect.velocity.y > swipeThreshold)
                 nearestVerIndex = Mathf.Min(nearestVerIndex + 1, 1);
         }
 

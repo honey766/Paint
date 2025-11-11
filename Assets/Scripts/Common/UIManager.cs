@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Random = UnityEngine.Random;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 public class UIManager : SingletonBehaviour<UIManager>
 {
@@ -78,6 +79,7 @@ public class UIManager : SingletonBehaviour<UIManager>
         yield return new WaitForSeconds(transitionDuration);
         doingTransition = false;
     }
+    public float GetTransitionDuration() => transitionDuration;
     #endregion
 
     public void GoToChoiceLevelWhenComeToMainScene()
@@ -122,7 +124,15 @@ public class UIManager : SingletonBehaviour<UIManager>
 
     public void OpenShop()
     {
+        GameObject shopPrefab = Resources.Load<GameObject>("Prefabs/Shop");
 
+        if (shopPrefab == null)
+        {
+            Debug.LogError("프리팹 로드 실패! 경로를 확인하세요: Prefabs/Shop");
+            return;
+        }
+
+        Instantiate(shopPrefab);
     }
 
     public void ControlExitGamePopUp()

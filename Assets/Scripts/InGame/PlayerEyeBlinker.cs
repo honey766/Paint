@@ -28,6 +28,8 @@ public class PlayerEyeBlinker : MonoBehaviour
             int eyeCount = Random.Range(0f, 1f) < blinkTwoTimesRate ? 2 : 1;
             for (int i = 0; i < eyeCount; i++)
             {
+                if (i == 1 && Random.Range(0, 3) == 0)
+                    yield return new WaitForSeconds(0.3f);
                 eye.DOScale(eyeCloseScale, blinkSpeed);
                 yield return blinkWait;
                 eye.DOScale(eyeOpenScale, blinkSpeed);

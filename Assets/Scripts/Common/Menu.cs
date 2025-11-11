@@ -37,6 +37,7 @@ public class Menu : MonoBehaviour
     public void OpenShop()
     {
         AudioManager.Instance.PlaySfx(SfxType.Click1);
+        UIManager.Instance.OpenShop();
     }
 
     public void GoToMainMenu()
