@@ -57,7 +57,7 @@ public class CharacterItem : MonoBehaviour
         {
             SetButtonOfBackUI(levelButtonPrefab);
         }
-        else if (isExtra)// && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= 3 * PersistentDataManager.Instance.stageSO.numOfLevelOfStage[stage - 1])
+        else if (isExtra && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= 3 * PersistentDataManager.Instance.stageSO.numOfLevelOfStage[stage - 1])
         {
             SetButtonOfBackUIExtra(levelButtonPrefab);
         }
