@@ -128,6 +128,7 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     {
         SetBGMVolume(PersistentDataManager.LoadBGM() / 100f);
         SetSFXVolume(PersistentDataManager.LoadSFX() / 100f);
+        PlayBgmImmediately(BgmType.Title);
     }
 
     // ---------------------
@@ -138,6 +139,16 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         volume = Mathf.Max(volume, 0.0001f);
         masterMixer.SetFloat("BGM", Mathf.Log10(volume) * 20);
         BgmVolume = volume;
+    }
+
+    public void PlayBgmImmediately(BgmType bgmType)
+    {
+        if (bgmDict.TryGetValue(bgmType, out AudioClip clip))
+            if (curBgmSource.clip != clip)
+            {
+                curBgmSource.clip = clip;
+                curBgmSource.Play();
+            }
     }
 
     public void ChangeBgmWithTransition(BgmType bgmType)

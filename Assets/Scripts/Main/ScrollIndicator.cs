@@ -6,9 +6,10 @@ public class ScrollIndicator : MonoBehaviour
     [Header("References")]
     [SerializeField] private RectTransform scrollContent;
     [SerializeField] private CharacterSwiper characterSwiper;
-    
+
     [Header("Settings")]
     [SerializeField] private bool isBottomIndicator;
+    [SerializeField] private bool isExplainButton;
     [SerializeField] private float baseOffset = 60f;
     [SerializeField] private float fadeAnimationDuration = 0.2f;
     [SerializeField] private float bounceSpeed = 2.3f;
@@ -38,7 +39,8 @@ public class ScrollIndicator : MonoBehaviour
     {
         InitializeMaxScrollPosition();
         UpdateIndicatorPosition();
-        UpdateIndicatorVisibility();
+        if (!isExplainButton)
+            UpdateIndicatorVisibility();
     }
 
     private void InitializeComponents()
@@ -81,6 +83,10 @@ public class ScrollIndicator : MonoBehaviour
 
     private float CalculateBounceOffset()
     {
+        if (isExplainButton)
+        {
+            return 0;
+        }
         float sineWave = Mathf.Sin(Time.time * bounceSpeed);
         float poweredWave = Mathf.Sign(sineWave) * Mathf.Pow(Mathf.Abs(sineWave), bouncePower);
         return poweredWave * bounceAmplitude;
