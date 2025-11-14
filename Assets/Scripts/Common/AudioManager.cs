@@ -128,7 +128,7 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     {
         SetBGMVolume(PersistentDataManager.LoadBGM() / 100f);
         SetSFXVolume(PersistentDataManager.LoadSFX() / 100f);
-        Invoke(nameof(PlayBgmFirst), 0.3f);
+        // Invoke(nameof(PlayBgmFirst), 0.3f);
     }
 
     private void PlayBgmFirst() => PlayBgmImmediately(BgmType.Title, 0.5f);
@@ -159,7 +159,7 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     public void ChangeBgmWithTransition(BgmType bgmType)
     {
         if (bgmDict.TryGetValue(bgmType, out AudioClip clip))
-            if (curBgmSource.clip != clip)
+            if (clip != null && curBgmSource.clip != clip)
                 StartCoroutine(ChangeBgmCoroutine(clip));
     }
     public void ChangeBgmWithTransition(int stage)
