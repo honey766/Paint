@@ -49,14 +49,10 @@ public class TutorialController : MonoBehaviour
         GameManager.Instance.HideStar();
     }
 
-    // private void Update()
-    // {
-    //     if (tutorialLevel < 2 || moveCountTutoRect == null) return;
-    //     int digits = Mathf.Clamp(PlayerController.Instance.moveCount.ToString().Length, 2, 7);
-    //     moveCountTutoRect.anchoredPosition = new Vector2(-71 * digits, 15.7f);
-    // }
-
-    public void TutorialClearEvent(int star)
+    /// <summary>
+    /// 튜토리얼 마지막 클리어라면 true
+    /// </summary>
+    public bool TutorialClearEvent(int star)
     {
         tutorialLevel++;
         if (tutorialLevel == 1)
@@ -90,14 +86,15 @@ public class TutorialController : MonoBehaviour
         }
         else if (tutorialLevel == 3)
         {
-            Instantiate(tutorialCanvas3);
+            // Instantiate(tutorialCanvas3);
+            tutorialArrowObj.SetActive(false);
             GameObject moveTutorialCanvas = GameObject.Find("MoveTutorialCanvas(Clone)");
             Destroy(moveTutorialCanvas);
-            // Destroy(tutorialBorderTooltip);
-            // Destroy(tutorialAnswerButton);
             GameManager.Instance.isGaming = false;
             PersistentDataManager.Instance.SetStageClearData(star);
         }
+
+        return tutorialLevel == 3;
     }
     public void FirstTutorialEvent()
     {
@@ -227,7 +224,6 @@ public class TutorialController : MonoBehaviour
           + "더 많은 <color=#B6A33F>별</color>을 획득해요.  ";
         moveCountTutoRect = moveTutoText.transform.parent.GetChild(2).GetComponent<RectTransform>();
         moveCountTutoRect.gameObject.SetActive(true);
-        //highlightHintTextObj.SetActive(false);
         if (tutorial1_1_2AnswerObj != null)
             Destroy(tutorial1_1_2AnswerObj);
         GameManager.Instance.ShowStarForTutorial();
@@ -236,11 +232,6 @@ public class TutorialController : MonoBehaviour
     {
         tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
         tutorialColor12Border.transform.position = Board.Instance.GetTilePos(1, 0);
-    }
-
-    public void HighlightTutorialAnswer()
-    {
-        // highlightHintTextObj.SetActive(true);
     }
 
     public void ShowHint()

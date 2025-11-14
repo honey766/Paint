@@ -57,7 +57,7 @@ public class CharacterItem : MonoBehaviour
         {
             SetButtonOfBackUI(levelButtonPrefab);
         }
-        else if (isExtra) //&& PersistentDataManager.Instance.GetStageTotalStarData(stage) >= 3 * PersistentDataManager.Instance.stageSO.numOfLevelOfStage[stage - 1])
+        else if (isExtra && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= 3 * PersistentDataManager.Instance.stageSO.numOfLevelOfStage[stage - 1])
         {
             SetButtonOfBackUIExtra(levelButtonPrefab);
         }
@@ -201,6 +201,8 @@ public class CharacterItem : MonoBehaviour
         {
             Logger.Log($"Going To Stage {stage} - {level}");
             UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
+            if (stage == 1 && level == 1) AudioManager.Instance.ChangeBgmWithTransition(BgmType.Tutorial);
+            else AudioManager.Instance.ChangeBgmWithTransition(stage);
         }
         else
         {

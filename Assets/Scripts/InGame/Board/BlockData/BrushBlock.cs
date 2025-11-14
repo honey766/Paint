@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class BrushBlock : BlockData
 {
@@ -6,13 +7,17 @@ public class BrushBlock : BlockData
     public override bool HasMutableColor { get; protected set; } = true;
     public override bool HasColor { get; protected set; } = true;
     public override TileType Color { get; protected set; } = TileType.None;
+    public override bool IsTransparent { get; protected set; } = false;
 
+    [SerializeField] private Sprite brush, erasor;
     private SpriteRenderer spriter;
+    private SpriteRenderer toolSpriter;
 
     public override void Initialize(BoardSOTileData boardSOTileData)
     {
         base.Initialize(boardSOTileData);
-        spriter = GetComponent<SpriteRenderer>();
+        spriter = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        toolSpriter = transform.GetChild(2).GetComponent<SpriteRenderer>();
 
         if (boardSOTileData is BoardSOIntTileData intTileData)
         {
@@ -26,9 +31,29 @@ public class BrushBlock : BlockData
         }
     }
 
+    public override void AdjustAlphaBasedOnTileBelow(TileData tile)
+    {
+        if (IsTransparent || Type == TileType.Player)
+            return;
+        if (HaveToChangeAlpha(tile))
+        {
+            if (tile.Type == TileType.Spray || tile.Type == TileType.DirectedSpray)
+                mySpriter.DOFade(0.7f, 0.15f);
+            else
+                mySpriter.DOFade(0.85f, 0.15f);
+        }
+        else
+        {
+            mySpriter.DOFade(1f, 0.15f);
+        }
+    }
+
     protected override void ApplyColorChange(TileType color)
     {
         Color = color;
         spriter.color = Board.Instance.GetColorByType(color);
+        
+        if (Color == TileType.White) toolSpriter.sprite = erasor;
+        else toolSpriter.sprite = brush;
     }
 }

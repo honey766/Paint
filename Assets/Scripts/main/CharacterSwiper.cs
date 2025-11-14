@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using UnityEngine.EventSystems;
 using System.Linq;
+using TMPro;
 
 // JSON 데이터 구조
 [Serializable]
@@ -65,13 +66,20 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         extraBackground.offsetMin = new Vector2(-extraContentHeight, -extraContentHeight); // Bottom
         extraBackground.offsetMax = new Vector2(extraContentHeight, ContentSpacing);  // Top
 
+        (int savedHorIndex, int savedVerIndex) = GetSavedIndex();
         LoadAndSetupCharacters();
-        StartCoroutine(InitSnapToCard(GetSavedIndex()));
+        StartCoroutine(InitSnapToCard((savedHorIndex, savedVerIndex)));
+
+        if (PersistentDataManager.DoWeNeedToInformExtraUnlock())
+        {
+            GameObject extraUnlockInformCanvas = Resources.Load<GameObject>("Prefabs/ExtraStageUnlockInformCanvas");
+            Instantiate(extraUnlockInformCanvas);
+            PersistentDataManager.WeInformedExtraUnlock();
+        }
     }
 
     void Update()
     {
-        //if (isSnapping) return;
         UpdateCardTransforms();
     }
     private (int, int) GetSavedIndex()
@@ -173,9 +181,20 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        isHorizontal = Mathf.Abs(eventData.delta.x) > Mathf.Abs(eventData.delta.y);
-        scrollRect.horizontal = isHorizontal;
-        scrollRect.vertical = !isHorizontal;
+        // 엑스트라 스테이지 해금 조건
+        if (PersistentDataManager.HaveWeInformedExtraUnlock())
+        {
+            isHorizontal = Mathf.Abs(eventData.delta.x) > Mathf.Abs(eventData.delta.y);
+            scrollRect.horizontal = isHorizontal;
+            scrollRect.vertical = !isHorizontal;
+        }
+        // 해금이 안 됐다면 수평 스크롤만 허용
+        else
+        {
+            isHorizontal = true;
+            scrollRect.horizontal = true;
+            scrollRect.vertical = false;
+        }   
 
         (curHorIndex, curVerIndex) = GetNearestIndex();
         Logger.Log($"({curHorIndex}, {curVerIndex})");
@@ -194,22 +213,21 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
     private void SnapToClosest()
     {
-        float centerX = viewport.position.x; //-content.anchoredPosition.x;
-        float centerY = viewport.position.y;
         (int nearestHorIndex, int nearestVerIndex) = GetNearestIndex();
+        float swipeThreshold = 250;
 
         if (isHorizontal && curHorIndex == nearestHorIndex)
         {
-            if (scrollRect.velocity.x > 200)
+            if (scrollRect.velocity.x > swipeThreshold)
                 nearestHorIndex = Mathf.Max(nearestHorIndex - 1, 0);
-            else if (scrollRect.velocity.x < -200)
+            else if (scrollRect.velocity.x < -swipeThreshold)
                 nearestHorIndex = Mathf.Min(nearestHorIndex + 1, cardRects[0].Count - 1);
         }
         else if (!isHorizontal && curVerIndex == nearestVerIndex)
         {
-            if (scrollRect.velocity.y < -200)
+            if (scrollRect.velocity.y < -swipeThreshold)
                 nearestVerIndex = Mathf.Max(nearestVerIndex - 1, 0);
-            else if (scrollRect.velocity.y > 200)
+            else if (scrollRect.velocity.y > swipeThreshold)
                 nearestVerIndex = Mathf.Min(nearestVerIndex + 1, 1);
         }
 
@@ -217,17 +235,68 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         scrollRect.StopMovement();
         scrollRect.velocity = Vector2.zero;
 
-        float offset = (centerX - cardRects[0][nearestHorIndex].position.x) / canvasScaleFactor;
-        Vector2 targetPos = new Vector2(parentContent.anchoredPosition.x + offset, nearestVerIndex * extraContentHeight);
+        // float offset = (centerX - cardRects[0][nearestHorIndex].position.x) / canvasScaleFactor;
+        // Vector2 targetPos = new Vector2(parentContent.anchoredPosition.x + offset, nearestVerIndex * extraContentHeight);
+
+        // isSnapping = true;
+        // snapTween = parentContent.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
+        // {
+        //     isSnapping = false;
+        //     PlayerPrefs.SetInt("LastSelectedCardHorizontal", nearestHorIndex);
+        //     PlayerPrefs.SetInt("LastSelectedCardVertical", nearestVerIndex);
+        //     PlayerPrefs.Save();
+        // });
+
+        isSnapping = false;
+        DoSnapping(nearestHorIndex, nearestVerIndex);
+    }
+
+    private void DoSnapping(int hor, int ver)
+    {
+        if (isSnapping) return;
+
+        float centerX = viewport.position.x;
+        float offset = (centerX - cardRects[0][hor].position.x) / canvasScaleFactor;
+        Vector2 targetPos = new Vector2(parentContent.anchoredPosition.x + offset, ver * extraContentHeight);
+
+        PlayerPrefs.SetInt("LastSelectedCardHorizontal", hor);
+        PlayerPrefs.SetInt("LastSelectedCardVertical", ver);
+        PlayerPrefs.Save();
 
         isSnapping = true;
         snapTween = parentContent.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
         {
             isSnapping = false;
-            PlayerPrefs.SetInt("LastSelectedCardHorizontal", nearestHorIndex);
-            PlayerPrefs.SetInt("LastSelectedCardVertical", nearestVerIndex);
-            PlayerPrefs.Save();
         });
+    }
+
+    // public void DoSnappingButton()
+    // {
+    //     AudioManager.Instance.PlaySfx(SfxType.Click1);
+    //     if (isSnapping) return;
+
+    //     (int nearestHorIndex, int nearestVerIndex) = GetNearestIndex();
+    //     nearestVerIndex = 1 - nearestVerIndex;
+    //     DoSnapping(nearestHorIndex, nearestVerIndex);
+    //     goUpDownButtonImage.DORotate(GetGoUpDownImageRotationVector(nearestVerIndex), 0.2f);
+    // }
+
+    public void DoSnapToExtra()
+    {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
+
+        (int nearestHorIndex, int nearestVerIndex) = GetNearestIndex();
+        nearestVerIndex = 1;
+        DoSnapping(nearestHorIndex, nearestVerIndex);
+    }
+
+    private Vector3 GetGoUpDownImageRotationVector(int verIndex)
+    {
+        return Vector3.forward * 90 * (1 - 2 * verIndex);
+    }
+    private Quaternion GetGoUpDownImageRotationQuaternion(int verIndex)
+    {
+        return Quaternion.Euler(Vector3.forward * 90 * (1 - 2 * verIndex));
     }
 
     private (int, int) GetNearestIndex()
@@ -253,5 +322,11 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     public void FlipCardImmediately()
     {
         characterItems[PlayerPrefs.GetInt("LastSelectedCardVertical", 0)][PlayerPrefs.GetInt("LastSelectedCardHorizontal", 0)].OnCardClick(0, true);
+    }
+
+
+    public float GetCanvasExtraYPosition()
+    {
+        return extraContentHeight;
     }
 }

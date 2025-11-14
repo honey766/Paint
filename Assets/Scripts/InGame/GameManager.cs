@@ -12,10 +12,12 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private StageSO stageSO;
 
     [Header("GameClear, GameOver")]
-    public GameObject gameClearObj;
-    [SerializeField] private TextMeshProUGUI goToNextLevelText; 
-    [SerializeField] private GameObject goToExtraObj;
-    [SerializeField] private GameObject gameOverObj;
+    [SerializeField] private GameObject gameClearCanvasPrefab;
+    private GameObject gameClearCanvasObj;
+
+    [SerializeField] private GameObject gameOverCanvasPrefab;
+    private GameObject gameOverCanvasObj;
+
 
     [Header("Tutorial")]
     [SerializeField] private GameObject tutorialControllerPrefab;
@@ -51,6 +53,9 @@ public class GameManager : SingletonBehaviour<GameManager>
     [SerializeField] private TileClickEvent tileTouchScript;
     [SerializeField] private JoyStickInputController joyStickScript;
 
+    [Header("Hint")]
+    private GameObject hintObj;
+
     private int stage, level, star;
 
     private void Awake()
@@ -68,6 +73,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void Start()
     {
         isGaming = true;
+        hintObj = null;
 
         if (!startGameDirectlyAtInGameScene)
         {
@@ -99,12 +105,47 @@ public class GameManager : SingletonBehaviour<GameManager>
             }
         }
     }
-    
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && isGaming)
+        if (Input.GetKeyDown(KeyCode.Escape))
+            ControlEscapeKey();
+    }
+
+    private void ControlEscapeKey()
+    {
+        if (UIManager.Instance.doingTransition)
+            return;
+
+        // 메뉴 오픈하기
+        if (isGaming)
         {
             Pause();
+            return;
+        }
+
+        // 세팅 닫기
+        Settings settings = FindAnyObjectByType<Settings>();
+        if (settings != null)
+        {
+            settings.OnSettingExit();
+            return;
+        }
+
+        // 메뉴 닫기
+        GameObject menu = GameObject.Find("GameMenuCanvas(Clone)");
+        if (menu != null)
+        {
+            menu.GetComponent<Menu>().Resume();
+            return;
+        }
+
+        // 힌트 닫기
+        HintController hint = FindAnyObjectByType<HintController>();
+        if (hint != null)
+        {
+            hint.OnCloseClick();
+            return;
         }
     }
 
@@ -252,7 +293,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void GameOver()
     {
         isGaming = false;
-        gameOverObj.SetActive(true);
+        gameOverCanvasObj = Instantiate(gameOverCanvasPrefab);
+        gameOverCanvasObj.GetComponent<GameClearCanvas>().Init(0, "");
         Logger.Log("GAMEOVER!~~");
     }
 
@@ -260,24 +302,28 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (stage == 1 && level == 1) // 튜토리얼
         {
-            tutorialController.TutorialClearEvent(star);
-            return;
+            if (!tutorialController.TutorialClearEvent(star))
+                return;
         }
         isGaming = false;
-        gameClearObj.SetActive(true);
-        PersistentDataManager.Instance.SetStageClearData(star);
 
+        string goToNextLevelText = "";
         if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
-            goToNextLevelText.text = "다음 스테이지";
+            goToNextLevelText = "다음 스테이지";
         else if (level < 0)
-            goToNextLevelText.text = "다음 Ex단계";
+            goToNextLevelText = "다음 Ex단계";
         else
-            goToNextLevelText.text = "다음 단계";
-        goToExtraObj.SetActive(
-            level == stageSO.numOfLevelOfStage[stage - 1]
-            && stageSO.numOfLevelOfExtraStage[stage - 1] > 0
-            && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= stageSO.numOfLevelOfStage[stage - 1] * 3
-        );
+            goToNextLevelText = "다음 단계";
+
+        // 혹시 모를 중복을 방지
+        GameClearCanvas curGameClearObj = FindAnyObjectByType<GameClearCanvas>();
+        if (curGameClearObj == null)
+        {
+            gameClearCanvasObj = Instantiate(gameClearCanvasPrefab);
+            gameClearCanvasObj.GetComponent<GameClearCanvas>().Init(star, goToNextLevelText);
+        }
+
+        PersistentDataManager.Instance.SetStageClearData(star);
         
         Logger.Log("Game Clear");
     }
@@ -292,7 +338,8 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void Resume()
     {
         isGaming = true;
-        gameClearObj.SetActive(false);
+        gameClearCanvasObj = null;
+        gameOverCanvasObj = null;
     }
 
     public void Restart()
@@ -303,7 +350,6 @@ public class GameManager : SingletonBehaviour<GameManager>
         InitStatus();
         if (color12WarningBackground.gameObject.activeSelf)
             SetColor12Warning(false);
-        if (gameOverObj.activeSelf) gameOverObj.SetActive(false);
         TutorialController t = FindAnyObjectByType<TutorialController>();
         if (t != null) t.RestartWhenFirstTutorial();
         Resume();
@@ -312,13 +358,22 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void ShowHint()
     {
         AudioManager.Instance.PlaySfx(SfxType.Click1);
+        isGaming = false;
+
         if (stage == 1 && level == 1)
         {
             tutorialController.ShowHint();
             return;
         }
-        GameObject hint = Resources.Load<GameObject>("Prefabs/Hint");
-        Instantiate(hint);
+        if (hintObj == null)
+        {
+            hintObj = Resources.Load<GameObject>("Prefabs/Hint");
+            hintObj = Instantiate(hintObj);
+        }
+        else if (!hintObj.activeSelf)
+        {
+            hintObj.SetActive(true);
+        }
     }
 
     public void SelectLevel()
@@ -330,12 +385,13 @@ public class GameManager : SingletonBehaviour<GameManager>
         });
     }
 
-    public void GoToNextStage()
+    public void GoToNextLevel()
     {
         if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
         {
-            if (stageSO.numOfStage == stage || PersistentDataManager.Instance.totalStar < stageSO.numOfStarToUnlockStage[stage])
+            if (stageSO.numOfStage == stage)// || PersistentDataManager.Instance.totalStar < stageSO.numOfStarToUnlockStage[stage])
             {
+                AudioManager.Instance.ChangeBgmWithTransition(BgmType.Title);
                 SelectLevel();
                 return;
             }
@@ -355,6 +411,8 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         if (PersistentDataManager.Instance.LoadStageAndLevel(nextStage, nextLevel))
         {
+            // 1-1 => 1-2도 bgm 바뀜
+            AudioManager.Instance.ChangeBgmWithTransition(nextStage);
             if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
             {
                 PlayerPrefs.SetInt("LastSelectedCardHorizontal", stage);
@@ -399,19 +457,6 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (isAppear)
         {
             GameObject color12WarningParent = color12WarningBackground.transform.parent.gameObject;
-            if (stage == 1 && level == 1)
-            {
-                // RectTransform rect = color12WarningParent.GetComponent<RectTransform>();
-
-                // // 가로: stretch (0~1)
-                // rect.anchorMin = new Vector2(0, 0.5f);  // 왼쪽
-                // rect.anchorMax = new Vector2(1, 0.5f);  // 오른쪽
-                // rect.pivot = new Vector2(0.5f, 0.5f);
-
-                // rect.anchoredPosition = new Vector2(0, 0);
-
-                tutorialController.GetComponent<TutorialController>().HighlightTutorialAnswer();
-            }
             color12WarningParent.SetActive(true);
             color12WarningBackground.color = new Color(1, 1, 1, 0);
             color12WarningTextColor.a = 0;
@@ -420,7 +465,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             color12WarningBackground.DOColor(new Color(1, 1, 1, 0.5f), 0.6f);
             color12WarningTextColor.a = 1;
             color12WarningText.DOColor(color12WarningTextColor, 0.6f);
-            color12WarningRestartButton.DOColor(Color.white, 0.6f);
+            color12WarningRestartButton.DOColor(new Color(1, 1, 1, 0.92f), 0.6f);
         }
         else
         {

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -6,22 +7,25 @@ public class SprayTile : TileData
 {
     protected const float myTileColorChangeTime = 0.5f;
     protected const float colorOneTileSpeed = 0.06f;
+    protected const int maxSprayCount = 1000;
     protected int paintCount;
     protected WaitForSeconds waitColorOneTile;
     protected ParticleSystem particle;
-    protected Coroutine doSprayTileCoroutine;
+    protected HashSet<IEnumerator> doSprayTileCoroutines = new();
+
+    protected SpriteRenderer spraySpriter;
 
     public override void Initialize(BoardSOTileData boardSOTileData)
     {
         base.Initialize(boardSOTileData);
+        if (Type != TileType.Spray) return;
 
-        // particle = GetComponentInChildren<ParticleSystem>();
-        // particle.Stop();
-        doSprayTileCoroutine = null;
+        spraySpriter = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        doSprayTileCoroutines.Clear();
 
         if (boardSOTileData is BoardSOIntTileData intTileData)
         {
-            paintCount = intTileData.intValue < 0 ? 1_000_000_000 : intTileData.intValue;
+            paintCount = intTileData.intValue < 0 ? maxSprayCount : intTileData.intValue;
             waitColorOneTile = new WaitForSeconds(colorOneTileSpeed);
         }
         else
@@ -32,25 +36,45 @@ public class SprayTile : TileData
 
     public override void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)
     {
+        base.OnBlockEnter(block, pos, direction, color, moveTime);
+        
         if (!block.HasColor)
             return;
+        if (color != TileType.Color1 && color != TileType.Color2)
+            return;
+            
         Color c = Board.Instance.GetColorByType(color);
         ColorDirectlyForRedo(direction, color);
         StartCoroutine(MyTileColorChange(c));
-        if (color == TileType.Color1 || color == TileType.Color2)
-            doSprayTileCoroutine = StartCoroutine(DoSprayTile(direction, color));
+        StartSpray(direction, color);
     }
 
     protected IEnumerator MyTileColorChange(Color color)
     {
         spriter.color = color;
+        spraySpriter.color = color;
         yield return MyCoroutine.WaitFor(myTileColorChangeTime, (t) =>
         {
             spriter.color = Color.Lerp(color, Color.white, t);
+            spraySpriter.color = Color.Lerp(color, Color.white, t);
         });
     }
 
-    protected IEnumerator DoSprayTile(Vector2Int direction, TileType colorType)
+    protected void StartSpray(Vector2Int direction, TileType colorType)
+    {
+        Logger.Log($"StartSpray {direction}");
+        IEnumerator routine = DoSprayTile(direction, colorType);
+        doSprayTileCoroutines.Add(routine);
+        StartCoroutine(SprayTileWrapper(routine));
+    }
+
+    private IEnumerator SprayTileWrapper(IEnumerator routine)
+    {
+        yield return StartCoroutine(routine);
+        doSprayTileCoroutines.Remove(routine);
+    }
+
+    private IEnumerator DoSprayTile(Vector2Int direction, TileType colorType)
     {
         Vector2Int curPos = pos;
         AudioManager.Instance.PlaySfx(SfxType.EnterSpray);
@@ -101,7 +125,7 @@ public class SprayTile : TileData
 
         for (int i = 0; i < paintCount; i++)
         {
-            Logger.Log($"{i} {i}");
+            //Logger.Log($"{i} {i}");
             curPos += direction;
             // 타일이 없으면 즉시 종료
             if (!Board.Instance.board.TryGetValue(curPos, out TileData tileData))
@@ -110,7 +134,7 @@ public class SprayTile : TileData
             if (tileData is NormalTile)
             {
                 Board.Instance.boardTypeForRedo[curPos] = Board.Instance.boardTypeForRedo[curPos].AddColorToNormalTile(colorType);
-                Logger.Log($"{Board.Instance.boardTypeForRedo[curPos]}");
+                //Logger.Log($"{Board.Instance.boardTypeForRedo[curPos]}");
             }
             else if (tileData is ReversePaintTile)
                 colorType = colorType.GetOppositeColor();
@@ -123,10 +147,11 @@ public class SprayTile : TileData
 
     public void StopSpraying()
     {
-        if (doSprayTileCoroutine != null)
+        if (doSprayTileCoroutines != null)
         {
-            StopCoroutine(doSprayTileCoroutine);
-            doSprayTileCoroutine = null;
+            foreach (var entry in doSprayTileCoroutines)
+                StopCoroutine(entry);
+            doSprayTileCoroutines.Clear();
         }
     }
 

@@ -18,15 +18,45 @@ public class MainManager : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
+            ControlEscapeKey();
+        // if (Input.GetKeyDown(KeyCode.A))
+        //     PlayerPrefs.DeleteAll();
+    }
+
+    private void ControlEscapeKey()
+    {
+        if (UIManager.Instance.doingTransition)
+            return;
+            
+        // 세팅 닫기
+        Settings settings = FindAnyObjectByType<Settings>();
+        if (settings != null)
         {
-            if (card.activeSelf)
-                CardToMainMenu();
-            else
-                UIManager.Instance.OpenExitGame();
+            settings.OnSettingExit();
+            return;
         }
 
-        if (Input.GetKeyDown(KeyCode.A))
-            PlayerPrefs.DeleteAll();
+        // 상점 닫기
+
+        // 메뉴 닫기
+        GameObject menu = GameObject.Find("MainMenuCanvas(Clone)");
+        if (menu != null)
+        {
+            menu.GetComponent<Menu>().Resume();
+            return;
+        }
+            
+        if (card.activeSelf)
+        {
+            // 메인 메뉴로 돌아가기
+            CardToMainMenu();
+        }
+        else
+        {
+            // 게임 종료 팝업 열고 닫기
+            // 토스에서는 제외
+            // UIManager.Instance.ControlExitGamePopUp();
+        }
     }
 
     public void MainMenuToCard()

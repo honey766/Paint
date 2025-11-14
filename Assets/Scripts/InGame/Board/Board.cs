@@ -108,6 +108,8 @@ public class Board : SingletonBehaviour<Board>
 
     public void InitBoardWhenRestart(BoardSO boardSO)
     {
+        StopSpraying();
+        
         // Tile
         foreach (var entry in boardSO.boardTileList)
             if (entry.type.IsNormalTile() && board[entry.pos] is NormalTile normalTile)

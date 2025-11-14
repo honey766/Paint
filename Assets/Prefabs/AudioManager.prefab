@@ -49,26 +49,45 @@ MonoBehaviour:
   masterMixer: {fileID: 24100000, guid: 20f2f1bee3cf31f4d81d0a656930eb53, type: 2}
   bgmSource: {fileID: 4699862124339260103}
   sfxSource2D: {fileID: 243314287968440958}
-  bgmClips: []
+  bgmClips:
+  - bgmType: 1000
+    audioClip: {fileID: 8300000, guid: b00eeb73260f78944a0899797922e5a4, type: 3}
+  - bgmType: 2000
+    audioClip: {fileID: 8300000, guid: b4899b548defb4342ba57bf24df290b8, type: 3}
+  - bgmType: 2001
+    audioClip: {fileID: 8300000, guid: a5ef2e620ee09654c9b7c6a31743d316, type: 3}
+  - bgmType: 2002
+    audioClip: {fileID: 8300000, guid: 7d9b8a44ada88584b884d4f4b184028d, type: 3}
+  - bgmType: 2003
+    audioClip: {fileID: 8300000, guid: efc9707b110ccd446bd42ce98565d872, type: 3}
+  - bgmType: 2004
+    audioClip: {fileID: 8300000, guid: 2b06239af1e65d74b9b66054721bf062, type: 3}
+  - bgmType: 2005
+    audioClip: {fileID: 8300000, guid: afdbfbef9e9f83e4f9355455d6ecdcb7, type: 3}
+  - bgmType: 2006
+    audioClip: {fileID: 8300000, guid: bfc7e802ff268e544bfb1d2a920a4a7e, type: 3}
+  - bgmType: 2007
+    audioClip: {fileID: 8300000, guid: 2b06239af1e65d74b9b66054721bf062, type: 3}
   sfxClips:
   - sfxType: 0
-    audioClip: {fileID: 8300000, guid: 8f43badcef8d0964d857e81fdf388a2c, type: 3}
+    audioClip: {fileID: 8300000, guid: b1797d58463bf3b49864af9ba4df2b6e, type: 3}
   - sfxType: 1
-    audioClip: {fileID: 0}
+    audioClip: {fileID: 8300000, guid: e0153db23c3fd8942819420eb1d6cd1f, type: 3}
   - sfxType: 2
-    audioClip: {fileID: 0}
+    audioClip: {fileID: 8300000, guid: 63805b18ac73c7a429cd37d0f93c9de5, type: 3}
   - sfxType: 3
-    audioClip: {fileID: 0}
+    audioClip: {fileID: 8300000, guid: 94cec4e671744d5478145e80ad656044, type: 3}
   - sfxType: 4
-    audioClip: {fileID: 0}
-  - sfxType: 1000
-    audioClip: {fileID: 0}
+    audioClip: {fileID: 8300000, guid: 4c204f473ac1e854893ea7744bee0095, type: 3}
   - sfxType: 1001
-    audioClip: {fileID: 0}
-  - sfxType: 2000
-    audioClip: {fileID: 0}
+    audioClip: {fileID: 8300000, guid: f9daf09ff9239b64a9ba1709598208c1, type: 3}
   - sfxType: 2001
-    audioClip: {fileID: 0}
+    audioClip: {fileID: 8300000, guid: 18db493703ffc164f9a6e3ca7f013442, type: 3}
+  loopSfxClips:
+  - sfxType: 1000
+    introClip: {fileID: 0}
+    loopClip: {fileID: 8300000, guid: 0ab15a271d1bc2049bad22df5da8913c, type: 3}
+    outroClip: {fileID: 0}
 --- !u!82 &4699862124339260103
 AudioSource:
   m_ObjectHideFlags: 0
@@ -80,7 +99,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -7084556645942922125, guid: 20f2f1bee3cf31f4d81d0a656930eb53, type: 2}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 11ba8b061d081de4fbf2affe9f53035a, type: 3}
+  m_Resource: {fileID: 8300000, guid: b00eeb73260f78944a0899797922e5a4, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

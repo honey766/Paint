@@ -1,0 +1,1045 @@
+fileFormatVersion: 2
+guid: 64979060fcbb26b4cb66f37570956762
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2551205225965745558
+    second: tuto1-1-1 sheet_0
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 546
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6a01352d5c489cd0800000000000000
+      internalID: -2551205225965745558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_1
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 546
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f2c2807e84fbf04684d9366e7c3598f
+      internalID: 746229411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_2
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 546
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24ceda8acca2cae4b8749baef6b11cc4
+      internalID: -1995796226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_3
+      rect:
+        serializedVersion: 2
+        x: 1017
+        y: 546
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f05b84ce6c7c44c41a9ff22bcc48d07e
+      internalID: 1081976748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_4
+      rect:
+        serializedVersion: 2
+        x: 1356
+        y: 546
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59ff95afe881b3a459479932fa71fc83
+      internalID: -146224415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 468
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ea02c04ca3685f4d823a3704322d61d
+      internalID: -631453153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_6
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 468
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7a1fa45c4cb1ef49a2ac902786341f9
+      internalID: 1013320968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_7
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 468
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d69013e9d1dec234f80be2a73609fe6c
+      internalID: -1556777492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_8
+      rect:
+        serializedVersion: 2
+        x: 1017
+        y: 468
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4dbeebe6de5a351448c12bc3c0bd48ae
+      internalID: -1175678895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_9
+      rect:
+        serializedVersion: 2
+        x: 1356
+        y: 468
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9169c534d29c5a748b8b76e5123a6c77
+      internalID: 392763025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 390
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af2d0125893c7e142bde1ebe17d6455e
+      internalID: -130728927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_11
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 390
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0638df3f2ebdf041a1fb66f766c61a4
+      internalID: 1023250628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_12
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 390
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c7464ea03e9e954495750d65ce71e2d
+      internalID: 1385344428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_13
+      rect:
+        serializedVersion: 2
+        x: 1017
+        y: 390
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 128012ca5fa677f43a9c1997b3d0154f
+      internalID: 2057857572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_14
+      rect:
+        serializedVersion: 2
+        x: 1356
+        y: 390
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6843ed32c44deff4bba1dcdbf15de6e2
+      internalID: 2038934578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_15
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 312
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da837e1e8ec207346ad02d7603a8a0c0
+      internalID: 1304545087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_16
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 312
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 032bd1429be6837498892f385f637b95
+      internalID: 231730425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_17
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 312
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58583cb19bc011546b8973e82dab69f1
+      internalID: -1007632252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_18
+      rect:
+        serializedVersion: 2
+        x: 1017
+        y: 312
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2306edb250635ed46801ea7802a00761
+      internalID: 2105617697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_19
+      rect:
+        serializedVersion: 2
+        x: 1356
+        y: 312
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9319b6c56ddd5b24db24ceb884412559
+      internalID: 273006698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 234
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4044a8caa1cfea04fa6cc41a11ae40de
+      internalID: -364555468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_21
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 234
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87e369a98a512b14082766c71f6e0105
+      internalID: -193535423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_22
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 234
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f39b6fb1db466745bace27a96aa8efd
+      internalID: 446732886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_23
+      rect:
+        serializedVersion: 2
+        x: 1017
+        y: 234
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2cb39653b525d64b9427c2dd9e5f49c
+      internalID: 1133510639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_24
+      rect:
+        serializedVersion: 2
+        x: 1356
+        y: 234
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 747eee0762a8d1147ba6a9fd0d487d58
+      internalID: -1234055546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_25
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 156
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3e193a6961c67f46bf41358a71e7490
+      internalID: -1247409711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_26
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 156
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4284dfdcb9318649b80e44d69a93575
+      internalID: 1520194324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_27
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 156
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 506e285092d029c48b1fb464ced663ef
+      internalID: -73347492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_28
+      rect:
+        serializedVersion: 2
+        x: 1017
+        y: 156
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11dd7ffd2436ab944b7a5cb496268a60
+      internalID: 971718546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_29
+      rect:
+        serializedVersion: 2
+        x: 1356
+        y: 156
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fdd4249fa599dc469018a90f7d6860c
+      internalID: 953093961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_30
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 78
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 589dd64a8539f204baf56d532230628f
+      internalID: -1277326156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_31
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 78
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ad9a7d485eb2b548889863de3ac616b
+      internalID: -611259264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_32
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 78
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68df6f0f10fb1d041bfe4af7d2db6b5a
+      internalID: 1550026279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_33
+      rect:
+        serializedVersion: 2
+        x: 1017
+        y: 78
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28c82dd09f4bcb841b4aac066ff0825a
+      internalID: 973713992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_34
+      rect:
+        serializedVersion: 2
+        x: 1356
+        y: 78
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7457ed2bd04138e4c845caf93dfa4f67
+      internalID: -1542296391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_35
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7dbf08e31dde5ea4e88e5aa9ad074127
+      internalID: -1073129706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_36
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 0
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1a243c75d8f5b140a51ed0b0173591b
+      internalID: -119919620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_37
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 0
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad045e87efcbd85469174931f5d1e0da
+      internalID: -924404931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tuto1-1-1 sheet_38
+      rect:
+        serializedVersion: 2
+        x: 1017
+        y: 0
+        width: 339
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e127e7267fc2ae64a804bc78f8752bf8
+      internalID: -601594556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f907e8f24fdc7fa449fb5b25ff09c2d4
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":5.0,"y":8.0},"gridSpriteSize":{"x":339.0,"y":78.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      tuto1-1-1 sheet_0: -2551205225965745558
+      tuto1-1-1 sheet_1: 746229411
+      tuto1-1-1 sheet_10: -130728927
+      tuto1-1-1 sheet_11: 1023250628
+      tuto1-1-1 sheet_12: 1385344428
+      tuto1-1-1 sheet_13: 2057857572
+      tuto1-1-1 sheet_14: 2038934578
+      tuto1-1-1 sheet_15: 1304545087
+      tuto1-1-1 sheet_16: 231730425
+      tuto1-1-1 sheet_17: -1007632252
+      tuto1-1-1 sheet_18: 2105617697
+      tuto1-1-1 sheet_19: 273006698
+      tuto1-1-1 sheet_2: -1995796226
+      tuto1-1-1 sheet_20: -364555468
+      tuto1-1-1 sheet_21: -193535423
+      tuto1-1-1 sheet_22: 446732886
+      tuto1-1-1 sheet_23: 1133510639
+      tuto1-1-1 sheet_24: -1234055546
+      tuto1-1-1 sheet_25: -1247409711
+      tuto1-1-1 sheet_26: 1520194324
+      tuto1-1-1 sheet_27: -73347492
+      tuto1-1-1 sheet_28: 971718546
+      tuto1-1-1 sheet_29: 953093961
+      tuto1-1-1 sheet_3: 1081976748
+      tuto1-1-1 sheet_30: -1277326156
+      tuto1-1-1 sheet_31: -611259264
+      tuto1-1-1 sheet_32: 1550026279
+      tuto1-1-1 sheet_33: 973713992
+      tuto1-1-1 sheet_34: -1542296391
+      tuto1-1-1 sheet_35: -1073129706
+      tuto1-1-1 sheet_36: -119919620
+      tuto1-1-1 sheet_37: -924404931
+      tuto1-1-1 sheet_38: -601594556
+      tuto1-1-1 sheet_4: -146224415
+      tuto1-1-1 sheet_5: -631453153
+      tuto1-1-1 sheet_6: 1013320968
+      tuto1-1-1 sheet_7: -1556777492
+      tuto1-1-1 sheet_8: -1175678895
+      tuto1-1-1 sheet_9: 392763025
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

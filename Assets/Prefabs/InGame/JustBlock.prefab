@@ -151,3 +151,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::JustBlock
   slidingDirection: {x: 0, y: 0}
+  curPos: {x: 0, y: 0}

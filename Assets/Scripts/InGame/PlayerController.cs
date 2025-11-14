@@ -42,6 +42,7 @@ public class PlayerController : BlockData
     public override bool HasMutableColor { get; protected set; } = true;
     public override bool HasColor { get; protected set; } = true;
     public override TileType Color { get; protected set; } = TileType.White;
+    public override bool IsTransparent { get; protected set; } = false;
 
     public Action<Vector2Int> MoveEvent;
 
@@ -63,8 +64,9 @@ public class PlayerController : BlockData
     [SerializeField] private float colorTileAudioCooldown = 0.1f;
     private float colorTileAudioLastTime;
 
+    [SerializeField] private Sprite playerBrush, playerErasor;
     // 캐싱
-    private SpriteRenderer spriter;
+    private SpriteRenderer spriter, toolSpriter;
     private Transform player;
     private Coroutine inputMoveCoroutine;
     private WaitForSeconds halfMoveWaitForSeconds;
@@ -85,8 +87,11 @@ public class PlayerController : BlockData
         else
             Destroy(gameObject);
 
-        spriter = transform.GetChild(0).GetComponent<SpriteRenderer>();
         player = transform.GetChild(0).transform;
+        transform.localScale = Vector3.one * 0.85f;
+        player.GetChild(0).localScale = Vector3.one * 0.85f;
+        spriter = player.GetChild(1).GetComponent<SpriteRenderer>();
+        toolSpriter = player.GetChild(3).GetComponent<SpriteRenderer>();
         halfMoveWaitForSeconds = new WaitForSeconds(moveTime / 2f);
         savedMoveCount = 0;
         redoing = 0;
@@ -313,13 +318,13 @@ public class PlayerController : BlockData
 
             IncreaseMoveCount();
             RecordMoveData(movingDirection);
-            curPos = nextPos;
+            Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, movingDirection, Color, moveTime);
             BlockMoveController.Instance.MoveBlocks(this, nextPos - movingDirection, movingDirection);
             PlayerMoveAnimation(nextPos, movingDirection, moveTime);
+            curPos = nextPos;
             Logger.Log($"Player Move to {curPos}");
             if (!GameManager.Instance.isGaming) break; // 게임오버라면 즉시 종료
 
-            Board.Instance.board[nextPos].OnBlockEnter(this, nextPos, movingDirection, Color, moveTime);
             yield return halfMoveWaitForSeconds;
 
             MoveEvent?.Invoke(curPos);
@@ -412,6 +417,9 @@ public class PlayerController : BlockData
             colorPalette = Board.Instance.colorPaletteSO;
         else
             colorPalette = PersistentDataManager.Instance.colorPaletteSO;
+
+        if (Color == TileType.White) toolSpriter.sprite = playerErasor;
+        else toolSpriter.sprite = playerBrush;
 
         switch (Color)
         {

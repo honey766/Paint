@@ -16,13 +16,13 @@ public class Menu : MonoBehaviour
 
     public void Restart()
     {
-        AudioManager.Instance.PlaySfx(SfxType.Click1);
         if (isGaming) GameManager.Instance.Restart();
         Destroy(gameObject);
     }
 
     public void SelectLevel()
     {
+        AudioManager.Instance.ChangeBgmWithTransition(BgmType.Title);
         AudioManager.Instance.PlaySfx(SfxType.Click1);
         if (isGaming) GameManager.Instance.SelectLevel();
     }
@@ -36,10 +36,12 @@ public class Menu : MonoBehaviour
     public void OpenShop()
     {
         AudioManager.Instance.PlaySfx(SfxType.Click1);
+        UIManager.Instance.OpenShop();
     }
 
     public void GoToMainMenu()
     {
+        AudioManager.Instance.ChangeBgmWithTransition(BgmType.Title);
         AudioManager.Instance.PlaySfx(SfxType.Click1);
         UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("Main"));
     }

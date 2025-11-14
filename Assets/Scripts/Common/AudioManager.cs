@@ -46,8 +46,15 @@ public enum SfxType
 
 public enum BgmType
 {
-    TitleBgm,
-    MainBgm
+    Title = 1000,
+    Tutorial = 2000,
+    Spring = 2001,
+    Summer,
+    Autumn,
+    Winter,
+    Desert,
+    Mountain,
+    Swamp
 }
 
 public class AudioManager : SingletonBehaviour<AudioManager>
@@ -56,7 +63,8 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     [SerializeField] private AudioMixer masterMixer;
 
     [Header("오디오 소스 (Audio Sources)")]
-    [SerializeField] private AudioSource bgmSource;
+    [SerializeField] private AudioSource curBgmSource;
+    [SerializeField] private AudioSource nextBgmSource;
     [SerializeField] private AudioSource sfxSource2D; // UI 등 2D 사운드 전용
     private Dictionary<SfxType, (AudioSource, AudioSource)> loopSfxSources = new();
 
@@ -80,6 +88,13 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     public float BgmVolume { get; private set; } = 1f;
     public float SfxVolume { get; private set; } = 1f;
 
+    // 스테이지별 BGM
+    private readonly BgmType[] stageBgm = new BgmType[]
+    {
+        BgmType.Spring, BgmType.Summer, BgmType.Autumn, BgmType.Winter,
+        BgmType.Desert, BgmType.Mountain, BgmType.Swamp
+    };
+
     protected override void Init()
     {
         base.Init();
@@ -96,7 +111,8 @@ public class AudioManager : SingletonBehaviour<AudioManager>
             loopSfxSources[loopSfx.sfxType] = (GetLoopSfxAudioSource(), GetLoopSfxAudioSource());
         }
 
-        bgmSource.loop = true;
+        curBgmSource.loop = true;
+        nextBgmSource.loop = true;
         sfxSource2D.loop = false;
     }
     private AudioSource GetLoopSfxAudioSource()
@@ -112,6 +128,7 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     {
         SetBGMVolume(PersistentDataManager.LoadBGM() / 100f);
         SetSFXVolume(PersistentDataManager.LoadSFX() / 100f);
+        PlayBgmImmediately(BgmType.Title);
     }
 
     // ---------------------
@@ -123,6 +140,90 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         masterMixer.SetFloat("BGM", Mathf.Log10(volume) * 20);
         BgmVolume = volume;
     }
+
+    public void PlayBgmImmediately(BgmType bgmType)
+    {
+        if (bgmDict.TryGetValue(bgmType, out AudioClip clip))
+            if (curBgmSource.clip != clip)
+            {
+                curBgmSource.clip = clip;
+                curBgmSource.Play();
+            }
+    }
+
+    public void ChangeBgmWithTransition(BgmType bgmType)
+    {
+        if (bgmDict.TryGetValue(bgmType, out AudioClip clip))
+            if (curBgmSource.clip != clip)
+                StartCoroutine(ChangeBgmCoroutine(clip));
+    }
+    public void ChangeBgmWithTransition(int stage)
+    {
+        if (stage < 1 || stage > stageBgm.Length)
+            return;
+        BgmType bgmType = stageBgm[stage - 1];
+        if (bgmDict.TryGetValue(bgmType, out AudioClip clip))
+            if (curBgmSource.clip != clip)
+                StartCoroutine(ChangeBgmCoroutine(clip));
+    }
+
+    private IEnumerator ChangeBgmCoroutine(AudioClip clip)
+    {
+        float fadeOutDuration = 1.2f;
+        float fadeInDuration = 0.3f;
+        float transitionDuration = UIManager.Instance.GetTransitionDuration();
+    
+        // 1. 현재 BGM 페이드아웃 시작
+        curBgmSource.DOFade(0, fadeOutDuration).SetEase(Ease.Linear);
+    
+        // 2. transitionDuration 후 선행 로딩 시작
+        yield return new WaitForSeconds(transitionDuration);
+    
+        // --- ⭐ BGM 선행 로딩 로직 ⭐ ---
+        if (clip.loadState == AudioDataLoadState.Unloaded)
+        {
+            clip.LoadAudioData(); // 메모리 로드 및 디코딩 시작
+            
+            // Load In Background가 체크되어 있을 때, 로드가 완료될 때까지 대기
+            while (clip.loadState == AudioDataLoadState.Loading)
+            {
+                yield return null; 
+            }
+        }
+        // --- ⭐ BGM 선행 로딩 완료 ⭐ ---
+    
+        // 3. 다음 BGM 소스 준비
+        nextBgmSource.clip = clip;
+        nextBgmSource.volume = 0f; // 볼륨만 설정 (Play/Stop 불필요)
+    
+        // 4. 나머지 페이드아웃 시간 대기
+        yield return new WaitForSeconds(Mathf.Max(0, fadeOutDuration - transitionDuration));
+    
+        // 5. 스왑 및 재생 시작
+        curBgmSource.Stop();
+        
+        var temp = curBgmSource;
+        curBgmSource = nextBgmSource;
+        nextBgmSource = temp; // 소스 스왑 완료
+    
+        yield return null; // 한 프레임 대기 (필요하다면)
+    
+        // 6. 새로운 BGM 재생 및 페이드인
+        // (LoadAudioData() 덕분에 렉 없이 즉시 재생 시작)
+        curBgmSource.clip = clip;
+        curBgmSource.volume = 0;
+        curBgmSource.Play();
+        curBgmSource.DOFade(1, fadeInDuration).SetEase(Ease.Linear);
+    }
+
+    // private IEnumerator ChangeBgmCoroutine(AudioClip clip)
+    // {
+    //     curBgmSource.DOFade(0, 1.35f).SetEase(Ease.Linear);
+    //     yield return new WaitForSeconds(1.35f);
+    //     curBgmSource.clip = clip;
+    //     curBgmSource.Play();
+    //     curBgmSource.DOFade(1, 0.2f);
+    // }
 
     public void SetSFXVolume(float volume)
     {
@@ -227,8 +328,6 @@ public class AudioManager : SingletonBehaviour<AudioManager>
             
             if (loopingFlags.Contains(sfxType))
                 loopingFlags.Remove(sfxType);
-                
-            Logger.LogWarning($"💥 {sfxType}의 기존 루프 시퀀스가 중지되고 새로 시작됩니다. (재개 시간: {lastTime:F2}s)");
         }
         
         // 2. 새로운 루프 시작 (이전 단계와 동일)
@@ -300,8 +399,6 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         }
         
         currentSrc.Play();
-
-        Logger.Log($"{sfxType} loop start (Crossfade mode) from {currentSrc.time:F2}s");
         
         while (loopingFlags.Contains(sfxType))
         {
@@ -338,7 +435,6 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         }
 
         // 3. 끝맺음
-        Logger.Log($"{sfxType} end fade out");
 
         if (clip.outroClip != null)
         {

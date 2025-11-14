@@ -183,7 +183,11 @@ public abstract class TileData : MonoBehaviour
     // private static readonly int RatioID = Shader.PropertyToID("_ratio");
     // private static readonly int RandomNoiseID = Shader.PropertyToID("_randomNoise");
 
-    public abstract void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime);
+    public virtual void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)
+    {
+        // if (!block.IsTransparent)
+        //     block.AdjustAlphaBasedOnTileBelow(this);
+    }
 
     public virtual void Initialize(BoardSOTileData boardSOTileData)
     {

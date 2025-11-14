@@ -14,6 +14,7 @@ public class ReversePaintTile : TileData
 
     public override void OnBlockEnter(BlockData block, Vector2Int pos, Vector2Int direction, TileType color, float moveTime)
     {
+        base.OnBlockEnter(block, pos, direction, color, moveTime);
         if (block.HasMutableColor)
             StartCoroutine(ChangePlayerColorDelayed(block, moveTime / 2f));
     }
