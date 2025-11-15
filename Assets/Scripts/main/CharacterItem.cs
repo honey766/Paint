@@ -13,7 +13,7 @@ public class CharacterItem : MonoBehaviour
     public Image frontUI; // 카드의 앞면 UI 그룹
     public Image backUI;  // 카드의 뒷면 UI 그룹
     public Sprite extraButtonSprite, extraButtonLockedSprite, buttonLockedSprite, backUISprite, starSprite;
-
+    public Sprite[] frontSprites;
 
     [Header("Flip Settings")]
     public float flipDuration = 0.4f; // 뒤집히는 데 걸리는 시간
@@ -38,8 +38,7 @@ public class CharacterItem : MonoBehaviour
         stage = character.Index;
         this.isExtra = isExtra;
 
-        // 앞면 이미지 불러오기
-        Sprite spriteFront = Resources.Load<Sprite>("Images/" + character.PicName);
+        Sprite spriteFront = frontSprites[stage - 1];
         if (spriteFront != null)
         {
             frontUI.sprite = spriteFront;
@@ -196,6 +195,8 @@ public class CharacterItem : MonoBehaviour
 
     public void OnStageButtonClick(int level)
     {
+        if (UIManager.Instance.doingTransition) return;
+
         // stage, level 데이터 호출 후 PersistentDataManager에 저장
         if (PersistentDataManager.Instance.LoadStageAndLevel(stage, level))
         {

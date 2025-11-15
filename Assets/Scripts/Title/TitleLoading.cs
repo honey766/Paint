@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class TitleLoading : MonoBehaviour
 {
+    private float loadingTime;
     private float t = 0;
     private bool isReady = false;
     [SerializeField] private Slider slider;
@@ -14,15 +15,20 @@ public class TitleLoading : MonoBehaviour
     [SerializeField] private GameObject touchText, goMainButton;
     [SerializeField] private float fadeDuration;
 
+    void Start()
+    {
+        loadingTime = Random.Range(0.75f, 1.25f);
+    }
+
     void Update()
     {
         if (!isReady)
         {
             t += Time.deltaTime;
-            float value = Mathf.Min(2f, t / 2f);
+            float value = Mathf.Min(loadingTime, t) / loadingTime;
             sliderPercent.text = $"{(int)(value * 100 + 0.01f)}%";
             slider.value = value;
-            if (t > 2f)
+            if (t > loadingTime)
             {
                 isReady = true;
                 StartCoroutine(ReadyCoroutine());
