@@ -67,6 +67,8 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         extraBackground.offsetMax = new Vector2(extraContentHeight, ContentSpacing);  // Top
 
         (int savedHorIndex, int savedVerIndex) = GetSavedIndex();
+        if (savedVerIndex == 1)
+            PersistentDataManager.HaveWeInformedExtraUnlock();
         LoadAndSetupCharacters();
         StartCoroutine(InitSnapToCard((savedHorIndex, savedVerIndex)));
 
