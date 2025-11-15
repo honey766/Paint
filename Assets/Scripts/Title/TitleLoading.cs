@@ -1,31 +1,96 @@
 using System.Collections;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TitleLoading : MonoBehaviour
 {
+    private float loadingTime;
     private float t = 0;
     private bool isReady = false;
     [SerializeField] private Slider slider;
-    [SerializeField] private TextMeshProUGUI sliderPercent;
+    [SerializeField] private TextMeshProUGUI sliderPercent, status;
     [SerializeField] private GameObject touchText, goMainButton;
     [SerializeField] private float fadeDuration;
+    private bool loadingFinished;
+
+
+
+    void Start()
+    {
+        loadingFinished = false;
+        loadingTime = Random.Range(0.75f, 1.25f);
+        InitAddressables();
+    }
+
+    // async void InitAddressables()
+    // {
+    //     status.text = "Addressables 초기화 중...";
+
+    //     var init = Addressables.InitializeAsync();
+    //     await init.Task;
+
+    //     if (init.Status == AsyncOperationStatus.Succeeded)
+    //     {
+    //         status.text = "초기화 성공!";
+    //         Debug.Log($"RuntimePath: {Addressables.RuntimePath}");
+    //     }
+    //     else
+    //     {
+    //         status.text = $"초기화 실패: {init.OperationException?.Message}";
+    //         Debug.LogError($"Exception: {init.OperationException}");
+    //     }
+
+    //     loadingFinished = true;
+    // }
+
+    void InitAddressables()
+    {
+        status.text = "Addressables 초기화 중...";
+
+        var init = Addressables.InitializeAsync();
+        
+        // Completed 이벤트에 핸들러 등록
+        init.Completed += (op) =>
+        {
+            if (op.Status == AsyncOperationStatus.Succeeded)
+            {
+                status.text = "초기화 성공!";
+                Debug.Log($"RuntimePath: {Addressables.RuntimePath}");
+            }
+            else
+            {
+                status.text = $"초기화 실패: {op.OperationException?.Message}";
+                Debug.LogError($"Exception: {op.OperationException}");
+            }
+
+            loadingFinished = true;
+        };
+    }
 
     void Update()
     {
         if (!isReady)
         {
             t += Time.deltaTime;
-            float value = Mathf.Min(2f, t / 2f);
+            float value = Mathf.Min(loadingTime, t) / loadingTime;
             sliderPercent.text = $"{(int)(value * 100 + 0.01f)}%";
             slider.value = value;
-            if (t > 2f)
+            if (t > loadingTime)
             {
-                isReady = true;
-                StartCoroutine(ReadyCoroutine());
+                if (!loadingFinished)
+                {
+                    sliderPercent.text = $"99%";
+                    slider.value = 0.99f;
+                }
+                else
+                {
+                    isReady = true;
+                    StartCoroutine(ReadyCoroutine());
+                }
             }
         }
     }
@@ -52,7 +117,7 @@ public class TitleLoading : MonoBehaviour
     {
         if (isReady)
         {
-            AudioManager.Instance.PlayBgmImmediately(BgmType.Title, 0.5f);
+            AudioManager.Instance.PlayBgmImmediatelyAsync(BgmType.Title, 0.5f);
             SceneManager.LoadScene("Main");
         }
     }

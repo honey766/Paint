@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using TMPro;
 
 public class CharacterItem : MonoBehaviour
@@ -18,9 +20,11 @@ public class CharacterItem : MonoBehaviour
     [Header("Flip Settings")]
     public float flipDuration = 0.4f; // 뒤집히는 데 걸리는 시간
 
+    private AsyncOperationHandle<Sprite> frontSpriteHandle;
     private bool isFlipped = false;
     private bool isSelected = false;
     private bool isAnimating = false;
+    private bool isSetUped = false;
 
     void OnEnable()
     {
@@ -33,22 +37,29 @@ public class CharacterItem : MonoBehaviour
 
     // 초기 데이터 세팅 (이름, 이미지 등)
 
-    public void Setup(Character character, GameObject levelButtonPrefab, bool isExtra)
+    public async void Setup(Character character, GameObject levelButtonPrefab, bool isExtra)
     {
+        if (isSetUped) return;
+        isSetUped = true;
+
         stage = character.Index;
         this.isExtra = isExtra;
 
-        // 앞면 이미지 불러오기
-        Sprite spriteFront = Resources.Load<Sprite>("Images/" + character.PicName);
-        if (spriteFront != null)
-        {
-            frontUI.sprite = spriteFront;
-            Debug.Log($"<color=green>성공:</color> {character.PicName} 이미지를 성공적으로 로드했습니다.");
-        }
-        else
-        {
-            Debug.LogError($"<color=red>실패:</color> 다음 경로에서 스프라이트를 찾을 수 없습니다:");
-        }
+        // 🔧 앞면 이미지 로딩 시작 (백그라운드에서 로드)
+        string address = $"Assets/Sprites/Main/{character.PicName}.png";
+        frontSpriteHandle = Addressables.LoadAssetAsync<Sprite>(address);
+
+        // // 앞면 이미지 불러오기
+        // Sprite spriteFront = Resources.Load<Sprite>("Images/" + character.PicName);
+        // if (spriteFront != null)
+        // {
+        //     frontUI.sprite = spriteFront;
+        //     Debug.Log($"<color=green>성공:</color> {character.PicName} 이미지를 성공적으로 로드했습니다.");
+        // }
+        // else
+        // {
+        //     Debug.LogError($"<color=red>실패:</color> 다음 경로에서 스프라이트를 찾을 수 없습니다:");
+        // }
 
         backUI.sprite = backUISprite;
 
@@ -70,6 +81,21 @@ public class CharacterItem : MonoBehaviour
                 obj.transform.GetChild(0).gameObject.SetActive(true);
                 obj.GetComponentInChildren<TextMeshProUGUI>().text = $"x {PersistentDataManager.Instance.stageSO.numOfStarToUnlockStage[stage - 1]}";
             }
+        }
+
+        // 🎯 마지막에 앞면 이미지 로딩 완료 대기 및 적용
+        await frontSpriteHandle.Task;
+
+        if (frontSpriteHandle.Status == AsyncOperationStatus.Succeeded)
+        {
+            frontUI.sprite = frontSpriteHandle.Result;
+            Logger.Log($"<color=green>성공:</color> {character.PicName} 이미지를 성공적으로 로드했습니다.");
+        }
+        else
+        {
+            Logger.LogError($"<color=red>실패:</color> {address} 경로에서 스프라이트를 찾을 수 없습니다:");
+            if (frontSpriteHandle.OperationException != null)
+                Logger.LogError($"Exception: {frontSpriteHandle.OperationException.Message}");
         }
     }
     private void SetButtonOfBackUI(GameObject levelButtonPrefab)
@@ -196,6 +222,8 @@ public class CharacterItem : MonoBehaviour
 
     public void OnStageButtonClick(int level)
     {
+        if (UIManager.Instance.doingTransition) return;
+
         // stage, level 데이터 호출 후 PersistentDataManager에 저장
         if (PersistentDataManager.Instance.LoadStageAndLevel(stage, level))
         {

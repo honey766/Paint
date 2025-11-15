@@ -89,6 +89,8 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     }
     private IEnumerator InitSnapToCard((int, int) index)
     {
+        if (index.Item2 == 1) PersistentDataManager.HaveWeInformedExtraUnlock();
+        
         // 한 프레임 기다렸다가 레이아웃 계산이 끝난 뒤 실행
         yield return null;
         

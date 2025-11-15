@@ -1018,6 +1018,7 @@ GameObject:
   - component: {fileID: 233604731}
   - component: {fileID: 233604733}
   - component: {fileID: 233604732}
+  - component: {fileID: 233604734}
   m_Layer: 5
   m_Name: Version
   m_TagString: Untagged
@@ -1091,8 +1092,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1143,6 +1144,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 233604730}
   m_CullTransparentMesh: 1
+--- !u!114 &233604734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233604730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a7c11ff046b27942abe0e32477a00e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GetGameVersion
 --- !u!1 &254934286
 GameObject:
   m_ObjectHideFlags: 0
@@ -1813,7 +1826,6 @@ MonoBehaviour:
   red: {r: 1, g: 0.45098042, b: 0.41176474, a: 1}
   blue: {r: 0.40000004, g: 0.627451, b: 1, a: 1}
   purple: {r: 0.71476454, g: 0.39438233, b: 0.7283019, a: 1}
-  doingTransition: 0
   transitionRectsParent: {fileID: 1777724437}
 --- !u!1 &494718973
 GameObject:

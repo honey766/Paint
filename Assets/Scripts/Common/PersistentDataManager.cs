@@ -202,6 +202,7 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
     {
         PlayerPrefs.SetInt("haveToInformExtraUnlock", 0);
         PlayerPrefs.SetInt("haveInformedExtraUnlock", 1);
+        PlayerPrefs.Save();
     }
     public static bool HaveWeInformedExtraUnlock() => PlayerPrefs.GetInt("haveInformedExtraUnlock", 0) == 1;
     #endregion
