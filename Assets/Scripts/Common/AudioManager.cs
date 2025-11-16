@@ -128,7 +128,9 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     {
         SetBGMVolume(PersistentDataManager.LoadBGM() / 100f);
         SetSFXVolume(PersistentDataManager.LoadSFX() / 100f);
-        // Invoke(nameof(PlayBgmFirst), 0.3f);
+        #if !UNITY_WEBGL
+        PlayBgmFirst();
+        #endif
     }
 
     private void PlayBgmFirst() => PlayBgmImmediately(BgmType.Title, 0.5f);
