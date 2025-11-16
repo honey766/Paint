@@ -68,7 +68,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
         (int savedHorIndex, int savedVerIndex) = GetSavedIndex();
         if (savedVerIndex == 1)
-            PersistentDataManager.HaveWeInformedExtraUnlock();
+            PersistentDataManager.SetHaveWeInformedExtraUnlock();
         LoadAndSetupCharacters();
         StartCoroutine(InitSnapToCard((savedHorIndex, savedVerIndex)));
 
