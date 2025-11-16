@@ -36,6 +36,7 @@ public enum SfxType
     SelectCard = 2,
     FlipCard = 3,
     Transition = 4,
+    Unlock = 5,
 
     // Tile
     ColorTile = 1000,
@@ -135,7 +136,9 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     {
         SetBGMVolume(PersistentDataManager.LoadBGM() / 100f);
         SetSFXVolume(PersistentDataManager.LoadSFX() / 100f);
-        // Invoke(nameof(PlayBgmFirst), 0.3f);
+        #if !UNITY_WEBGL
+        PlayBgmFirst();
+        #endif
     }
 
     private void PlayBgmFirst() => PlayBgmImmediatelyAsync(BgmType.Title, 0.5f);

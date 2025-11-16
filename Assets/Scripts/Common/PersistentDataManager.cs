@@ -4,6 +4,8 @@ using System;
 
 public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
 {
+    public int numOfStage { get; private set; }
+
     [Header("Ingame Data")]
     public int stage { get; private set; }
     public int level { get; private set; } // 음수면 extra레벨
@@ -24,10 +26,17 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
     public bool isTileTouch { get; private set; }
     public float moveLatencyRate { get; private set; }
 
+    [Header("Unlock Data")]
+    private bool[] stageUnlockInformData;
+    private bool[] extraStageUnlockInformData;
+    private List<int> stageUnlockInformPrefsData;
+    private List<int> extraStageUnlockInformPrefsData;
+
     private void Awake()
     {
         Init();
         LoadStageClearData();
+        LoadUnlockData();
         isTileTouch = LoadIsTileTouch();
         moveLatencyRate = LoadMoveLatencyRate() / 100f;
     }
@@ -70,24 +79,24 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
     private void LoadStageClearData()
     {
         stageSO = Resources.Load<StageSO>("ScriptableObjects/Stage/Stage");
-        int stageNum = stageSO.numOfStage;
+        numOfStage = stageSO.numOfStage;
         int maxLevelNum = -1;
         int maxExtraLevelNum = -1;
-        for (int i = 0; i < stageNum; i++)
+        for (int i = 0; i < numOfStage; i++)
         {
             maxLevelNum = Mathf.Max(maxLevelNum, stageSO.numOfLevelOfStage[i]);
             maxExtraLevelNum = Mathf.Max(maxExtraLevelNum, stageSO.numOfLevelOfExtraStage[i]);
         }
 
-        stageClearData = new int[stageNum, maxLevelNum];
-        stageTotalStarData = new int[stageNum];
-        stagePlayerPrefsData = new List<int>[stageNum];
-        extraStageClearData = new int[stageNum, maxExtraLevelNum];
-        extraStageTotalStarData = new int[stageNum];
-        extraStagePlayerPrefsData = new List<int>[stageNum];
+        stageClearData = new int[numOfStage, maxLevelNum];
+        stageTotalStarData = new int[numOfStage];
+        stagePlayerPrefsData = new List<int>[numOfStage];
+        extraStageClearData = new int[numOfStage, maxExtraLevelNum];
+        extraStageTotalStarData = new int[numOfStage];
+        extraStagePlayerPrefsData = new List<int>[numOfStage];
         totalStar = 0;
 
-        for (int i = 0; i < stageNum; i++)
+        for (int i = 0; i < numOfStage; i++)
         {
             stagePlayerPrefsData[i] = new List<int>();
             extraStagePlayerPrefsData[i] = new List<int>();
@@ -96,13 +105,13 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
             totalStar += stageTotalStarData[i] + extraStageTotalStarData[i];
         }
 
-        for (int i = 0; i < stageNum; i++)
+        for (int i = 0; i < numOfStage; i++)
             for (int j = 0; j < stageSO.numOfLevelOfStage[i]; j++)
                 Logger.Log($"stage{i + 1}-{j + 1}:{stageClearData[i, j]}");
-        for (int i = 0; i < stageNum; i++)
+        for (int i = 0; i < numOfStage; i++)
             for (int j = 0; j < stageSO.numOfLevelOfExtraStage[i]; j++)
                 Logger.Log($"extraStage{i + 1}-{j + 1}:{extraStageClearData[i, j]}");
-        for (int i = 0; i < stageNum; i++)
+        for (int i = 0; i < numOfStage; i++)
         {
             Logger.Log($"stage{i + 1}, star{stageTotalStarData[i]}, extraStar{extraStageTotalStarData[i]},\n" +
             $"data: {Convert.ToString(stagePlayerPrefsData[i][0], 2).PadLeft(32, '0')}");
@@ -192,7 +201,7 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
     public static void SaveIsNoticeEnabled(bool notice) => PlayerPrefs.SetInt("notice", notice ? 1 : 0);
     #endregion
 
-    #region ExtraUnlockInform
+    #region UnlockInform
     // 스테이지 선택 화면에서 엑스트라 스테이지 해금에 대한 안내 메시지를 띄워야 하는지
     public static bool DoWeNeedToInformExtraUnlock() => PlayerPrefs.GetInt("haveToInformExtraUnlock", 0) == 1;
     // 다음에 스테이지 선택 화면에 들어올 때 엑스트라 스테이지 해금에 대한 안내 메시지를 띄우도록 설정
@@ -205,5 +214,78 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
         PlayerPrefs.Save();
     }
     public static bool HaveWeInformedExtraUnlock() => PlayerPrefs.GetInt("haveInformedExtraUnlock", 0) == 1;
+    public static void SetHaveWeInformedExtraUnlock() => PlayerPrefs.SetInt("haveInformedExtraUnlock", 1);
+
+    private void LoadUnlockData()
+    {
+        int stageNum = stageSO.numOfStage;
+        stageUnlockInformData = new bool[stageNum];
+        extraStageUnlockInformData = new bool[stageNum];
+
+        stageUnlockInformPrefsData = new List<int>();
+        extraStageUnlockInformPrefsData = new List<int>();
+        LoadCertainUnlockData(stageUnlockInformPrefsData, false);
+        LoadCertainUnlockData(extraStageUnlockInformPrefsData, true);
+    }
+
+    private void LoadCertainUnlockData(List<int> prefsData, bool isExtra)
+    {
+        int curStage = 1;
+        int count = 0;
+        while (curStage < numOfStage)
+        {
+            count++;
+            int data = PlayerPrefs.GetInt((isExtra ? "Extra" : "") + $"StageUnlockData{count}", 0);
+            prefsData.Add(data);
+            for (int j = 0; j < 32 && curStage <= numOfStage; j++)
+            {
+                if (isExtra)
+                {
+                    extraStageUnlockInformData[curStage - 1] = (data & (1 << j)) != 0;
+                }
+                else
+                {
+                    stageUnlockInformData[curStage - 1] = (data & (1 << j)) != 0;
+                }
+                curStage++;
+            }
+        }
+        if (!stageUnlockInformData[0]) InformedCertainStageUnlock(1, false);
+    }
+
+    public void InformedCertainStageUnlock(int stageNum, bool isExtra)
+    {
+        int savedData;
+        stageNum--;
+        if (isExtra)
+        {
+            extraStageUnlockInformData[stageNum] = true;
+            extraStageUnlockInformPrefsData[stageNum / 32] |= 1 << (stageNum % 32);
+            savedData = extraStageUnlockInformPrefsData[stageNum / 32];
+        }
+        else
+        {
+            stageUnlockInformData[stageNum] = true;
+            stageUnlockInformPrefsData[stageNum / 32] |= 1 << (stageNum % 32);
+            savedData = stageUnlockInformPrefsData[stageNum / 32];
+        }
+        PlayerPrefs.SetInt((isExtra ? "Extra" : "") + $"StageUnlockData{1 + stageNum / 32}", savedData);
+    }
+
+    public bool CanStageUnlock(int stageNum, bool isExtra)
+    {
+        if (isExtra)
+            return GetStageTotalStarData(stageNum) >= 3 * stageSO.numOfLevelOfStage[stageNum - 1];
+        else
+            return totalStar >= stageSO.numOfStarToUnlockStage[stageNum - 1];
+    }
+
+    public bool HaveInformedStageUnlock(int stageNum, bool isExtra)
+    {
+        if (isExtra)
+            return extraStageUnlockInformData[stageNum - 1];
+        else
+            return stageUnlockInformData[stageNum - 1];
+    }
     #endregion
 }

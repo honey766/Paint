@@ -2,9 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 public class SwipeInputController : MonoBehaviour, IPointerDownHandler, IPointerMoveHandler, IPointerUpHandler
 {
+    [SerializeField] private int pages;
+    [SerializeField] private GameObject pageDotPrefab;
+    [SerializeField] private Transform pageDotsParent;
     [SerializeField] private UnityEvent leftMove, rightMove;
     [SerializeField] private float slideThresholdX = 100f;
     private struct MouseRecord
@@ -15,6 +19,17 @@ public class SwipeInputController : MonoBehaviour, IPointerDownHandler, IPointer
     private Queue<MouseRecord> records = new Queue<MouseRecord>();
     private int isSlided; // 0 : no, 1 : 왼쪽으로 했음, 2 : 오른쪽으로 했음
     bool isPointerDownInvoked;
+    private RectTransform[] pageDotRects;
+
+    private void Awake()
+    {
+        if (pageDotPrefab != null)
+        {
+            pageDotRects = new RectTransform[pages];
+            for (int i = 0; i < pages; i++)
+                pageDotRects[i] = Instantiate(pageDotPrefab, pageDotsParent).GetComponent<RectTransform>();
+        }
+    }
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -88,4 +103,27 @@ public class SwipeInputController : MonoBehaviour, IPointerDownHandler, IPointer
         }
         return true;
     }
+
+    public void SetPageDots(int idx)
+    {
+        if (pageDotPrefab == null) return;
+        for (int i = 0; i < pages; i++)
+        {
+            float size = i == idx ? 40 : 25;
+            pageDotRects[i].DOSizeDelta(Vector2.one * size, 0.2f);
+        }
+    }
+
+    public void SetPageDotsImmediately(int idx)
+    {
+        if (pageDotPrefab == null) return;
+        for (int i = 0; i < pages; i++)
+        {
+            float size = i == idx ? 40 : 25;
+            pageDotRects[i].sizeDelta = Vector2.one * size;
+        }
+    }
+
+    public void OnRightButton() => rightMove?.Invoke();
+    public void OnLeftButton() => leftMove?.Invoke();
 }

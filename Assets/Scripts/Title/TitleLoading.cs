@@ -71,6 +71,11 @@ public class TitleLoading : MonoBehaviour
         };
     }
 
+    void Start()
+    {
+        loadingTime = Random.Range(0.75f, 1.25f);
+    }
+
     void Update()
     {
         if (!isReady)
