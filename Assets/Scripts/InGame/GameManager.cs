@@ -298,11 +298,12 @@ public class GameManager : SingletonBehaviour<GameManager>
         Logger.Log("GAMEOVER!~~");
     }
 
-    public void GameClear()
+    public async void GameClear()
     {
         if (stage == 1 && level == 1) // 튜토리얼
         {
-            if (!tutorialController.TutorialClearEvent(star))
+            bool tutorialClear = await tutorialController.TutorialClearEvent(star);
+            if (!tutorialClear)
                 return;
         }
         isGaming = false;
@@ -385,7 +386,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         });
     }
 
-    public void GoToNextLevel()
+    public async void GoToNextLevel()
     {
         if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
         {
@@ -409,7 +410,9 @@ public class GameManager : SingletonBehaviour<GameManager>
             nextStage = level == -stageSO.numOfLevelOfExtraStage[stage - 1] ? stage + 1 : stage;
             nextLevel = level == -stageSO.numOfLevelOfExtraStage[stage - 1] ? 1 : level - 1;
         }
-        if (PersistentDataManager.Instance.LoadStageAndLevel(nextStage, nextLevel))
+
+        bool success = await PersistentDataManager.Instance.LoadStageAndLevelAsync(nextStage, nextLevel);
+        if (success)
         {
             // 1-1 => 1-2도 bgm 바뀜
             AudioManager.Instance.ChangeBgmWithTransition(nextStage);
@@ -423,19 +426,6 @@ public class GameManager : SingletonBehaviour<GameManager>
         else
         {
             Logger.Log($"Failed to go to Next Stage {stage} - {level}");
-        }
-    }
-
-    public void GoToExtraStage()
-    {
-        if (PersistentDataManager.Instance.LoadStageAndLevel(stage, -1))
-        {
-            PlayerPrefs.SetInt("LastSelectedCardVertical", 1);
-            UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
-        }
-        else
-        {
-            Logger.Log($"Failed to go to Extra Stage {stage}-{1}");
         }
     }
 

@@ -12,12 +12,11 @@ public class TitleLoading : MonoBehaviour
     private float t = 0;
     private bool isReady = false;
     [SerializeField] private Slider slider;
-    [SerializeField] private TextMeshProUGUI sliderPercent, status;
+    [SerializeField] private TextMeshProUGUI sliderPercent;
     [SerializeField] private GameObject touchText, goMainButton;
     [SerializeField] private float fadeDuration;
     private bool loadingFinished;
-
-
+    private AsyncOperationHandle<AudioClip> pendingLoadHandle = default;
 
     void Start()
     {
@@ -26,54 +25,16 @@ public class TitleLoading : MonoBehaviour
         InitAddressables();
     }
 
-    // async void InitAddressables()
-    // {
-    //     status.text = "Addressables 초기화 중...";
-
-    //     var init = Addressables.InitializeAsync();
-    //     await init.Task;
-
-    //     if (init.Status == AsyncOperationStatus.Succeeded)
-    //     {
-    //         status.text = "초기화 성공!";
-    //         Debug.Log($"RuntimePath: {Addressables.RuntimePath}");
-    //     }
-    //     else
-    //     {
-    //         status.text = $"초기화 실패: {init.OperationException?.Message}";
-    //         Debug.LogError($"Exception: {init.OperationException}");
-    //     }
-
-    //     loadingFinished = true;
-    // }
-
     void InitAddressables()
     {
-        status.text = "Addressables 초기화 중...";
-
         var init = Addressables.InitializeAsync();
         
         // Completed 이벤트에 핸들러 등록
         init.Completed += (op) =>
         {
-            if (op.Status == AsyncOperationStatus.Succeeded)
-            {
-                status.text = "초기화 성공!";
-                Debug.Log($"RuntimePath: {Addressables.RuntimePath}");
-            }
-            else
-            {
-                status.text = $"초기화 실패: {op.OperationException?.Message}";
-                Debug.LogError($"Exception: {op.OperationException}");
-            }
-
             loadingFinished = true;
+            pendingLoadHandle = AudioManager.Instance.PreloadBgmAsync(BgmType.Title);
         };
-    }
-
-    void Start()
-    {
-        loadingTime = Random.Range(0.75f, 1.25f);
     }
 
     void Update()
@@ -82,6 +43,8 @@ public class TitleLoading : MonoBehaviour
         {
             t += Time.deltaTime;
             float value = Mathf.Min(loadingTime, t) / loadingTime;
+            float noise = Mathf.PerlinNoise(Time.time * 3f, 0f) * 0.1f - 0.05f; 
+            value = Mathf.Clamp01(value + noise);
             sliderPercent.text = $"{(int)(value * 100 + 0.01f)}%";
             slider.value = value;
             if (t > loadingTime)
@@ -94,6 +57,8 @@ public class TitleLoading : MonoBehaviour
                 else
                 {
                     isReady = true;
+                    sliderPercent.text = $"100%";
+                    slider.value = 1f;
                     StartCoroutine(ReadyCoroutine());
                 }
             }
@@ -110,7 +75,6 @@ public class TitleLoading : MonoBehaviour
         float alpha;
         while (true)
         {
-            // float t = Mathf.PingPong(Time.time - startTime, fadeDuration) / fadeDuration;
             float t = ((Time.time - startTime) % fadeDuration) / fadeDuration;
             alpha = Mathf.Max(0, Mathf.Sin((1.1f * t - 0.1f) * Mathf.PI));
             txt.color = new Color(1, 1, 1, alpha);
@@ -122,7 +86,7 @@ public class TitleLoading : MonoBehaviour
     {
         if (isReady)
         {
-            AudioManager.Instance.PlayBgmImmediatelyAsync(BgmType.Title, 0.5f);
+            AudioManager.Instance.PlayBgmImmediatelyAsync(BgmType.Title, 0.5f, pendingLoadHandle);
             SceneManager.LoadScene("Main");
         }
     }

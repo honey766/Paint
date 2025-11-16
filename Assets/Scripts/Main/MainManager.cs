@@ -67,7 +67,7 @@ public class MainManager : MonoBehaviour
             main.SetActive(false);
             card.SetActive(true);
             SetStarCountText();
-        });
+        }, 0.3f);
     }
 
     public void CardToMainMenu()

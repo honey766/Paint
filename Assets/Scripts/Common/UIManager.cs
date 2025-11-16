@@ -45,7 +45,7 @@ public class UIManager : SingletonBehaviour<UIManager>
 
 
     #region Transition
-    public void ScreenTransition(Action action)
+    public void ScreenTransition(Action action, float plusWaitTime = 0f)
     {
         if (doingTransition) return;
         doingTransition = true;
@@ -60,10 +60,10 @@ public class UIManager : SingletonBehaviour<UIManager>
         for (int i = 0; i < transitionRects.Length; i++)
             transitionImages[i].color = color;
 
-        StartCoroutine(ScreenTransitionCoroutine(action));
+        StartCoroutine(ScreenTransitionCoroutine(action, plusWaitTime));
     }
 
-    private IEnumerator ScreenTransitionCoroutine(Action action)
+    private IEnumerator ScreenTransitionCoroutine(Action action, float plusWaitTime)
     {
         AudioManager.Instance.PlaySfx(SfxType.Transition, 0.6f);
         for (int i = 0; i < transitionRects.Length; i++)
@@ -74,7 +74,7 @@ public class UIManager : SingletonBehaviour<UIManager>
         }
         yield return new WaitForSeconds(transitionDuration);
         action();
-        yield return new WaitForSeconds(waitDuration);
+        yield return new WaitForSeconds(waitDuration + plusWaitTime);
         for (int i = 0; i < transitionRects.Length; i++)
             transitionRects[i].DOAnchorPosY(-Screen.height * Random.Range(1.3f, 2f), transitionDuration - Random.Range(0f, 0.25f));
         yield return new WaitForSeconds(transitionDuration + 0.3f);

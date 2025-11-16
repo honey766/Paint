@@ -27584,6 +27584,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: b325adc0ec8dbf34fb438612a59ddc7f, type: 2}
     - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
+      propertyPath: stageSO
+      value: 
+      objectReference: {fileID: 11400000, guid: 6e5c545834058ec4e9387fa6a39564b0, type: 2}
+    - target: {fileID: 1321193891248493092, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
       propertyPath: stageText
       value: 
       objectReference: {fileID: 1302447452}
@@ -27707,6 +27711,14 @@ PrefabInstance:
       propertyPath: purpleBorder
       value: 
       objectReference: {fileID: 184826087}
+    - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
+      propertyPath: colorPaletteSO
+      value: 
+      objectReference: {fileID: 11400000, guid: 4a5f46be516fc684c933e4c23be3f823, type: 2}
+    - target: {fileID: 8534681559411114825, guid: 8077fd4e9a80327479ba3e12998bd97a, type: 3}
+      propertyPath: tileFactoryConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: 1a8f4727906b52d409519c3a27e3084d, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

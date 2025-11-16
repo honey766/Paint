@@ -2684,8 +2684,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 903ac523a98716f4998d9aaca44b9707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PersistentDataManager
-  stageSO: {fileID: 0}
-  colorPaletteSO: {fileID: 11400000, guid: a5a2a4f9f398c954198f6fe416bae737, type: 2}
+  stageSO: {fileID: 11400000, guid: 6e5c545834058ec4e9387fa6a39564b0, type: 2}
+  colorPaletteSO: {fileID: 11400000, guid: 4a5f46be516fc684c933e4c23be3f823, type: 2}
 --- !u!4 &871772422
 Transform:
   m_ObjectHideFlags: 0

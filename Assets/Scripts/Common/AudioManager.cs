@@ -87,8 +87,9 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     private Dictionary<SfxType, float> lastPlaybackTimes = new Dictionary<SfxType, float>();
 
     // 각 오디오 소스별 핸들 추적
-    private AsyncOperationHandle<AudioClip> curBgmHandle;
-    private AsyncOperationHandle<AudioClip> nextBgmHandle;
+    private AsyncOperationHandle<AudioClip> curBgmHandle = default;
+    private AsyncOperationHandle<AudioClip> nextBgmHandle = default;
+    private AsyncOperationHandle<AudioClip> pendingLoadHandle = default;
     private string curBgmSourceClipAddress = "";
 
     // 볼륨 설정
@@ -137,11 +138,10 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         SetBGMVolume(PersistentDataManager.LoadBGM() / 100f);
         SetSFXVolume(PersistentDataManager.LoadSFX() / 100f);
         #if !UNITY_WEBGL
-        PlayBgmFirst();
+        pendingLoadHandle = PreloadBgmAsync(BgmType.Title);
+        PlayBgmImmediatelyAsync(BgmType.Title, 0.5f, pendingLoadHandle);
         #endif
     }
-
-    private void PlayBgmFirst() => PlayBgmImmediatelyAsync(BgmType.Title, 0.5f);
 
     // ---------------------
     // 🎵 일반 SFX / BGM
@@ -153,25 +153,42 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         BgmVolume = volume;
     }
 
-    public async void PlayBgmImmediatelyAsync(BgmType bgmType, float fadeInDuration)
+    // 1단계: BGM 로드 작업을 시작하고 핸들을 반환합니다.
+    public AsyncOperationHandle<AudioClip> PreloadBgmAsync(BgmType bgmType)
     {
+        if (pendingLoadHandle.IsValid())
+        {
+            // 이미 진행 중인 선행 로드 작업이 있다면 해제
+            Addressables.Release(pendingLoadHandle);
+            pendingLoadHandle = default;
+        }
+
         if (!bgmAddressDict.TryGetValue(bgmType, out string address))
         {
             Debug.LogError($"Addressables 주소를 찾을 수 없습니다: {bgmType}");
-            return;
+            return default; // 유효하지 않은 핸들 반환
         }
 
-        // 1. 새 BGM 로드
-        AsyncOperationHandle<AudioClip> newHandle = Addressables.LoadAssetAsync<AudioClip>(address);
-        await newHandle.Task;
+        // 로드 작업만 시작하고 반환
+        pendingLoadHandle = Addressables.LoadAssetAsync<AudioClip>(address);
+        return pendingLoadHandle;
+    }
 
-        if (newHandle.Status != AsyncOperationStatus.Succeeded)
+    // 2단계: 선행 로드된 핸들을 받아 BGM을 재생합니다.
+    public async void PlayBgmImmediatelyAsync(BgmType bgmType, float fadeInDuration, AsyncOperationHandle<AudioClip> loadHandle)
+    {
+        // 1. 로드 대기 및 검증
+        // 여기서 await을 사용하여 로드가 완료될 때까지 기다립니다.
+        await loadHandle.Task;
+
+        if (!loadHandle.IsValid() || loadHandle.Status != AsyncOperationStatus.Succeeded)
         {
-            Debug.LogError($"BGM 로드 실패: {address}");
+            Debug.LogError($"BGM 로드 실패 또는 핸들 무효: {bgmType}");
+            // 로드 실패 시 정리할 필요 없이 여기서 return
             return;
         }
 
-        AudioClip clip = newHandle.Result;
+        AudioClip clip = loadHandle.Result;
 
         // 2. 이전 BGM 정리 (재생 중단 후 해제)
         curBgmSource.Stop();
@@ -196,8 +213,8 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         curBgmSource.DOFade(1, fadeInDuration).SetEase(Ease.Linear);
 
         // 5. 핸들 저장
-        curBgmHandle = newHandle;
-        curBgmSourceClipAddress = address;
+        curBgmHandle = loadHandle;
+        curBgmSourceClipAddress = bgmAddressDict[bgmType];
     }
 
     public void ChangeBgmWithTransition(BgmType bgmType)

@@ -229,12 +229,13 @@ public class CharacterItem : MonoBehaviour
         isSelected = false;
     }
 
-    public void OnStageButtonClick(int level)
+    public async void OnStageButtonClick(int level)
     {
         if (UIManager.Instance.doingTransition) return;
 
         // stage, level 데이터 호출 후 PersistentDataManager에 저장
-        if (PersistentDataManager.Instance.LoadStageAndLevel(stage, level))
+        bool success = await PersistentDataManager.Instance.LoadStageAndLevelAsync(stage, level);
+        if (success)
         {
             Logger.Log($"Going To Stage {stage} - {level}");
             UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
