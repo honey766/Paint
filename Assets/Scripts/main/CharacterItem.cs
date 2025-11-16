@@ -19,7 +19,7 @@ public class CharacterItem : MonoBehaviour
     public float flipDuration = 0.4f; // 뒤집히는 데 걸리는 시간
 
     private bool isFlipped = false;
-    private bool isSelected = false;
+    public bool isSelected = false;
     private bool isAnimating = false;
 
     void OnEnable()
@@ -52,26 +52,31 @@ public class CharacterItem : MonoBehaviour
         backUI.sprite = backUISprite;
 
         // 스테이지 진입 가능
-        if (!isExtra && PersistentDataManager.Instance.totalStar >= PersistentDataManager.Instance.stageSO.numOfStarToUnlockStage[stage - 1])
+        if (!isExtra && PersistentDataManager.Instance.CanStageUnlock(stage, false))
         {
             SetButtonOfBackUI(levelButtonPrefab);
         }
-        else if (isExtra && PersistentDataManager.Instance.GetStageTotalStarData(stage) >= 3 * PersistentDataManager.Instance.stageSO.numOfLevelOfStage[stage - 1])
+        // 스테이지 진입 가능
+        else if (isExtra && PersistentDataManager.Instance.CanStageUnlock(stage, true))
         {
             SetButtonOfBackUIExtra(levelButtonPrefab);
         }
-        else // 스테이지 진입 불가능
+        // 스테이지 진입 불가능
+        else 
         {
-            GameObject obj = Resources.Load<GameObject>("Prefabs/BackUILocked");
-            obj = Instantiate(obj, backUI.transform);
-            if (!isExtra)
-            {
-                obj.transform.GetChild(0).gameObject.SetActive(true);
-                obj.GetComponentInChildren<TextMeshProUGUI>().text = $"x {PersistentDataManager.Instance.stageSO.numOfStarToUnlockStage[stage - 1]}";
-            }
+            SetBackUILocked();
         }
     }
-    private void SetButtonOfBackUI(GameObject levelButtonPrefab)
+    public void SetBackUILocked(bool hideLevelButton = false)
+    {
+        GameObject obj = Resources.Load<GameObject>("Prefabs/BackUILocked");
+        obj = Instantiate(obj, backUI.transform);
+        obj.transform.GetChild(0).gameObject.SetActive(hideLevelButton);
+        obj.transform.GetChild(1).gameObject.SetActive(!isExtra);
+        if (!isExtra)
+            obj.GetComponentInChildren<TextMeshProUGUI>().text = $"x {PersistentDataManager.Instance.stageSO.numOfStarToUnlockStage[stage - 1]}";
+    }
+    public void SetButtonOfBackUI(GameObject levelButtonPrefab)
     {
         int numOfLevel = PersistentDataManager.Instance.stageSO.numOfLevelOfStage[stage - 1];
 
@@ -89,7 +94,7 @@ public class CharacterItem : MonoBehaviour
             //i == 0 || PersistentDataManager.Instance.GetStageClearData(stage, i) > 0);
         }
     }
-    private void SetButtonOfBackUIExtra(GameObject levelButtonPrefab)
+    public void SetButtonOfBackUIExtra(GameObject levelButtonPrefab)
     {
         int numOfLevel = PersistentDataManager.Instance.stageSO.numOfLevelOfExtraStage[stage - 1];
 
@@ -137,6 +142,10 @@ public class CharacterItem : MonoBehaviour
         }
     }
 
+    public void OnCardClick(bool playSfx)
+    {
+        OnCardClick(flipDuration / 2f, playSfx);
+    }
     public void OnCardClick(float duration, bool playSfx)
     {
         float originalFlipDuration = flipDuration;

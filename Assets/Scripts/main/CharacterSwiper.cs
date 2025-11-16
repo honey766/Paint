@@ -7,6 +7,7 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using System.Linq;
 using TMPro;
+using System.Data;
 
 // JSON 데이터 구조
 [Serializable]
@@ -76,15 +77,20 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         {
             GameObject extraUnlockInformCanvas = Resources.Load<GameObject>("Prefabs/ExtraStageUnlockInformCanvas");
             Instantiate(extraUnlockInformCanvas);
-            PersistentDataManager.WeInformedExtraUnlock();
+            StartCoroutine(WeInformedExtraUnlock());
         }
+    }
+
+    private IEnumerator WeInformedExtraUnlock()
+    {
+        yield return null; PersistentDataManager.WeInformedExtraUnlock();
     }
 
     void Update()
     {
         UpdateCardTransforms();
     }
-    private (int, int) GetSavedIndex()
+    public (int, int) GetSavedIndex()
     {
         // 저장된 인덱스 불러오기 (없으면 0으로 기본값)
         return (PlayerPrefs.GetInt("LastSelectedCardHorizontal", 0), PlayerPrefs.GetInt("LastSelectedCardVertical", 0));
@@ -111,6 +117,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
             UpdateCardTransforms();
         }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(parentContent);
     }
 
     private void LoadAndSetupCharacters()
@@ -199,7 +206,6 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         }   
 
         (curHorIndex, curVerIndex) = GetNearestIndex();
-        Logger.Log($"({curHorIndex}, {curVerIndex})");
 
         if (snapTween != null && snapTween.IsActive())
         {
@@ -253,7 +259,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         DoSnapping(nearestHorIndex, nearestVerIndex);
     }
 
-    private void DoSnapping(int hor, int ver)
+    public void DoSnapping(int hor, int ver, float snapDurationRatio = 1f)
     {
         if (isSnapping) return;
 
@@ -266,7 +272,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         PlayerPrefs.Save();
 
         isSnapping = true;
-        snapTween = parentContent.DOAnchorPos(targetPos, snapDuration).SetEase(Ease.OutCubic).OnComplete(() =>
+        snapTween = parentContent.DOAnchorPos(targetPos, snapDuration * snapDurationRatio).SetEase(Ease.OutCubic).OnComplete(() =>
         {
             isSnapping = false;
         });
@@ -326,9 +332,16 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         characterItems[PlayerPrefs.GetInt("LastSelectedCardVertical", 0)][PlayerPrefs.GetInt("LastSelectedCardHorizontal", 0)].OnCardClick(0, true);
     }
 
+    public void FlipCard(int hor, int ver)
+    {
+        characterItems[ver][hor].SetSelected();
+        characterItems[ver][hor].OnCardClick(true);
+    }
 
     public float GetCanvasExtraYPosition()
     {
         return extraContentHeight;
     }
+
+    public CharacterItem GetCharacterItem(int hor, int ver) => characterItems[ver][hor];
 }

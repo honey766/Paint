@@ -19,7 +19,7 @@ public class ScrollIndicator : MonoBehaviour
     private RectTransform rectTransform;
     private Image image;
     private Color originalColor;
-    private float currentAlpha;
+    public float currentAlpha;
     private float maxScrollPosition = UNINITIALIZED_VALUE;
     private bool recentIsFadeOut;
     
@@ -163,7 +163,7 @@ public class ScrollIndicator : MonoBehaviour
         UpdateImageAlpha();
     }
 
-    private void UpdateImageAlpha()
+    public void UpdateImageAlpha()
     {
         image.color = new Color(
             originalColor.r, 

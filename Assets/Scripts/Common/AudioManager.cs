@@ -34,6 +34,7 @@ public enum SfxType
     SelectCard = 2,
     FlipCard = 3,
     Transition = 4,
+    Unlock = 5,
 
     // Tile
     ColorTile = 1000,
