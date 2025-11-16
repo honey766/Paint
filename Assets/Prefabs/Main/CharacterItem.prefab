@@ -286,6 +286,14 @@ MonoBehaviour:
   buttonLockedSprite: {fileID: 2050884686751419605, guid: 080499fa38ee7d645bf40094ac266892, type: 3}
   backUISprite: {fileID: -7687891851159983849, guid: 5320bf921b0ff6c4e8040bf48e2805e4, type: 3}
   starSprite: {fileID: 5199979006384268662, guid: fec33e0548c143a44abe05193d5bf9c4, type: 3}
+  frontSprites:
+  - {fileID: 5692506304436155833, guid: 7c1862518db20a94dac512c4130bbcf1, type: 3}
+  - {fileID: 8538372981283164270, guid: 5964c91ae5a84434c946db701a5da713, type: 3}
+  - {fileID: -8173381326919342040, guid: 5739cfad4d4c36047a59b94289cbfb11, type: 3}
+  - {fileID: -3274677536472234291, guid: b31373e878b14114683be557b1016468, type: 3}
+  - {fileID: 2532182997973787429, guid: af65eda9c327afb4bb9ff64e1e67446f, type: 3}
+  - {fileID: 6963709280899567045, guid: 6abbdad5caf260348a505afc1f6cf168, type: 3}
+  - {fileID: 3341978696566070861, guid: 97370df5260e79b49a78aaa8c9970ba9, type: 3}
   flipDuration: 0.4
 --- !u!114 &238265566948194317
 MonoBehaviour:

@@ -149,13 +149,14 @@ public class EditorTileDrawer : MonoBehaviour
     {
         EditorDataFormat.DecodeDirectedSpray(encodedValue,
                 out int paintCount, out Vector2Int direction, out bool doPaintReverse);
-        Transform triangle = obj.transform.GetChild(1);
-        SpriteRenderer spriterTriangle = triangle.GetChild(0).GetComponent<SpriteRenderer>();
-        SpriteRenderer spriterOutline = triangle.GetChild(1).GetComponent<SpriteRenderer>();
+        // Transform triangle = obj.transform.GetChild(1);
+        SpriteRenderer spriterTriangle = obj.transform.GetChild(1).GetComponent<SpriteRenderer>();
+        SpriteRenderer spriterOutline = obj.transform.GetChild(2).GetComponent<SpriteRenderer>();
 
         SetTextOfObject(obj, paintCount.ToString());
 
-        triangle.rotation = CustomTools.GetRotationByDirection(direction);
+        // triangle.rotation = CustomTools.GetRotationByDirection(direction);
+        spriterOutline.transform.localPosition = (Vector2)direction * 0.17f;
 
         if (doPaintReverse)
         {
@@ -165,7 +166,7 @@ public class EditorTileDrawer : MonoBehaviour
         else
         {
             spriterTriangle.color = new Color(0.7f, 0.7f, 0.7f, 0.5f);
-            spriterOutline.color = new Color(0.7f, 0.7f, 0.7f, 0.9f);
+            spriterOutline.color = new Color(0.22f, 0.22f, 0.22f, 1f);
         }
     }
 

@@ -6,13 +6,14 @@ using DG.Tweening;
 using Random = UnityEngine.Random;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
+using TMPro;
 
 public class UIManager : SingletonBehaviour<UIManager>
 {
     [SerializeField] float transitionDuration;
     [SerializeField] float waitDuration;
     [SerializeField] Color red, blue, purple;
-    public bool doingTransition;
+    public bool doingTransition { get; private set; }
     [SerializeField] private Transform transitionRectsParent;
 
     private GameObject exitGameObj;
@@ -76,7 +77,7 @@ public class UIManager : SingletonBehaviour<UIManager>
         yield return new WaitForSeconds(waitDuration);
         for (int i = 0; i < transitionRects.Length; i++)
             transitionRects[i].DOAnchorPosY(-Screen.height * Random.Range(1.3f, 2f), transitionDuration - Random.Range(0f, 0.25f));
-        yield return new WaitForSeconds(transitionDuration);
+        yield return new WaitForSeconds(transitionDuration + 0.3f);
         doingTransition = false;
     }
     public float GetTransitionDuration() => transitionDuration;

@@ -54,8 +54,9 @@ public class MainManager : MonoBehaviour
         else
         {
             // 게임 종료 팝업 열고 닫기
-            // 토스에서는 제외
-            // UIManager.Instance.ControlExitGamePopUp();
+            #if !UNITY_WEBGL
+            UIManager.Instance.ControlExitGamePopUp();
+            #endif
         }
     }
 

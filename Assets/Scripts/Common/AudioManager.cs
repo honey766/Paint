@@ -128,8 +128,10 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     {
         SetBGMVolume(PersistentDataManager.LoadBGM() / 100f);
         SetSFXVolume(PersistentDataManager.LoadSFX() / 100f);
-        PlayBgmImmediately(BgmType.Title);
+        // Invoke(nameof(PlayBgmFirst), 0.3f);
     }
+
+    private void PlayBgmFirst() => PlayBgmImmediately(BgmType.Title, 0.5f);
 
     // ---------------------
     // 🎵 일반 SFX / BGM
@@ -141,11 +143,14 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         BgmVolume = volume;
     }
 
-    public void PlayBgmImmediately(BgmType bgmType)
+    public void PlayBgmImmediately(BgmType bgmType, float fadeInDuration)
     {
         if (bgmDict.TryGetValue(bgmType, out AudioClip clip))
             if (curBgmSource.clip != clip)
             {
+                nextBgmSource.Stop();
+                curBgmSource.volume = 0;
+                curBgmSource.DOFade(1, fadeInDuration).SetEase(Ease.Linear);
                 curBgmSource.clip = clip;
                 curBgmSource.Play();
             }
@@ -154,7 +159,7 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     public void ChangeBgmWithTransition(BgmType bgmType)
     {
         if (bgmDict.TryGetValue(bgmType, out AudioClip clip))
-            if (curBgmSource.clip != clip)
+            if (clip != null && curBgmSource.clip != clip)
                 StartCoroutine(ChangeBgmCoroutine(clip));
     }
     public void ChangeBgmWithTransition(int stage)
@@ -214,6 +219,8 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         curBgmSource.volume = 0;
         curBgmSource.Play();
         curBgmSource.DOFade(1, fadeInDuration).SetEase(Ease.Linear);
+        nextBgmSource.clip = null;
+        nextBgmSource.Stop();
     }
 
     // private IEnumerator ChangeBgmCoroutine(AudioClip clip)
