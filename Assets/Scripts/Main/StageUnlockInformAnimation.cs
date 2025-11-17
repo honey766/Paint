@@ -158,6 +158,7 @@ public class StageUnlockInformAnimation : MonoBehaviour
                 if (entry.isExplainButton) entry.ShowExplainButton();
             }
         }
+        yield return new WaitForSeconds(0.3f);  
         blockingUI.SetActive(false); // 스크롤 가능
         isAnimating = false;
     }

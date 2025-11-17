@@ -15,6 +15,7 @@ public class ExtraStageUnlockInformCanvas : MonoBehaviour
         cs.DoSnapToExtra();
         onClick?.Invoke();
         transform.GetChild(0).gameObject.SetActive(false);
+        transform.GetChild(1).gameObject.SetActive(false);
         StartCoroutine(InstantiateCursor());
     }
 

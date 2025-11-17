@@ -40,11 +40,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 91dca1aee6f0ba748b452b8d92ac3368
-    m_Address: Assets/Sound/Bgm/Title.ogg
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9e0cc67b7bcd5c240a71875741e3dab3
     m_Address: Assets/Sound/Bgm/Spring.ogg
     m_ReadOnly: 0
@@ -52,6 +47,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d87a81c7e0e31a542893094a9e3d3360
     m_Address: Assets/Sound/Bgm/Tutorial.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd4e985ff22f9774bab67efbfb29fe89
+    m_Address: Assets/Sound/Bgm/Title.mp3
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
