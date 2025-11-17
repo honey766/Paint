@@ -16,6 +16,7 @@ public class TitleLoading : MonoBehaviour
     [SerializeField] private GameObject touchText, goMainButton;
     [SerializeField] private float fadeDuration;
     private bool loadingFinished;
+    private float prevValue = 0f;
     private AsyncOperationHandle<AudioClip> pendingLoadHandle = default;
 
     void Start()
@@ -41,10 +42,12 @@ public class TitleLoading : MonoBehaviour
     {
         if (!isReady)
         {
-            t += Time.deltaTime;
+            t += 1.3f * Time.deltaTime;
             float value = Mathf.Min(loadingTime, t) / loadingTime;
-            float noise = Mathf.PerlinNoise(Time.time * 3f, 0f) * 0.1f - 0.05f; 
+            float noise = Mathf.PerlinNoise(Time.time * 3f, 0f) * 0.1f - 0.05f;
+            noise += Random.Range(-1f, 1f) * Time.deltaTime;
             value = Mathf.Clamp01(value + noise);
+            value = Mathf.Max(prevValue, value);
             sliderPercent.text = $"{(int)(value * 100 + 0.01f)}%";
             slider.value = value;
             if (t > loadingTime)
@@ -62,6 +65,7 @@ public class TitleLoading : MonoBehaviour
                     StartCoroutine(ReadyCoroutine());
                 }
             }
+            prevValue = value;
         }
     }
 

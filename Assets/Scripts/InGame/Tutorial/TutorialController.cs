@@ -26,8 +26,12 @@ public class TutorialController : MonoBehaviour
     private RectTransform moveCountTutoRect;
     [SerializeField] private int tutorialLevel;
 
+    private Task tuto2LoadTask, tuto3LoadTask;
+
     private void Awake()
     {
+        PersistentDataManager.Instance.PreLoadTutorialLevel();
+
         //color12Border = GameObject.Find("Color12BorderDrawer").GetComponent<MeshRenderer>();
         color12Lines = GameObject.Find("PurpleLines");
 
@@ -93,6 +97,7 @@ public class TutorialController : MonoBehaviour
             Destroy(moveTutorialCanvas);
             GameManager.Instance.isGaming = false;
             PersistentDataManager.Instance.SetStageClearData(star);
+            PersistentDataManager.Instance.ReleaseTutorialLevelAsync();
         }
 
         return tutorialLevel == 3;
@@ -119,7 +124,6 @@ public class TutorialController : MonoBehaviour
 
         PlayerController.Instance.MoveEvent += (pos) =>
         {
-            Logger.Log($"HIHI!! {pos}");
             // 처음 상태
             if (firstTutorialArrowStatus == 0)
             {

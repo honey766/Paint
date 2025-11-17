@@ -3,7 +3,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
-using UnityEngine.Rendering;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System;
 
 public class GameManager : SingletonBehaviour<GameManager>
 {
@@ -55,6 +59,8 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     [Header("Hint")]
     private GameObject hintObj;
+    public List<BoardSO> boardSOs { get; private set; }
+    public bool hintLoadTaskCompleted { get; private set; }
 
     private int stage, level, star;
 
@@ -68,6 +74,7 @@ public class GameManager : SingletonBehaviour<GameManager>
         //starPosY = star321Dropper[0].GetComponent<RectTransform>().anchoredPosition.y;
         starParticleSystem = starParticle.transform.GetChild(0).GetComponent<ParticleSystem>();
         isFirstTutorial = true;
+        LoadHintTasks();
     }
 
     public void Start()
@@ -147,6 +154,11 @@ public class GameManager : SingletonBehaviour<GameManager>
             hint.OnCloseClick();
             return;
         }
+    }
+
+    private void OnDestroy()
+    {
+        UnloadHintTasks();
     }
 
     // 보라색 테두리 경고문구(주석처리됨), 별 슬라이더의 별 위치 조정
@@ -411,22 +423,60 @@ public class GameManager : SingletonBehaviour<GameManager>
             nextLevel = level == -stageSO.numOfLevelOfExtraStage[stage - 1] ? 1 : level - 1;
         }
 
-        bool success = await PersistentDataManager.Instance.LoadStageAndLevelAsync(nextStage, nextLevel);
-        if (success)
+
+
+        // bool success = await PersistentDataManager.Instance.LoadStageAndLevelAsync(nextStage, nextLevel);
+        // if (success)
+        // {
+        //     // 1-1 => 1-2도 bgm 바뀜
+        //     AudioManager.Instance.ChangeBgmWithTransition(nextStage);
+        //     if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
+        //     {
+        //         PlayerPrefs.SetInt("LastSelectedCardHorizontal", stage);
+        //         PlayerPrefs.SetInt("LastSelectedCardVertical", 0);
+        //     }
+        //     UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
+        // }
+        // else
+        // {
+        //     Logger.Log($"Failed to go to Next Stage {stage} - {level}");
+        // }
+
+        Logger.Log($"AAAAAAAA{nextStage}, {nextLevel}");
+        Task<bool> loadingTask = PersistentDataManager.Instance.LoadStageAndLevelAsync(nextStage, nextLevel);
+        Task[] tasksToWait = new Task[] { loadingTask };
+
+        Action conditionalSceneLoadAction = async () =>
         {
-            // 1-1 => 1-2도 bgm 바뀜
-            AudioManager.Instance.ChangeBgmWithTransition(nextStage);
-            if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
+            // 로딩 Task의 최종 결과(bool)를 비동기적으로 기다림
+            bool success = await loadingTask;
+
+            if (success)
             {
-                PlayerPrefs.SetInt("LastSelectedCardHorizontal", stage);
-                PlayerPrefs.SetInt("LastSelectedCardVertical", 0);
+                // 성공: InGame 씬으로 이동
+                Logger.Log($"Going To Stage {nextStage} - {nextLevel}");
+                AudioManager.Instance.ChangeBgmWithTransition(nextStage);
+                if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
+                {
+                    PlayerPrefs.SetInt("LastSelectedCardHorizontal", stage);
+                    PlayerPrefs.SetInt("LastSelectedCardVertical", 0);
+                }
+                SceneManager.LoadScene("InGame");
             }
-            UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
-        }
-        else
-        {
-            Logger.Log($"Failed to go to Next Stage {stage} - {level}");
-        }
+            else
+            {
+                // 실패: Title 씬으로 이동
+                Logger.LogError("에셋 로드 실패! 타이틀 화면으로 복귀합니다.");
+                SceneManager.LoadScene("Title");
+            }
+        };
+
+        // 4. UIManager 코루틴 시작
+        // action 인자에 조건부 로직을 담은 함수를, tasks 인자에 로딩 Task를 넘깁니다.
+        UIManager.Instance.ScreenTransition(
+            conditionalSceneLoadAction, 
+            tasksToWait
+        );
     }
 
     public void SettingsExit()
@@ -472,10 +522,89 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (isActive == color12WarningBackground.transform.parent.gameObject.activeSelf)
             return;
         SetColor12Warning(isActive);
-        // RectTransform rect = color12Warning.GetComponent<RectTransform>();
-        // rect.anchoredPosition = new Vector2(0, -310);
-        // rect.DOAnchorPosY(115, rectDuration).SetEase(gogoEase);
     }
-    // public float rectDuration = 0.7f;
-    // public Ease gogoEase = Ease.OutQuad;
+
+    private async void LoadHintTasks()
+    {
+        hintLoadTaskCompleted = false;
+
+        bool isExtra = PersistentDataManager.Instance.level < 0;
+        int stage = PersistentDataManager.Instance.stage;
+        int level = Mathf.Abs(PersistentDataManager.Instance.level);
+        boardSOs = new();
+        int num = 1;
+
+        while (true)
+        {
+            string boardName = isExtra ? "Extra" : "";
+            boardName += $"Hint{stage}-{level}" + (num == 1 ? "" : $"-{num}");
+            string address = $"Assets/ScriptableObjects/Hint/Stage{stage}/{boardName}.asset";
+
+            var locations = Addressables.LoadResourceLocationsAsync(address);
+            await locations.Task;
+
+            // 키가 없으면 종료
+            if (locations.Status != AsyncOperationStatus.Succeeded || locations.Result.Count == 0)
+            {
+                Logger.Log($"✅ 힌트 로드 완료. (총 {boardSOs.Count}개, 마지막 확인 키: {address})");
+                Addressables.Release(locations);
+                break;
+            }
+
+            Addressables.Release(locations);
+
+            try
+            {
+                AsyncOperationHandle<BoardSO> newHandle = Addressables.LoadAssetAsync<BoardSO>(address);
+                await newHandle.Task; // 로드가 완료될 때까지 대기
+
+                // 비동기 작업이 성공했는지 확인
+                if (newHandle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    BoardSO boardSO = newHandle.Result;
+
+                    if (boardSO == null)
+                    {
+                        Debug.LogWarning($"에셋은 찾았으나 내용(BoardSO)이 null입니다: {address}");
+                        Addressables.Release(newHandle);
+                        break; 
+                    }
+
+                    boardSOs.Add(boardSO);
+                    num++;
+                    // 다음 반복을 위해 핸들을 해제하지 않음 (로드가 성공했으므로 계속 참조)
+                }
+                else
+                {
+                    // Status가 Failed지만 InvalidKeyException으로 잡히지 않은 다른 종류의 실패 (예: 파일 손상 등)
+                    Logger.Log($"로드 상태 실패 (Status: {newHandle.Status}): {address}");
+                    Addressables.Release(newHandle);
+                    break;
+                }
+            }
+            catch (UnityEngine.AddressableAssets.InvalidKeyException)
+            {
+                // 🎯 이전에 찾던 에셋(키)이 Addressables Catalog에 없음을 확인
+                Logger.Log($"✅ 힌트 로드 완료. (마지막 키 없음: {address})");
+                break; // 찾으려는 연속된 에셋이 없으므로 루프 종료
+            }
+            catch (System.Exception ex)
+            {
+                // InvalidKeyException 외의 다른 예상치 못한 오류 처리
+                Logger.LogError($"에셋 로드 중 예상치 못한 오류 발생 ({address}): {ex.Message}");
+                break;
+            }
+        }
+
+        hintLoadTaskCompleted = true;
+    }
+
+    private void UnloadHintTasks()
+    {
+        if (boardSOs == null) return;
+
+        foreach (BoardSO boardSO in boardSOs)
+            Addressables.Release(boardSO);
+        boardSOs.Clear();
+    }
 }

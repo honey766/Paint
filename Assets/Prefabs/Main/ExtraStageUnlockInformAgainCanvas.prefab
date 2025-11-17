@@ -311,8 +311,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -160, y: 500}
+  m_AnchoredPosition: {x: 0, y: -100}
+  m_SizeDelta: {x: -120, y: 700}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9186816213539102174
 CanvasRenderer:
@@ -479,7 +479,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -100, y: -100}
+  m_SizeDelta: {x: -80, y: -80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1113048301368077828
 CanvasRenderer:
@@ -509,9 +509,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC815\uADDC \uC2A4\uD14C\uC774\uC9C0\uB97C \uBAA8\uB450 <color=#663333>3\uBCC4</color>\uB85C
+  m_text: "\n\uC815\uADDC \uC2A4\uD14C\uC774\uC9C0\uB97C \uBAA8\uB450 <color=#663333>3\uBCC4</color>\uB85C
     \uD074\uB9AC\uC5B4\uD558\uBA74 \n\uD574\uB2F9 \uC2A4\uD14C\uC774\uC9C0\uC758
-    <color=#663333>\uC5D1\uC2A4\uD2B8\uB77C \uB808\uBCA8</color>\uC774 \n\uD574\uAE08\uB3FC\uC694."
+    <color=#663333>\uC5D1\uC2A4\uD2B8\uB77C \uB808\uBCA8</color>\uC774 \n\uD574\uAE08\uB3FC\uC694.\n\n<color=#72787B><size=90%>\uC2A4\uD06C\uB864\uC744
+    \uC704\uC544\uB798\uB85C \uC6C0\uC9C1\uC5EC\uC11C \n\uC815\uADDC \uC2A4\uD14C\uC774\uC9C0\uB85C
+    \uC774\uB3D9\uD560 \uC218 \uC788\uC5B4\uC694.</size></color>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8e65ac83cdfaad34b945d34234f3b33f, type: 2}
   m_sharedMaterial: {fileID: -5714282466922394333, guid: 8e65ac83cdfaad34b945d34234f3b33f, type: 2}
@@ -538,19 +540,19 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 46
+  m_fontSize: 52.8
   m_fontSizeBase: 44
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 46
+  m_fontSizeMax: 60
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 10
+  m_lineSpacing: 12
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0

@@ -37,6 +37,7 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
 
     // 이전 핸들을 추적하여 메모리 해제에 사용
     private AsyncOperationHandle<BoardSO> currentBoardHandle;
+    private List<AsyncOperationHandle<BoardSO>> tutorialBoardHandle;
 
     private void Awake()
     {
@@ -53,50 +54,37 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
         this.moveLatencyRate = moveLatencyRate;
     }
 
-    // public void LoadTutorialLevel(int level)
-    // {
-    //     boardSO = Resources.Load<BoardSO>($"ScriptableObjects/Board/Stage1/Stage1-1-{level}");
-    // }
-
-    // // stage, level이 존재하면 true
-    // public bool LoadStageAndLevel(int stage, int level)
-    // {
-    //     string name;
-    //     if (level > 0) name = $"Stage{stage}-{level}";
-    //     else name = $"ExtraStage{stage}-{-level}";
-
-    //     boardSO = Resources.Load<BoardSO>($"ScriptableObjects/Board/Stage{stage}/" + name);
-    //     if (boardSO != null)
-    //     {
-    //         this.stage = stage;
-    //         this.level = level;
-    //     }
-    //     return boardSO != null;
-    // }
-
-
     // 튜토리얼 레벨 로드 (비동기)
+    public void PreLoadTutorialLevel()
+    {
+        tutorialBoardHandle = new();
+
+        for (int level = 2; level <= 3; level++)
+        {
+            string address = $"Assets/ScriptableObjects/Board/Stage1/Stage1-1-{level}.asset";
+            AsyncOperationHandle<BoardSO> newHandle = Addressables.LoadAssetAsync<BoardSO>(address);
+            tutorialBoardHandle.Add(newHandle);
+        }
+    }
     public async Task LoadTutorialLevelAsync(int level)
     {
-        string address = $"Assets/ScriptableObjects/Board/Stage1/Stage1-1-{level}.asset";
-        
-        // 1. 이전 에셋 해제
-        ReleaseCurrentBoard(); 
+        AsyncOperationHandle<BoardSO> newHandle = tutorialBoardHandle[level - 2];
+        await newHandle.Task;
 
-        // 2. 비동기 로드 시작
-        AsyncOperationHandle<BoardSO> newHandle = Addressables.LoadAssetAsync<BoardSO>(address);
-        await newHandle.Task; // 로드가 완료될 때까지 대기
-
-        // 3. 로드 결과 확인 및 처리
         if (newHandle.Status == AsyncOperationStatus.Succeeded)
         {
             boardSO = newHandle.Result;
-            currentBoardHandle = newHandle; // 새 핸들 저장
         }
         else
         {
-            Logger.LogError($"Tutorial Level 로드 실패: {address}");
+            Logger.LogError($"Tutorial Level {level} 로드 실패");
         }
+    }
+    public async void ReleaseTutorialLevelAsync()
+    {
+        for (int i = 0; i < tutorialBoardHandle.Count; i++)
+            Addressables.Release(tutorialBoardHandle[i]);
+        tutorialBoardHandle.Clear();
     }
 
     // 이전에 로드된 에셋을 해제하는 도우미 함수

@@ -43,7 +43,6 @@ public class SwipeInputController : MonoBehaviour, IPointerDownHandler, IPointer
         if (!isPointerDownInvoked || !Input.GetMouseButton(0))
             return; // 마우스가 눌려 있지 않으면 리턴
 
-        Logger.Log($"push {eventData.position.x}");
         records.Enqueue(new MouseRecord { time = Time.time, pos = eventData.position });
         Vector2 mousePosAgo;
         if (!GetMousePosAgo(out mousePosAgo)) return;

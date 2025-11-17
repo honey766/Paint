@@ -4,6 +4,8 @@ using DG.Tweening;
 using UnityEngine.SceneManagement;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Threading.Tasks;
+using System;
 using TMPro;
 
 public class CharacterItem : MonoBehaviour
@@ -46,8 +48,8 @@ public class CharacterItem : MonoBehaviour
         this.isExtra = isExtra;
 
         // 🔧 앞면 이미지 로딩 시작 (백그라운드에서 로드)
-        string address = $"Assets/Sprites/Main/{character.PicName}.png";
-        frontSpriteHandle = Addressables.LoadAssetAsync<Sprite>(address);
+        // string address = $"Assets/Sprites/Main/{character.PicName}.png";
+        // frontSpriteHandle = Addressables.LoadAssetAsync<Sprite>(address);
 
         // // 앞면 이미지 불러오기
         // Sprite spriteFront = Resources.Load<Sprite>("Images/" + character.PicName);
@@ -80,19 +82,19 @@ public class CharacterItem : MonoBehaviour
         }
 
         // 🎯 마지막에 앞면 이미지 로딩 완료 대기 및 적용
-        await frontSpriteHandle.Task;
-
-        if (frontSpriteHandle.Status == AsyncOperationStatus.Succeeded)
-        {
-            frontUI.sprite = frontSpriteHandle.Result;
-            Logger.Log($"<color=green>성공:</color> {character.PicName} 이미지를 성공적으로 로드했습니다.");
-        }
-        else
-        {
-            Logger.LogError($"<color=red>실패:</color> {address} 경로에서 스프라이트를 찾을 수 없습니다:");
-            if (frontSpriteHandle.OperationException != null)
-                Logger.LogError($"Exception: {frontSpriteHandle.OperationException.Message}");
-        }
+        // await frontSpriteHandle.Task;
+        frontUI.sprite = CardImageLoader.Instance.GetStageCard(stage);
+        // if (frontSpriteHandle.Status == AsyncOperationStatus.Succeeded)
+        // {
+        //     frontUI.sprite = frontSpriteHandle.Result;
+        //     Logger.Log($"<color=green>성공:</color> {character.PicName} 이미지를 성공적으로 로드했습니다.");
+        // }
+        // else
+        // {
+        //     Logger.LogError($"<color=red>실패:</color> {address} 경로에서 스프라이트를 찾을 수 없습니다:");
+        //     if (frontSpriteHandle.OperationException != null)
+        //         Logger.LogError($"Exception: {frontSpriteHandle.OperationException.Message}");
+        // }
     }
     public void SetBackUILocked(bool hideLevelButton = false)
     {
@@ -234,17 +236,48 @@ public class CharacterItem : MonoBehaviour
         if (UIManager.Instance.doingTransition) return;
 
         // stage, level 데이터 호출 후 PersistentDataManager에 저장
-        bool success = await PersistentDataManager.Instance.LoadStageAndLevelAsync(stage, level);
-        if (success)
+        // bool success = await PersistentDataManager.Instance.LoadStageAndLevelAsync(stage, level);
+        // if (success)
+        // {
+        //     Logger.Log($"Going To Stage {stage} - {level}");
+        //     UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
+        //     if (stage == 1 && level == 1) AudioManager.Instance.ChangeBgmWithTransition(BgmType.Tutorial);
+        //     else AudioManager.Instance.ChangeBgmWithTransition(stage);
+        // }
+        // else
+        // {
+        //     Logger.Log($"Failed to go to Stage {stage} - {level}");
+        // }
+
+        Task<bool> loadingTask = PersistentDataManager.Instance.LoadStageAndLevelAsync(stage, level);
+        Task[] tasksToWait = new Task[] { loadingTask };
+
+        Action conditionalSceneLoadAction = async () =>
         {
-            Logger.Log($"Going To Stage {stage} - {level}");
-            UIManager.Instance.ScreenTransition(() => SceneManager.LoadScene("InGame"));
-            if (stage == 1 && level == 1) AudioManager.Instance.ChangeBgmWithTransition(BgmType.Tutorial);
-            else AudioManager.Instance.ChangeBgmWithTransition(stage);
-        }
-        else
-        {
-            Logger.Log($"Failed to go to Stage {stage} - {level}");
-        }
+            // 로딩 Task의 최종 결과(bool)를 비동기적으로 기다림
+            bool success = await loadingTask;
+
+            if (success)
+            {
+                // 성공: InGame 씬으로 이동
+                Logger.Log($"Going To Stage {stage} - {level}");
+                SceneManager.LoadScene("InGame");
+                if (stage == 1 && level == 1) AudioManager.Instance.ChangeBgmWithTransition(BgmType.Tutorial);
+                else AudioManager.Instance.ChangeBgmWithTransition(stage);
+            }
+            else
+            {
+                // 실패: Title 씬으로 이동
+                Logger.LogError("에셋 로드 실패! 타이틀 화면으로 복귀합니다.");
+                SceneManager.LoadScene("Title");
+            }
+        };
+
+        // 4. UIManager 코루틴 시작
+        // action 인자에 조건부 로직을 담은 함수를, tasks 인자에 로딩 Task를 넘깁니다.
+        UIManager.Instance.ScreenTransition(
+            conditionalSceneLoadAction, 
+            tasksToWait
+        );
     }
 }
