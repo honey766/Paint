@@ -81,6 +81,10 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         isGaming = true;
         hintObj = null;
+        
+        #if !UNITY_EDITOR
+        startGameDirectlyAtInGameScene = false;
+        #endif
 
         if (!startGameDirectlyAtInGameScene)
         {

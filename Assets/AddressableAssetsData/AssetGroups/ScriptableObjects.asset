@@ -771,7 +771,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ac416ec3be5077a468a03ef2e5326f76
-    m_Address: Assets/ScriptableObjects/Hint/Stage7/Hint7-11.asset
+    m_Address: Assets/ScriptableObjects/Hint/Stage7/Hint7-12.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -916,7 +916,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cef3bd89cdc170d4188cf07e149b0a09
-    m_Address: Assets/ScriptableObjects/Board/Stage7/Stage7-11.asset
+    m_Address: Assets/ScriptableObjects/Board/Stage7/Stage7-12.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

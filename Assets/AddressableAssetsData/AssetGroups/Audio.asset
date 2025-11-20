@@ -15,6 +15,11 @@ MonoBehaviour:
   m_GroupName: Audio
   m_GUID: bc87a00568780e44aa31146de44eb60f
   m_SerializeEntries:
+  - m_GUID: 06b41bf6828956348b03e96ef0ba1994
+    m_Address: Assets/ScriptableObjects/Board/Stage7/Stage7-11.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 084a1592ae1f4a445bc269a0613714e3
     m_Address: Assets/Sound/Bgm/Swamp.ogg
     m_ReadOnly: 0
@@ -32,6 +37,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 524d71dfdd3ba134e932b51f9fe05b7a
     m_Address: Assets/Sound/Bgm/Autumn.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83aa0e8674772d44b93dbd859b8db371
+    m_Address: Assets/ScriptableObjects/Hint/Stage7/Hint7-11.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

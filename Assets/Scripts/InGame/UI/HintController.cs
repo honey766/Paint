@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class HintController : MonoBehaviour
 {
     [SerializeField] private GameObject notExists, backgroundImageParent, loadingText;
+    [SerializeField] private RectTransform closeBtnRect;
     private HintDrawer hintDrawer;
 
     private void Awake()
@@ -15,6 +16,13 @@ public class HintController : MonoBehaviour
 
     private IEnumerator Init()
     {
+        #if UNITY_WEBGL
+        closeBtnRect.anchorMin = closeBtnRect.anchorMax = new Vector2(0, 1);
+        closeBtnRect.pivot = new Vector2(0, 1);
+        #else
+        closeBtnRect.anchorMin = closeBtnRect.anchorMax = new Vector2(1, 1);
+        closeBtnRect.pivot = new Vector2(1, 1);
+        #endif
         backgroundImageParent.transform.GetChild(0).GetComponent<Image>().sprite
             = FindAnyObjectByType<BackgroundImageLoader>().GetComponent<Image>().sprite;
         loadingText.SetActive(true);

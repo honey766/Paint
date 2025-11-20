@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5964c91ae5a84434c946db701a5da713
+guid: 2c0061a4c9f0e6f449b9c032c288a45b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8538372981283164270
-    second: back_img_2_0
+      213: 1021736910686683898
+    second: "GRAC_All_(\uC804\uCCB4\uC774\uC6A9\uAC00) (2) (1)_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -76,8 +76,8 @@ TextureImporter:
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
-    compressionQuality: 100
-    crunchedCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
     ignorePlatformSupport: 0
@@ -111,14 +111,14 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: WebGL
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: 29
+    textureFormat: -1
     textureCompression: 1
-    compressionQuality: 100
+    compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 1
+    overridden: 0
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: back_img_2_0
+      name: "GRAC_All_(\uC804\uCCB4\uC774\uC6A9\uAC00) (2) (1)_0"
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1024
-        height: 2048
+        width: 500
+        height: 590
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e601d2dfcf46e7670800000000000000
-      internalID: 8538372981283164270
+      spriteID: af2826f8e40fd2e00800000000000000
+      internalID: 1021736910686683898
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      back_img_2_0: 8538372981283164270
+      "GRAC_All_(\uC804\uCCB4\uC774\uC6A9\uAC00) (2) (1)_0": 1021736910686683898
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

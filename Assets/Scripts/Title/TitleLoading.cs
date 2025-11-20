@@ -22,7 +22,7 @@ public class TitleLoading : MonoBehaviour
     void Start()
     {
         loadingFinished = false;
-        loadingTime = Random.Range(0.75f, 1.25f);
+        loadingTime = Random.Range(3.1f, 3.6f);
         InitAddressables();
     }
 
@@ -42,10 +42,10 @@ public class TitleLoading : MonoBehaviour
     {
         if (!isReady)
         {
-            t += 1.3f * Time.deltaTime;
+            t += Time.deltaTime;
             float value = Mathf.Min(loadingTime, t) / loadingTime;
-            float noise = Mathf.PerlinNoise(Time.time * 3f, 0f) * 0.1f - 0.05f;
-            noise += Random.Range(-1f, 1f) * Time.deltaTime;
+            float noise = Mathf.PerlinNoise(Time.time * 3f, 0f) * 0.02f - 0.04f;
+            noise += Random.Range(-0.5f, 0.5f) * Time.deltaTime;
             value = Mathf.Clamp01(value + noise);
             value = Mathf.Max(prevValue, value);
             sliderPercent.text = $"{(int)(value * 100 + 0.01f)}%";
