@@ -66,7 +66,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 09d6265e307a23f4eab5caef85d79482
-    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-13.asset
+    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-14.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -95,11 +95,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 0eda006acb120184bb2b2e106564fc65
-    m_Address: Assets/ScriptableObjects/Board/Stage1/Stage1-14Legacy.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0fbeeb72341d8984e80e194663844fed
     m_Address: Assets/ScriptableObjects/Board/Stage4/ExtraStage4-1.asset
     m_ReadOnly: 0
@@ -116,7 +111,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1543c635fadb682489bb2a507b488b66
-    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-8.asset
+    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-9.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -206,7 +201,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2dea0c49cf0b0c7458294a7146b74054
-    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-12.asset
+    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-13.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -296,12 +291,17 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 461e778efcd518246829dec0a9dcfc47
-    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-11.asset
+    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-12.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 46506528e4cbbc54ebb855b8a091acdb
     m_Address: Assets/ScriptableObjects/Board/Stage1/Stage1-7.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 465f431bbd9a53343975d1237c7db68f
+    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-8.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -326,7 +326,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4974d8a3eee95ea48aa3a914bd1ecc65
-    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-8.asset
+    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-9.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -381,7 +381,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 52a8a9a68acdb2e4897621de579402fc
-    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-14.asset
+    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-15.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -501,7 +501,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 653855922959663409df593798ffadfe
-    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-10.asset
+    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-11.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -551,7 +551,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6fec3dcfe05f6e8419875e1b1b7a442a
-    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-14.asset
+    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-15.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -665,6 +665,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 905dbedc3448a6547ac2712e89b977aa
+    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-8.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 917312cb85ad8054eb64014640eceac4
     m_Address: Assets/ScriptableObjects/Board/Stage1/Stage1-12.asset
     m_ReadOnly: 0
@@ -726,7 +731,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a198a61003957d447b68c9a2e9e02f66
-    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-9.asset
+    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-10.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -851,12 +856,12 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bcef4ff23784c1f40890016d053b2b41
-    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-9.asset
+    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-10.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bd7acbe5ad05902439bd4a4de973429f
-    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-11.asset
+    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-12.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -1051,7 +1056,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e243137dc7fe23a40b3ed289032f9638
-    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-10.asset
+    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-11.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -1061,7 +1066,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e3cbb2f2670b90d41963cfe1d183d252
-    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-13.asset
+    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-14.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -1151,7 +1156,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ee467bebd1b40164b915b74e4030c72f
-    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-12.asset
+    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-13.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
