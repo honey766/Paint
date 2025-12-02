@@ -54,6 +54,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
     [Header("Other")]
     private const float ContentSpacing = 600;
+    public Action verticalDragBeginEvent;
 
     private List<RectTransform>[] cardRects = new List<RectTransform>[2];
     private List<CharacterItem>[] characterItems = new List<CharacterItem>[2];
@@ -97,6 +98,8 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     }
     private IEnumerator InitSnapToCard((int, int) index)
     {
+        if (index.Item2 == 1) PersistentDataManager.HaveWeInformedExtraUnlock();
+        
         // 한 프레임 기다렸다가 레이아웃 계산이 끝난 뒤 실행
         yield return null;
         
@@ -196,6 +199,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
             isHorizontal = Mathf.Abs(eventData.delta.x) > Mathf.Abs(eventData.delta.y);
             scrollRect.horizontal = isHorizontal;
             scrollRect.vertical = !isHorizontal;
+            if (!isHorizontal) verticalDragBeginEvent?.Invoke();
         }
         // 해금이 안 됐다면 수평 스크롤만 허용
         else
@@ -278,16 +282,15 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         });
     }
 
-    // public void DoSnappingButton()
-    // {
-    //     AudioManager.Instance.PlaySfx(SfxType.Click1);
-    //     if (isSnapping) return;
+    public void VerticalSnappingButton()
+    {
+        AudioManager.Instance.PlaySfx(SfxType.Click1);
+        if (isSnapping) return;
 
-    //     (int nearestHorIndex, int nearestVerIndex) = GetNearestIndex();
-    //     nearestVerIndex = 1 - nearestVerIndex;
-    //     DoSnapping(nearestHorIndex, nearestVerIndex);
-    //     goUpDownButtonImage.DORotate(GetGoUpDownImageRotationVector(nearestVerIndex), 0.2f);
-    // }
+        (int nearestHorIndex, int nearestVerIndex) = GetNearestIndex();
+        nearestVerIndex = 1 - nearestVerIndex;
+        DoSnapping(nearestHorIndex, nearestVerIndex);
+    }
 
     public void DoSnapToExtra()
     {

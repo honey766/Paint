@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -11,8 +12,10 @@ public class StageUnlockInformAnimation : MonoBehaviour
     [SerializeField] private float flipDuration = 1f;
     [SerializeField] private float unlockDuration = 1f;
     [SerializeField] private float snapDurationRatio = 2.5f;
+    [SerializeField] private float fadeDuration = 0.2f;
     [SerializeField] private GameObject blockingUI;
 
+    public bool isAnimating;
     private int numOfStage;
     private List<int> toInformStage = new(); // 음수면 extra
     private PersistentDataManager pdm;
@@ -24,6 +27,7 @@ public class StageUnlockInformAnimation : MonoBehaviour
 
     private void OnEnable()
     {
+        isAnimating = true;
         doWeNeedToInformExtraUnlock = PersistentDataManager.DoWeNeedToInformExtraUnlock();
         cs = GetComponentInChildren<CharacterSwiper>();
         
@@ -50,6 +54,8 @@ public class StageUnlockInformAnimation : MonoBehaviour
         if (toInformStage.Count > 0)
             foreach (var entry in scrollIndicators) 
                 entry.gameObject.SetActive(false);
+        else
+            isAnimating = false;
 
         if (time < 0.5f)
             yield return new WaitForSeconds(0.5f - time);
@@ -66,12 +72,17 @@ public class StageUnlockInformAnimation : MonoBehaviour
     private IEnumerator SubscribeUnlockEvent()
     {
         yield return null;
+        savedVerIndex = 1;
         FindAnyObjectByType<ExtraStageUnlockInformCanvas>().onClick += InformStageUnlockAfterSeconds;
     }
 
     private void GetToInformStageData()
     {
-        for (int i = 0; i < 2 * numOfStage; i++)
+        int maxStage = numOfStage; // 엑스트라 해금 전
+        if (PersistentDataManager.HaveWeInformedExtraUnlock() || PersistentDataManager.DoWeNeedToInformExtraUnlock())
+            maxStage = 2 * numOfStage;
+        
+        for (int i = 0; i < maxStage; i++)
         {
             bool isExtra = i >= numOfStage;
             int curStage = (i % numOfStage) + 1;
@@ -144,21 +155,23 @@ public class StageUnlockInformAnimation : MonoBehaviour
                 entry.gameObject.SetActive(true);
                 entry.currentAlpha = 0f;
                 entry.UpdateImageAlpha();
+                if (entry.isExplainButton) entry.ShowExplainButton();
             }
         }
+        yield return new WaitForSeconds(0.3f);  
         blockingUI.SetActive(false); // 스크롤 가능
+        isAnimating = false;
     }
 
-    public float fadeTime = 0.5f;
     private void UnlockAndFadeOut(Transform backUnlockUI)
     {
         for (int i = 0; i < 4; i++)
         {
             Transform child = backUnlockUI.GetChild(i);
             Image img = child.GetComponent<Image>();
-            if (img != null) img.DOFade(0, fadeTime);
+            if (img != null) img.DOFade(0, fadeDuration);
             TextMeshProUGUI tmp = child.GetComponent<TextMeshProUGUI>();
-            if (tmp != null) tmp.DOFade(0, fadeTime);
+            if (tmp != null) tmp.DOFade(0, fadeDuration);
         }
         Transform particle = backUnlockUI.GetChild(4);
         particle.gameObject.SetActive(true);

@@ -67,7 +67,8 @@ public class MainManager : MonoBehaviour
             main.SetActive(false);
             card.SetActive(true);
             SetStarCountText();
-        });
+        }, 
+        () => !CardImageLoader.Instance.imageLoadingCompleted);
     }
 
     public void CardToMainMenu()

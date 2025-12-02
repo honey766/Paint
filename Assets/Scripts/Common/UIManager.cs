@@ -1,12 +1,13 @@
+using Random = UnityEngine.Random;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using Random = UnityEngine.Random;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using TMPro;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Threading.Tasks;
 
 public class UIManager : SingletonBehaviour<UIManager>
 {
@@ -48,22 +49,38 @@ public class UIManager : SingletonBehaviour<UIManager>
     public void ScreenTransition(Action action)
     {
         if (doingTransition) return;
+        ScreenTransitionReady();
+        StartCoroutine(ScreenTransitionCoroutine(action, new Task[]{}, null));
+    }
+    public async void ScreenTransition(Action action, Task[] tasks)
+    {
+        if (doingTransition) return;
+        ScreenTransitionReady();
+        StartCoroutine(ScreenTransitionCoroutine(action, tasks, null));
+    }
+    public async void ScreenTransition(Action action, Func<bool> waitCondition)
+    {
+        if (doingTransition) return;
+        ScreenTransitionReady();
+        StartCoroutine(ScreenTransitionCoroutine(action, new Task[]{}, waitCondition));
+    }
+    private void ScreenTransitionReady()
+    {
         doingTransition = true;
 
         // 트랜지션 색 랜덤 결정
         Color color;
-        int random = UnityEngine.Random.Range(0, 3);
+        int random = Random.Range(0, 3);
         if (random == 0) color = red;
         else if (random == 1) color = blue;
         else color = purple;
 
         for (int i = 0; i < transitionRects.Length; i++)
             transitionImages[i].color = color;
-
-        StartCoroutine(ScreenTransitionCoroutine(action));
     }
 
-    private IEnumerator ScreenTransitionCoroutine(Action action)
+    // waitCondition은 () => !IsHintTasksLoaded처럼 람다식으로 반환. true일 동안 대기
+    private IEnumerator ScreenTransitionCoroutine(Action action, Task[] tasks, Func<bool> waitCondition)
     {
         AudioManager.Instance.PlaySfx(SfxType.Transition, 0.6f);
         for (int i = 0; i < transitionRects.Length; i++)
@@ -72,9 +89,18 @@ public class UIManager : SingletonBehaviour<UIManager>
             transitionRects[i].anchoredPosition = new Vector2(transitionRects[i].anchoredPosition.x, Screen.height * Random.Range(1.3f, 2f));
             transitionRects[i].DOAnchorPosY(0, transitionDuration - Random.Range(0f, 0.25f));
         }
+
         yield return new WaitForSeconds(transitionDuration);
+
+        while (waitCondition?.Invoke() == true)
+            yield return null;
+        foreach (Task task in tasks)
+            while (!task.IsCompleted)
+                yield return null;
         action();
+
         yield return new WaitForSeconds(waitDuration);
+
         for (int i = 0; i < transitionRects.Length; i++)
             transitionRects[i].DOAnchorPosY(-Screen.height * Random.Range(1.3f, 2f), transitionDuration - Random.Range(0f, 0.25f));
         yield return new WaitForSeconds(transitionDuration + 0.3f);

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class ScrollIndicator : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class ScrollIndicator : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private bool isBottomIndicator;
-    [SerializeField] private bool isExplainButton;
+    public bool isExplainButton;
     [SerializeField] private float baseOffset = 60f;
     [SerializeField] private float fadeAnimationDuration = 0.2f;
     [SerializeField] private float bounceSpeed = 2.3f;
@@ -20,6 +21,7 @@ public class ScrollIndicator : MonoBehaviour
     private Image image;
     private Color originalColor;
     public float currentAlpha;
+    private float initialAlpha;
     private float maxScrollPosition = UNINITIALIZED_VALUE;
     private bool recentIsFadeOut;
     
@@ -31,7 +33,7 @@ public class ScrollIndicator : MonoBehaviour
         if (!PersistentDataManager.HaveWeInformedExtraUnlock())
             gameObject.SetActive(false);
         InitializeComponents();
-        currentAlpha = 1f;
+        initialAlpha = currentAlpha = image.color.a;
         recentIsFadeOut = true;
     }
 
@@ -161,6 +163,11 @@ public class ScrollIndicator : MonoBehaviour
         currentAlpha += Time.deltaTime / fadeAnimationDuration;
         currentAlpha = Mathf.Min(currentAlpha, 1f);
         UpdateImageAlpha();
+    }
+
+    public void ShowExplainButton()
+    {
+        image.DOFade(initialAlpha, 0.2f);
     }
 
     public void UpdateImageAlpha()

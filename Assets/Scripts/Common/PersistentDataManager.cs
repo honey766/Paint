@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Threading.Tasks;
 
 public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
 {
@@ -32,6 +35,10 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
     private List<int> stageUnlockInformPrefsData;
     private List<int> extraStageUnlockInformPrefsData;
 
+    // 이전 핸들을 추적하여 메모리 해제에 사용
+    private AsyncOperationHandle<BoardSO> currentBoardHandle;
+    private List<AsyncOperationHandle<BoardSO>> tutorialBoardHandle;
+
     private void Awake()
     {
         Init();
@@ -47,25 +54,81 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
         this.moveLatencyRate = moveLatencyRate;
     }
 
-    public void LoadTutorialLevel(int level)
+    // 튜토리얼 레벨 로드 (비동기)
+    public void PreLoadTutorialLevel()
     {
-        boardSO = Resources.Load<BoardSO>($"ScriptableObjects/Board/Stage1/Stage1-1-{level}");
+        tutorialBoardHandle = new();
+
+        for (int level = 2; level <= 3; level++)
+        {
+            string address = $"Assets/ScriptableObjects/Board/Stage1/Stage1-1-{level}.asset";
+            AsyncOperationHandle<BoardSO> newHandle = Addressables.LoadAssetAsync<BoardSO>(address);
+            tutorialBoardHandle.Add(newHandle);
+        }
+    }
+    public async Task LoadTutorialLevelAsync(int level)
+    {
+        AsyncOperationHandle<BoardSO> newHandle = tutorialBoardHandle[level - 2];
+        await newHandle.Task;
+
+        if (newHandle.Status == AsyncOperationStatus.Succeeded)
+        {
+            boardSO = newHandle.Result;
+        }
+        else
+        {
+            Logger.LogError($"Tutorial Level {level} 로드 실패");
+        }
+    }
+    public async void ReleaseTutorialLevelAsync()
+    {
+        for (int i = 0; i < tutorialBoardHandle.Count; i++)
+            Addressables.Release(tutorialBoardHandle[i]);
+        tutorialBoardHandle.Clear();
     }
 
-    // stage, level이 존재하면 true
-    public bool LoadStageAndLevel(int stage, int level)
+    // 이전에 로드된 에셋을 해제하는 도우미 함수
+    private void ReleaseCurrentBoard()
+    {
+        if (currentBoardHandle.IsValid())
+        {
+            Addressables.Release(currentBoardHandle);
+            currentBoardHandle = default;
+            boardSO = null; // 참조 해제
+        }
+    }
+
+    // 일반 스테이지 및 레벨 로드 (비동기)
+    // stage, level이 존재하면 true 반환
+    public async Task<bool> LoadStageAndLevelAsync(int stage, int level) // 함수 이름과 반환형 변경
     {
         string name;
         if (level > 0) name = $"Stage{stage}-{level}";
         else name = $"ExtraStage{stage}-{-level}";
 
-        boardSO = Resources.Load<BoardSO>($"ScriptableObjects/Board/Stage{stage}/" + name);
-        if (boardSO != null)
+        string address = $"Assets/ScriptableObjects/Board/Stage{stage}/{name}.asset";
+        // 1. 이전 에셋 해제
+        ReleaseCurrentBoard();
+
+        // 2. 비동기 로드 시작
+        AsyncOperationHandle<BoardSO> newHandle = Addressables.LoadAssetAsync<BoardSO>(address);
+        await newHandle.Task; // 로드가 완료될 때까지 대기
+
+        // 3. 로드 결과 확인
+        if (newHandle.Status == AsyncOperationStatus.Succeeded)
         {
+            boardSO = newHandle.Result;
+            currentBoardHandle = newHandle;
             this.stage = stage;
             this.level = level;
+            return true;
         }
-        return boardSO != null;
+        else
+        {
+            // 로드 실패 시 핸들을 따로 해제할 필요는 없습니다. (실패한 핸들은 Release가 필요 없음)
+            Logger.LogWarning($"Stage/Level 로드 실패: {address}");
+            return false;
+        }
     }
 
     #region StageData
@@ -78,7 +141,6 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
 
     private void LoadStageClearData()
     {
-        stageSO = Resources.Load<StageSO>("ScriptableObjects/Stage/Stage");
         numOfStage = stageSO.numOfStage;
         int maxLevelNum = -1;
         int maxExtraLevelNum = -1;
@@ -211,6 +273,7 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
     {
         PlayerPrefs.SetInt("haveToInformExtraUnlock", 0);
         PlayerPrefs.SetInt("haveInformedExtraUnlock", 1);
+        PlayerPrefs.Save();
     }
     public static bool HaveWeInformedExtraUnlock() => PlayerPrefs.GetInt("haveInformedExtraUnlock", 0) == 1;
     public static void SetHaveWeInformedExtraUnlock() => PlayerPrefs.SetInt("haveInformedExtraUnlock", 1);

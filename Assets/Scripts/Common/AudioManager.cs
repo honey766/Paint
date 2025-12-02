@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using DG.Tweening;
 
 [System.Serializable]
@@ -12,10 +14,10 @@ public class SfxAudioClip
 }
 
 [System.Serializable]
-public class BgmAudioClip
+public class BgmAssetReference
 {
     public BgmType bgmType;
-    public AudioClip audioClip;
+    public AssetReference assetReference;
 }
 
 [System.Serializable]
@@ -70,20 +72,25 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     private Dictionary<SfxType, (AudioSource, AudioSource)> loopSfxSources = new();
 
     [Header("오디오 데이터 (Audio Data)")]
-    [SerializeField] private BgmAudioClip[] bgmClips;
+    [SerializeField] private BgmAssetReference[] bgmReferences;
     [SerializeField] private SfxAudioClip[] sfxClips;
     [SerializeField] private LoopSfxAudioClip[] loopSfxClips;
 
     // 데이터 딕셔너리
-    private Dictionary<BgmType, AudioClip> bgmDict = new();
+    private Dictionary<BgmType, string> bgmAddressDict = new();
     private Dictionary<SfxType, AudioClip> sfxDict = new();
     private Dictionary<SfxType, LoopSfxAudioClip> loopSfxDict = new();
 
     // 루프 상태 관리용
     private Dictionary<SfxType, Coroutine> loopCoroutines = new();
     private HashSet<SfxType> loopingFlags = new();
-    // 새로 추가: 마지막 재생 시간을 저장하는 딕셔너리
     private Dictionary<SfxType, float> lastPlaybackTimes = new Dictionary<SfxType, float>();
+
+    // 각 오디오 소스별 핸들 추적
+    private AsyncOperationHandle<AudioClip> curBgmHandle = default;
+    private AsyncOperationHandle<AudioClip> nextBgmHandle = default;
+    private AsyncOperationHandle<AudioClip> pendingLoadHandle = default;
+    private string curBgmSourceClipAddress = "";
 
     // 볼륨 설정
     public float BgmVolume { get; private set; } = 1f;
@@ -100,7 +107,8 @@ public class AudioManager : SingletonBehaviour<AudioManager>
     {
         base.Init();
 
-        foreach (var bgm in bgmClips) bgmDict[bgm.bgmType] = bgm.audioClip;
+        foreach (var bgmRef in bgmReferences)
+            bgmAddressDict[bgmRef.bgmType] = bgmRef.assetReference.RuntimeKey.ToString();
 
         foreach (var sfx in sfxClips) sfxDict[sfx.sfxType] = sfx.audioClip;
 
@@ -130,11 +138,10 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         SetBGMVolume(PersistentDataManager.LoadBGM() / 100f);
         SetSFXVolume(PersistentDataManager.LoadSFX() / 100f);
         #if !UNITY_WEBGL
-        PlayBgmFirst();
+        pendingLoadHandle = PreloadBgmAsync(BgmType.Title);
+        PlayBgmImmediatelyAsync(BgmType.Title, 0.5f, pendingLoadHandle);
         #endif
     }
-
-    private void PlayBgmFirst() => PlayBgmImmediately(BgmType.Title, 0.5f);
 
     // ---------------------
     // 🎵 일반 SFX / BGM
@@ -146,94 +153,171 @@ public class AudioManager : SingletonBehaviour<AudioManager>
         BgmVolume = volume;
     }
 
-    public void PlayBgmImmediately(BgmType bgmType, float fadeInDuration)
+    // 1단계: BGM 로드 작업을 시작하고 핸들을 반환합니다.
+    public AsyncOperationHandle<AudioClip> PreloadBgmAsync(BgmType bgmType)
     {
-        if (bgmDict.TryGetValue(bgmType, out AudioClip clip))
-            if (curBgmSource.clip != clip)
-            {
-                nextBgmSource.Stop();
-                curBgmSource.volume = 0;
-                curBgmSource.DOFade(1, fadeInDuration).SetEase(Ease.Linear);
-                curBgmSource.clip = clip;
-                curBgmSource.Play();
-            }
+        if (pendingLoadHandle.IsValid())
+        {
+            // 이미 진행 중인 선행 로드 작업이 있다면 해제
+            Addressables.Release(pendingLoadHandle);
+            pendingLoadHandle = default;
+        }
+
+        if (!bgmAddressDict.TryGetValue(bgmType, out string address))
+        {
+            Debug.LogError($"Addressables 주소를 찾을 수 없습니다: {bgmType}");
+            return default; // 유효하지 않은 핸들 반환
+        }
+
+        // 로드 작업만 시작하고 반환
+        pendingLoadHandle = Addressables.LoadAssetAsync<AudioClip>(address);
+        return pendingLoadHandle;
+    }
+
+    // 2단계: 선행 로드된 핸들을 받아 BGM을 재생합니다.
+    public async void PlayBgmImmediatelyAsync(BgmType bgmType, float fadeInDuration, AsyncOperationHandle<AudioClip> loadHandle)
+    {
+        // 1. 로드 대기 및 검증
+        // 여기서 await을 사용하여 로드가 완료될 때까지 기다립니다.
+        await loadHandle.Task;
+
+        if (!loadHandle.IsValid() || loadHandle.Status != AsyncOperationStatus.Succeeded)
+        {
+            Debug.LogError($"BGM 로드 실패 또는 핸들 무효: {bgmType}");
+            // 로드 실패 시 정리할 필요 없이 여기서 return
+            return;
+        }
+
+        AudioClip clip = loadHandle.Result;
+
+        // 2. 이전 BGM 정리 (재생 중단 후 해제)
+        curBgmSource.Stop();
+        if (curBgmHandle.IsValid())
+        {
+            Addressables.Release(curBgmHandle);
+            curBgmHandle = default;
+        }
+
+        // 3. 다음 BGM 소스도 정리
+        nextBgmSource.Stop();
+        if (nextBgmHandle.IsValid())
+        {
+            Addressables.Release(nextBgmHandle);
+            nextBgmHandle = default;
+        }
+
+        // 4. 새 BGM 설정 및 재생
+        curBgmSource.clip = clip;
+        curBgmSource.volume = 0;
+        curBgmSource.Play();
+        curBgmSource.DOFade(1, fadeInDuration).SetEase(Ease.Linear);
+
+        // 5. 핸들 저장
+        curBgmHandle = loadHandle;
+        curBgmSourceClipAddress = bgmAddressDict[bgmType];
     }
 
     public void ChangeBgmWithTransition(BgmType bgmType)
     {
-        if (bgmDict.TryGetValue(bgmType, out AudioClip clip))
-            if (clip != null && curBgmSource.clip != clip)
-                StartCoroutine(ChangeBgmCoroutine(clip));
+        if (bgmAddressDict.TryGetValue(bgmType, out string address))
+            if (curBgmSourceClipAddress != address)
+                StartCoroutine(ChangeBgmCoroutine(address));
     }
     public void ChangeBgmWithTransition(int stage)
     {
         if (stage < 1 || stage > stageBgm.Length)
             return;
         BgmType bgmType = stageBgm[stage - 1];
-        if (bgmDict.TryGetValue(bgmType, out AudioClip clip))
-            if (curBgmSource.clip != clip)
-                StartCoroutine(ChangeBgmCoroutine(clip));
+        if (bgmAddressDict.TryGetValue(bgmType, out string address))
+            if (curBgmSourceClipAddress != address)
+                StartCoroutine(ChangeBgmCoroutine(address));
     }
 
-    private IEnumerator ChangeBgmCoroutine(AudioClip clip)
+    private IEnumerator ChangeBgmCoroutine(string address)
     {
+        curBgmSourceClipAddress = address;
         float fadeOutDuration = 1.2f;
         float fadeInDuration = 0.3f;
         float transitionDuration = UIManager.Instance.GetTransitionDuration();
     
         // 1. 현재 BGM 페이드아웃 시작
         curBgmSource.DOFade(0, fadeOutDuration).SetEase(Ease.Linear);
+
+        // 2. nextBgmSource에 남아있던 이전 핸들 먼저 정리
+        if (nextBgmHandle.IsValid())
+        {
+            Addressables.Release(nextBgmHandle);
+            nextBgmHandle = default; // 핸들 초기화
+        }
+
+        // 3. 새 BGM 로딩 시작
+        AsyncOperationHandle<AudioClip> newHandle = Addressables.LoadAssetAsync<AudioClip>(address);
     
-        // 2. transitionDuration 후 선행 로딩 시작
+        // 4. transitionDuration 대기
         yield return new WaitForSeconds(transitionDuration);
     
-        // --- ⭐ BGM 선행 로딩 로직 ⭐ ---
-        if (clip.loadState == AudioDataLoadState.Unloaded)
+        // 5. 로드 완료 대기
+        while (!newHandle.IsDone)
+            yield return null; 
+
+        if (newHandle.Status != AsyncOperationStatus.Succeeded)
         {
-            clip.LoadAudioData(); // 메모리 로드 및 디코딩 시작
-            
-            // Load In Background가 체크되어 있을 때, 로드가 완료될 때까지 대기
-            while (clip.loadState == AudioDataLoadState.Loading)
-            {
-                yield return null; 
-            }
+            Debug.LogError("Addressables BGM 로드 실패: " + address);
+            curBgmSource.DOFade(1, fadeOutDuration).SetEase(Ease.Linear);
+            yield break;
         }
-        // --- ⭐ BGM 선행 로딩 완료 ⭐ ---
+
+        AudioClip clip = newHandle.Result;
     
-        // 3. 다음 BGM 소스 준비
+        // 6. 다음 BGM 소스 준비
         nextBgmSource.clip = clip;
-        nextBgmSource.volume = 0f; // 볼륨만 설정 (Play/Stop 불필요)
+        nextBgmSource.volume = 0f;
+        nextBgmHandle = newHandle; // 새 핸들 할당
     
-        // 4. 나머지 페이드아웃 시간 대기
+        // 7. 나머지 페이드아웃 시간 대기
         yield return new WaitForSeconds(Mathf.Max(0, fadeOutDuration - transitionDuration));
     
-        // 5. 스왑 및 재생 시작
+        // 8. 이전 핸들 저장 (해제용)
+        AsyncOperationHandle<AudioClip> oldHandle = curBgmHandle;
+    
+        // 9. 소스 스왑
         curBgmSource.Stop();
-        
-        var temp = curBgmSource;
+        var tempSource = curBgmSource;
         curBgmSource = nextBgmSource;
-        nextBgmSource = temp; // 소스 스왑 완료
+        nextBgmSource = tempSource;
+        
+        // 10. 핸들도 스왑
+        curBgmHandle = nextBgmHandle;
+        nextBgmHandle = default; // nextBgmHandle 초기화 (이미 curBgmHandle로 이동)
     
-        yield return null; // 한 프레임 대기 (필요하다면)
-    
-        // 6. 새로운 BGM 재생 및 페이드인
-        // (LoadAudioData() 덕분에 렉 없이 즉시 재생 시작)
-        curBgmSource.clip = clip;
-        curBgmSource.volume = 0;
+        // 11. 새 BGM 재생 및 페이드인
         curBgmSource.Play();
         curBgmSource.DOFade(1, fadeInDuration).SetEase(Ease.Linear);
-        nextBgmSource.clip = null;
+        
+        // 12. 이전 BGM 정리
         nextBgmSource.Stop();
+        nextBgmSource.clip = null;
+        
+        // 13. 이전 핸들 해제 (이제 안전)
+        if (oldHandle.IsValid())
+        {
+            Addressables.Release(oldHandle);
+        }
     }
 
-    // private IEnumerator ChangeBgmCoroutine(AudioClip clip)
-    // {
-    //     curBgmSource.DOFade(0, 1.35f).SetEase(Ease.Linear);
-    //     yield return new WaitForSeconds(1.35f);
-    //     curBgmSource.clip = clip;
-    //     curBgmSource.Play();
-    //     curBgmSource.DOFade(1, 0.2f);
-    // }
+    // OnDestroy에서 모든 핸들 정리
+    private void OnDestroy()
+    {
+        if (curBgmHandle.IsValid())
+        {
+            Addressables.Release(curBgmHandle);
+        }
+        
+        if (nextBgmHandle.IsValid())
+        {
+            Addressables.Release(nextBgmHandle);
+        }
+    }
 
     public void SetSFXVolume(float volume)
     {

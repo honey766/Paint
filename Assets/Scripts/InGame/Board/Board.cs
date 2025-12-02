@@ -55,7 +55,6 @@ public class Board : SingletonBehaviour<Board>
         {
             foreach (var entry in board.Values)
             {
-                Logger.Log("QQQQQQQQQQQQQ");
                 Destroy(entry.gameObject);
             }
         }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
+using System.Threading.Tasks;
 
 public class TutorialController : MonoBehaviour
 {
@@ -25,8 +26,12 @@ public class TutorialController : MonoBehaviour
     private RectTransform moveCountTutoRect;
     [SerializeField] private int tutorialLevel;
 
+    private Task tuto2LoadTask, tuto3LoadTask;
+
     private void Awake()
     {
+        PersistentDataManager.Instance.PreLoadTutorialLevel();
+
         //color12Border = GameObject.Find("Color12BorderDrawer").GetComponent<MeshRenderer>();
         color12Lines = GameObject.Find("PurpleLines");
 
@@ -52,13 +57,13 @@ public class TutorialController : MonoBehaviour
     /// <summary>
     /// 튜토리얼 마지막 클리어라면 true
     /// </summary>
-    public bool TutorialClearEvent(int star)
+    public async Task<bool> TutorialClearEvent(int star)
     {
         tutorialLevel++;
         if (tutorialLevel == 1)
         {
             GameManager.Instance.isGaming = false;
-            PersistentDataManager.Instance.LoadTutorialLevel(2);
+            await PersistentDataManager.Instance.LoadTutorialLevelAsync(2);
             Instantiate(tutorialCanvas2);
             moveTutorialCanvasObj = GameObject.Find("MoveTutorialCanvas(Clone)");
             moveTutorialCanvasObj.GetComponent<MoveTutorialTooltip>().EnteredTutorialTwo();
@@ -77,7 +82,7 @@ public class TutorialController : MonoBehaviour
         }
         else if (tutorialLevel == 2)
         {
-            PersistentDataManager.Instance.LoadTutorialLevel(3);
+            await PersistentDataManager.Instance.LoadTutorialLevelAsync(3);
             Transform blackLineParent = GameObject.Find("BlackLines").transform;
             foreach (Transform child in blackLineParent)
                 child.gameObject.SetActive(false);
@@ -92,6 +97,7 @@ public class TutorialController : MonoBehaviour
             Destroy(moveTutorialCanvas);
             GameManager.Instance.isGaming = false;
             PersistentDataManager.Instance.SetStageClearData(star);
+            PersistentDataManager.Instance.ReleaseTutorialLevelAsync();
         }
 
         return tutorialLevel == 3;
@@ -118,7 +124,6 @@ public class TutorialController : MonoBehaviour
 
         PlayerController.Instance.MoveEvent += (pos) =>
         {
-            Logger.Log($"HIHI!! {pos}");
             // 처음 상태
             if (firstTutorialArrowStatus == 0)
             {

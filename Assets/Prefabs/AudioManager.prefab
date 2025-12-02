@@ -51,25 +51,70 @@ MonoBehaviour:
   curBgmSource: {fileID: 4699862124339260103}
   nextBgmSource: {fileID: 3482704425230720341}
   sfxSource2D: {fileID: 243314287968440958}
-  bgmClips:
+  bgmReferences:
   - bgmType: 1000
-    audioClip: {fileID: 8300000, guid: 91dca1aee6f0ba748b452b8d92ac3368, type: 3}
+    assetReference:
+      m_AssetGUID: dd4e985ff22f9774bab67efbfb29fe89
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
   - bgmType: 2000
-    audioClip: {fileID: 8300000, guid: d87a81c7e0e31a542893094a9e3d3360, type: 3}
+    assetReference:
+      m_AssetGUID: d87a81c7e0e31a542893094a9e3d3360
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
   - bgmType: 2001
-    audioClip: {fileID: 8300000, guid: 9e0cc67b7bcd5c240a71875741e3dab3, type: 3}
+    assetReference:
+      m_AssetGUID: 9e0cc67b7bcd5c240a71875741e3dab3
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
   - bgmType: 2002
-    audioClip: {fileID: 8300000, guid: 46179738982ca0e438ab863461cece1e, type: 3}
+    assetReference:
+      m_AssetGUID: 46179738982ca0e438ab863461cece1e
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
   - bgmType: 2003
-    audioClip: {fileID: 8300000, guid: 524d71dfdd3ba134e932b51f9fe05b7a, type: 3}
+    assetReference:
+      m_AssetGUID: 524d71dfdd3ba134e932b51f9fe05b7a
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
   - bgmType: 2004
-    audioClip: {fileID: 8300000, guid: 90ab6d23d6b1ccb4ea0a48d574958999, type: 3}
+    assetReference:
+      m_AssetGUID: 90ab6d23d6b1ccb4ea0a48d574958999
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
   - bgmType: 2005
-    audioClip: {fileID: 8300000, guid: ef75d3c39da49cd4282bf38d8d082e8f, type: 3}
+    assetReference:
+      m_AssetGUID: ef75d3c39da49cd4282bf38d8d082e8f
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
   - bgmType: 2006
-    audioClip: {fileID: 8300000, guid: 0ae6553f85fe79d4a9edeab14e419861, type: 3}
+    assetReference:
+      m_AssetGUID: 0ae6553f85fe79d4a9edeab14e419861
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
   - bgmType: 2007
-    audioClip: {fileID: 8300000, guid: 084a1592ae1f4a445bc269a0613714e3, type: 3}
+    assetReference:
+      m_AssetGUID: 084a1592ae1f4a445bc269a0613714e3
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
   sfxClips:
   - sfxType: 0
     audioClip: {fileID: 8300000, guid: aa32f520e4760e14c96929e8cbe11dce, type: 3}
