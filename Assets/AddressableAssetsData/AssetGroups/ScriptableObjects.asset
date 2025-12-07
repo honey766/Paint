@@ -110,11 +110,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1543c635fadb682489bb2a507b488b66
-    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-9.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1545e047e0870eb4b8f100bb0369069a
     m_Address: Assets/ScriptableObjects/Hint/Stage1/Hint1-10.asset
     m_ReadOnly: 0
@@ -322,11 +317,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 48f9ae6aa8214134b91b03a9fa25bda4
     m_Address: Assets/ScriptableObjects/Hint/Stage1/Hint1-11.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4974d8a3eee95ea48aa3a914bd1ecc65
-    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-9.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
