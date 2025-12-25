@@ -37,6 +37,13 @@ public class MainManager : MonoBehaviour
         }
 
         // 상점 닫기
+        GameObject shop = GameObject.Find("Shop(Clone)");
+        if (shop != null)
+        {
+            AudioManager.Instance.PlaySfx(SfxType.Click1);
+            Destroy(shop);
+            return;
+        }
 
         // 메뉴 닫기
         GameObject menu = GameObject.Find("MainMenuCanvas(Clone)");
@@ -49,7 +56,8 @@ public class MainManager : MonoBehaviour
         if (card.activeSelf)
         {
             // 메인 메뉴로 돌아가기
-            CardToMainMenu();
+            // CardToMainMenu();
+            OpenMenu();
         }
         else
         {

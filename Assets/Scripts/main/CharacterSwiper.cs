@@ -8,6 +8,8 @@ using UnityEngine.EventSystems;
 using System.Linq;
 using TMPro;
 using System.Data;
+using System.IO.Compression;
+using UnityEngine.InputSystem;
 
 // JSON 데이터 구조
 [Serializable]
@@ -52,9 +54,16 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     private float canvasScaleFactor;
     private float extraContentHeight;
 
+    [Header("Keyboard Input")]
+    [SerializeField] private float inputCooldown = 0.5f;
+    private float keyboardNextFireTime;
+    private Vector2 lastKeyboardInput;
+    private Vector2Int targetIndex;
+    [HideInInspector] public bool canGetKeyboardInput = true;
+
     [Header("Other")]
-    private const float ContentSpacing = 600;
     public Action verticalDragBeginEvent;
+    private const float ContentSpacing = 600;
 
     private List<RectTransform>[] cardRects = new List<RectTransform>[2];
     private List<CharacterItem>[] characterItems = new List<CharacterItem>[2];
@@ -72,6 +81,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         if (savedVerIndex == 1)
             PersistentDataManager.SetHaveWeInformedExtraUnlock();
         LoadAndSetupCharacters();
+        targetIndex = new Vector2Int(savedHorIndex, savedVerIndex);
         StartCoroutine(InitSnapToCard((savedHorIndex, savedVerIndex)));
 
         if (PersistentDataManager.DoWeNeedToInformExtraUnlock())
@@ -89,6 +99,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
     void Update()
     {
+        KeyboardInput();
         UpdateCardTransforms();
     }
     public (int, int) GetSavedIndex()
@@ -156,7 +167,45 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
             }
         }
     }
+#if UNITY_STANDALONE
+    private void KeyboardInput()
+    {
+        if (!canGetKeyboardInput)
+            return;
+        KeyboardAxisInput();
+        CardSelectInput();
+    }
+    private void KeyboardAxisInput()
+    {
+        // 화살표 방향 입력 (좌우/상하 합쳐서 Vector2)
+        Vector2 dir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
+        if ((dir.x == 0 && dir.y != 0) || (dir.x != 0 && dir.y == 0)) // 방향키 눌림
+        {
+            Vector2 inputVec = new Vector2(dir.x, dir.y);
+            if (Time.time >= keyboardNextFireTime || lastKeyboardInput != inputVec)
+            {
+                lastKeyboardInput = inputVec;
+                targetIndex.x = Mathf.Clamp(targetIndex.x + (int)dir.x, 0, cardRects[0].Count - 1);
+                targetIndex.y = Mathf.Clamp(targetIndex.y - (int)dir.y, 0, 1);
+                DoSnapping(targetIndex.x, targetIndex.y);
+                keyboardNextFireTime = Time.time + inputCooldown;
+            }
+        }
+        else
+        {
+            keyboardNextFireTime = 0f; // 키 뗐을 때 초기화
+        }
+    }
+    private void CardSelectInput()
+    {
+        if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
+        {
+            (int nearestHorIndex, int nearestVerIndex) = GetNearestIndex();
+            FlipCard(nearestHorIndex, nearestVerIndex);
+        }
+    }
+#endif
     private void UpdateCardTransforms()
     {
         float centerX = viewport.position.x;
@@ -179,7 +228,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
                 // cardRects[i].localRotation = Quaternion.Euler(0, rotationY, 0);
 
                 // 중앙에 가장 가까운 카드(스케일이 거의 1)를 '선택된' 상태로 만듦
-                if (scale > 0.99f)
+                if (scale > 0.99f || (i == targetIndex.x && j == targetIndex.y))
                 {
                     characterItems[j][i].SetSelected();
                 }
@@ -242,6 +291,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
             else if (scrollRect.velocity.y > swipeThreshold)
                 nearestVerIndex = Mathf.Min(nearestVerIndex + 1, 1);
         }
+        targetIndex = new Vector2Int(nearestHorIndex, nearestVerIndex);
 
         AudioManager.Instance.PlaySfx(SfxType.SelectCard);
         scrollRect.StopMovement();
@@ -265,7 +315,7 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
 
     public void DoSnapping(int hor, int ver, float snapDurationRatio = 1f)
     {
-        if (isSnapping) return;
+        // if (isSnapping) return;
 
         float centerX = viewport.position.x;
         float offset = (centerX - cardRects[0][hor].position.x) / canvasScaleFactor;

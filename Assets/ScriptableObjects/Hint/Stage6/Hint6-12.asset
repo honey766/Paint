@@ -63,7 +63,7 @@ MonoBehaviour:
   limitStepForOneStar: -1
   limitStepForTwoStar: 210
   limitStepForThreeStar: 159
-  startPlayerColor: 3
+  startPlayerColor: 0
   references:
     version: 2
     RefIds:

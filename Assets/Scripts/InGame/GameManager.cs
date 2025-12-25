@@ -143,6 +143,15 @@ public class GameManager : SingletonBehaviour<GameManager>
             return;
         }
 
+        // 상점 닫기
+        GameObject shop = GameObject.Find("Shop(Clone)");
+        if (shop != null)
+        {
+            AudioManager.Instance.PlaySfx(SfxType.Click1);
+            Destroy(shop);
+            return;
+        }
+
         // 메뉴 닫기
         GameObject menu = GameObject.Find("GameMenuCanvas(Clone)");
         if (menu != null)

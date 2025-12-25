@@ -16,6 +16,7 @@ public class UIManager : SingletonBehaviour<UIManager>
     [SerializeField] Color red, blue, purple;
     public bool doingTransition { get; private set; }
     [SerializeField] private Transform transitionRectsParent;
+    [SerializeField] private int desktopTransitionCount = 16, noDesktopTransitionCount = 8;
 
     private GameObject exitGameObj;
     private RectTransform[] transitionRects;
@@ -28,9 +29,17 @@ public class UIManager : SingletonBehaviour<UIManager>
 
         List<RectTransform> rectList = new List<RectTransform>();
 
-        foreach (Transform child in transitionRectsParent)
+        int rectCount = noDesktopTransitionCount;
+        #if UNITY_STANDALONE
+        rectCount = desktopTransitionCount;
+        #endif
+
+        GameObject rectObj = transform.GetChild(0).GetChild(0).gameObject;
+        rectList.Add(rectObj.GetComponent<RectTransform>());
+        for (int i = 1; i < rectCount; i++)
         {
-            rectList.AddRange(child.GetComponentsInChildren<RectTransform>());
+            GameObject instRect = Instantiate(rectObj, transform.GetChild(0));
+            rectList.Add(instRect.GetComponent<RectTransform>());
         }
 
         transitionRects = rectList.ToArray();

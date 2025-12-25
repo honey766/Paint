@@ -44,6 +44,7 @@ public class PlayerController : BlockData
     public override TileType Color { get; protected set; } = TileType.White;
     public override bool IsTransparent { get; protected set; } = false;
 
+    private float keyboardNextFireTime, keyboardRedoNextFireTime;
     public Action<Vector2Int> MoveEvent;
 
     [Header("플레이어의 색")]
@@ -61,7 +62,7 @@ public class PlayerController : BlockData
     private const int MAX_REDOLIST_COUNT = 20;
     private int redoing;
 
-    [SerializeField] private float colorTileAudioCooldown = 0.1f;
+    private float colorTileAudioCooldown;
     private float colorTileAudioLastTime;
 
     [SerializeField] private Sprite playerBrush, playerErasor;
@@ -116,20 +117,29 @@ public class PlayerController : BlockData
     private void Update()
     {
         // 화살표 방향 입력 (좌우/상하 합쳐서 Vector2)
-        // Vector2 dir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        Vector2 dir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-        // if ((dir.x == 0 && dir.y != 0) || (dir.x != 0 && dir.y == 0)) // 방향키 눌림
-        // {
-        //     if (Time.time >= keyboardNextFireTime)
-        //     {
-        //         TryMoveTo(destPos.x + (int)dir.x, destPos.y + (int)dir.y);
-        //         keyboardNextFireTime = Time.time + moveTime * 2;
-        //     }
-        // }
-        // else
-        // {
-        //     keyboardNextFireTime = 0f; // 키 뗐을 때 초기화
-        // }
+        if ((dir.x == 0 && dir.y != 0) || (dir.x != 0 && dir.y == 0)) // 방향키 눌림
+        {
+            if (Time.time >= keyboardNextFireTime)
+            {
+                TryMoveTo(destPos.x + (int)dir.x, destPos.y + (int)dir.y);
+                keyboardNextFireTime = Time.time + moveTime * 2;
+            }
+        }
+        else
+        {
+            keyboardNextFireTime = 0f; // 키 뗐을 때 초기화
+        }
+
+        if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            if (Time.time >= keyboardRedoNextFireTime)
+            {
+                keyboardRedoNextFireTime = Time.time + moveTime;
+                Redo();
+            }
+        }
     }
 #endif
     public void MoveOnce(Vector2Int dir)

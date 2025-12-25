@@ -116,6 +116,9 @@ public class StageUnlockInformAnimation : MonoBehaviour
     {
         blockingUI.SetActive(true);
         bool isAnimated = false;
+        CharacterSwiper characterSwiper = FindAnyObjectByType<CharacterSwiper>();
+        characterSwiper.canGetKeyboardInput = false;
+
         foreach (int entryStage in toInformStage)
         {
             bool isExtra = entryStage < 0;
@@ -158,7 +161,9 @@ public class StageUnlockInformAnimation : MonoBehaviour
                 if (entry.isExplainButton) entry.ShowExplainButton();
             }
         }
-        yield return new WaitForSeconds(0.3f);  
+        yield return new WaitForSeconds(0.3f); 
+
+        characterSwiper.canGetKeyboardInput = true; 
         blockingUI.SetActive(false); // 스크롤 가능
         isAnimating = false;
     }
