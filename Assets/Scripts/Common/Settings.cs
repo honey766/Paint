@@ -4,6 +4,7 @@ using DG.Tweening;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System;
+using UnityEngine.Events;
 
 public class Settings : MonoBehaviour
 {
@@ -45,6 +46,7 @@ public class Settings : MonoBehaviour
     int moveLatencyRate;
     private bool isTileTouch;
     private bool isNotice;
+    public static Action onLanguageChanged;
     
     private void OnEnable()
     {

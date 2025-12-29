@@ -1155,6 +1155,9 @@ MonoBehaviour:
   - {fileID: 8084744614863823714}
   - {fileID: 8765860841014257546}
   - {fileID: 3745891949633755362}
+  tuto2PurpleBackground: {fileID: 2377533171008528875}
+  tuto3_1PurpleBackground: {fileID: 1220852723878929533}
+  tuto3_2PurpleBackground: {fileID: 5559091242293039408}
 --- !u!114 &1458146831779628390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1167,6 +1170,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aaf6f2f4e949ca4886372896d4ccfc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SwipeInputController
+  pages: 0
+  pageDotPrefab: {fileID: 0}
+  pageDotsParent: {fileID: 0}
   leftMove:
     m_PersistentCalls:
       m_Calls:
@@ -1198,6 +1204,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   slideThresholdX: 100
+  canKeyboardInput: 1
 --- !u!1 &5101870226993679681
 GameObject:
   m_ObjectHideFlags: 0

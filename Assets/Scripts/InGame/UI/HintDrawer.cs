@@ -66,7 +66,11 @@ public class HintDrawer : MonoBehaviour
         heightOffset = numOfPages > 1 ? 60 : 0;
         parentRect = GetComponent<RectTransform>();
         width = parentRect.rect.width - widthOffset;
+        #if UNITY_STANDALONE
+        height = parentRect.rect.height - heightOffset;
+        #else
         height = parentRect.rect.height - 220 - heightOffset;
+        #endif
         tileSize = Mathf.Min(width / Mathf.Max(5.5f, n), height / Mathf.Max(5.5f, m));
 
         leftButton.SetActive(false);

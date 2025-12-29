@@ -27,6 +27,14 @@ public class MainManager : MonoBehaviour
     {
         if (UIManager.Instance.doingTransition)
             return;
+
+        // 세팅 이동 설명 닫기
+        GameObject moveExplain = GameObject.Find("MoveExplainCanvas(Clone)");
+        if (moveExplain != null && moveExplain.activeSelf)
+        {
+            moveExplain.SetActive(false);
+            return;
+        }
             
         // 세팅 닫기
         Settings settings = FindAnyObjectByType<Settings>();

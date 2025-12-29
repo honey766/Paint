@@ -1,0 +1,176 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: StringTable_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 8300ed01294889b49a85ca02d4712d27, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 5474725888
+    m_Localized: "Swipe in any direction \nto move the character."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9874550784
+    m_Localized: 'Tap a tile to move the character
+
+      to its position.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26298106884096
+    m_Localized: The shop is empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 196228429230080
+    m_Localized: 'When you pass over
+
+      a paint can<sprite=5>
+
+      the tile<sprite=0><size=60%>
+      </size> gets <color=#FE7269>painted</color>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 197351496069120
+    m_Localized: "If both <color=#FE7269>red</color><sprite=2><size=60%> </size>
+      and <color=#3D91FF>blue</color><sprite=3>\nare painted on a tile, \nit turns
+      <color=#E473FF>purple</color><sprite=4>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 197371725197312
+    m_Localized: 'You must fill the
+
+      <color=#E473FF>purple color</color> inside
+      the
+
+      <color=#E473FF>purple outlines</color><sprite=1><size=60%> </size>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 197560011698176
+    m_Localized: 'You can move by <size=110%><color=#555555>swiping the screen.</color></size>
+
+      You
+      can change to <size=110%><color=#555555>tap-to-move</color></size> in the settings.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 197618316718080
+    m_Localized: 'You can move by <size=110%><color=#555555>tapping tiles</color></size>.
+
+      You
+      can switch to <size=110%><color=#555555>swipe controls</color></size> in the
+      settings.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 199071966015488
+    m_Localized: "Do not fill <color=#E473FF>purple</color> on tiles \nwithout a
+      border<sprite=1>\n\n\n\n\n\n\nYou <color=#2A86FF>succeed</color> only by \nfilling
+      <color=#E473FF>purple</color> on the <sprite=1>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 199485356617728
+    m_Localized: '<color=#D64EF5>Purple paint</color> must stay inside the <color=#D64EF5>purple
+      outlines</color>.
+
+      <color=#FF736A>Red</color> and <color=#3C91FF>blue</color>
+      can be painted anywhere.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 199901767118848
+    m_Localized: "The fewer moves the player makes, \u2197\nthe more <color=#B6A33F>stars</color>
+      they earn."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 200269926346752
+    m_Localized: View Hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 200329049255936
+    m_Localized: (Current Move Count)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 200272417763328
+    m_Localized: Retry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 200271264329728
+    m_Localized: Redo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 200330357878784
+    m_Localized: Next Level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 200458632278016
+    m_Localized: Restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 200486453096448
+    m_Localized: Main Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 200484305612800
+    m_Localized: Select Level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 640731770368000
+    m_Localized: Tap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 640734014320640
+    m_Localized: Swipe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 641800638410752
+    m_Localized: '[Tap]'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 641880703479808
+    m_Localized: '[Swipe]'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 668812560150528
+    m_Localized: Check
+    m_Metadata:
+      m_Items: []
+  - m_Id: 668854213783552
+    m_Localized: "<size=110%><color=#663333>Extra Stage</color></size> Unlocked!\n<size=5>
+      </size>\nEarn <color=#663333>3 stars</color> on all levels in a Regular Stage
+      \nto unlock its Extra Level."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 669752029720576
+    m_Localized: "\n<size=110%><color=#663333>Extra Stage</color></size> Unlocked!\n<size=5>
+      </size>\nEarn <color=#663333>3 stars</color> on all levels in a Regular Stage
+      \nto unlock its Extra Level.\n\n<color=#72787B><size=90%>You can scroll up
+      and down</size></color>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 671876834766848
+    m_Localized: Shop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 671983332339712
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 679013468188672
+    m_Localized: Next Stage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 679344541380608
+    m_Localized: Next EX Level
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

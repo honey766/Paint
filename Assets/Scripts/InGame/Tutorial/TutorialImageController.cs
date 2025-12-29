@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.Localization.Settings;
 
 public class TutorialImageController : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class TutorialImageController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI tuto1_text;
     [SerializeField] private GameObject movetutorialCanvas;
     [SerializeField] private RectTransform[] pageDots;
+    [SerializeField] private RectTransform tuto2PurpleBackground, tuto3_1PurpleBackground, tuto3_2PurpleBackground;
     private int curPage;
     
     private static readonly string[] tuto1_text_content = new string[3]
@@ -86,11 +88,17 @@ public class TutorialImageController : MonoBehaviour
         Destroy(gameObject);
     }
 
+    private string GetTutoText(int curPage)
+    {
+        curPage++;
+        return LocalizationSettings.StringDatabase.GetLocalizedString("StringTable", "Tuto" + curPage, LocalizationSettings.SelectedLocale);
+    }
     private void SetTutoImage()
     {
         if (tutorialNum == 1)
         {
-            tuto1_text.text = tuto1_text_content[curPage];
+            // tuto1_text.text = tuto1_text_content[curPage];
+            tuto1_text.text = GetTutoText(curPage);
             foreach (GameObject obj in tuto1_1Images)
                 obj.SetActive(curPage == 0);
             foreach (GameObject obj in tuto1_2Images)
@@ -101,6 +109,21 @@ public class TutorialImageController : MonoBehaviour
             rightButton.SetActive(curPage < 2);
             exitButton.SetActive(curPage == 2);
             pageDots[curPage].DOSizeDelta(Vector2.one * 40, 0.2f);
+            if (LocalizationSettings.SelectedLocale.Identifier.Code == "en")
+            {
+                if (curPage == 1)
+                {
+                    tuto2PurpleBackground.anchoredPosition = new Vector2(-32.5f, 370);
+                    tuto2PurpleBackground.localScale = Vector3.one * 0.4f;
+                }
+                else if (curPage == 2)
+                {
+                    tuto3_1PurpleBackground.anchoredPosition = new Vector2(-174, 436);
+                    tuto3_1PurpleBackground.localScale = new Vector3(0.83f, 0.372f, 0.372f);
+                    tuto3_2PurpleBackground.anchoredPosition = new Vector2(-129.3f, 355.5f);
+                    tuto3_2PurpleBackground.localScale = new Vector3(1.05f, 0.372f, 0.372f);
+                }
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 using DG.Tweening;
 using TMPro;
 using System.Threading.Tasks;
+using UnityEngine.Localization.Settings;
 
 public class TutorialController : MonoBehaviour
 {
@@ -205,9 +206,11 @@ public class TutorialController : MonoBehaviour
     public void SecondTutorialEvent()
     {
         moveTutorialCanvasObj.SetActive(true);
+        // moveTutorialCanvasObj.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text =
+        //     "<color=#D64EF5>보라색 테두리</color> 안에만 <color=#D64EF5>보라색</color>을 칠해야 해요.\n"
+        //   + "<color=#FF736A>빨강</color>, <color=#3C91FF>파랑</color>은 어떤 곳에든 칠할 수 있어요.";
         moveTutorialCanvasObj.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text =
-            "<color=#D64EF5>보라색 테두리</color> 안에만 <color=#D64EF5>보라색</color>을 칠해야 해요.\n"
-          + "<color=#FF736A>빨강</color>, <color=#3C91FF>파랑</color>은 어떤 곳에든 칠할 수 있어요.";
+            LocalizationSettings.StringDatabase.GetLocalizedString("StringTable", "OnlyPurpleTuto", LocalizationSettings.SelectedLocale);
         tutorialColor12BorderTempObj = Instantiate(tutorialColor12Border);
         tutorialColor12BorderTempObj.transform.position = Board.Instance.GetTilePos(2, 1);
         if (tutorialArrowObj != null) tutorialArrowObj.SetActive(true);
@@ -224,9 +227,11 @@ public class TutorialController : MonoBehaviour
         RectTransform moveTutoText = moveTutorialCanvasObj.transform.GetChild(0).GetChild(1).GetComponent<RectTransform>();
         moveTutoText.offsetMin = new Vector2(130, moveTutoText.offsetMin.y); // Left
         moveTutoText.offsetMax = new Vector2(-130, moveTutoText.offsetMax.y); // Right
+        // moveTutoText.GetComponent<TextMeshProUGUI>().text =
+        //     "플레이어의 이동횟수가 적을수록 ↗\n"
+        //   + "더 많은 <color=#B6A33F>별</color>을 획득해요.  ";
         moveTutoText.GetComponent<TextMeshProUGUI>().text =
-            "플레이어의 이동횟수가 적을수록 ↗\n"
-          + "더 많은 <color=#B6A33F>별</color>을 획득해요.  ";
+            LocalizationSettings.StringDatabase.GetLocalizedString("StringTable", "MoveFewerTuto", LocalizationSettings.SelectedLocale);
         moveCountTutoRect = moveTutoText.transform.parent.GetChild(2).GetComponent<RectTransform>();
         moveCountTutoRect.gameObject.SetActive(true);
         if (tutorial1_1_2AnswerObj != null)

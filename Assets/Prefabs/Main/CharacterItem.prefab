@@ -295,6 +295,7 @@ MonoBehaviour:
   - {fileID: 6963709280899567045, guid: 6abbdad5caf260348a505afc1f6cf168, type: 3}
   - {fileID: 3341978696566070861, guid: 97370df5260e79b49a78aaa8c9970ba9, type: 3}
   flipDuration: 0.4
+  isSelected: 0
 --- !u!114 &238265566948194317
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -308,7 +309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}

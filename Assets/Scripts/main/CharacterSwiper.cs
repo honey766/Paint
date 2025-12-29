@@ -74,8 +74,8 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         canvasScaleFactor = canvas.scaleFactor;
         extraContentHeight = canvas.GetComponent<RectTransform>().rect.height + ContentSpacing;
         contents[1].anchoredPosition = new Vector2(0, -extraContentHeight);
-        extraBackground.offsetMin = new Vector2(-extraContentHeight, -extraContentHeight); // Bottom
-        extraBackground.offsetMax = new Vector2(extraContentHeight, ContentSpacing);  // Top
+        extraBackground.offsetMin = new Vector2(-extraContentHeight * 2, -extraContentHeight); // Bottom
+        extraBackground.offsetMax = new Vector2(extraContentHeight * 2, ContentSpacing);  // Top
 
         (int savedHorIndex, int savedVerIndex) = GetSavedIndex();
         if (savedVerIndex == 1)

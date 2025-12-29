@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 public class SwipeInputController : MonoBehaviour, IPointerDownHandler, IPointerMoveHandler, IPointerUpHandler
 {
@@ -11,6 +12,8 @@ public class SwipeInputController : MonoBehaviour, IPointerDownHandler, IPointer
     [SerializeField] private Transform pageDotsParent;
     [SerializeField] private UnityEvent leftMove, rightMove;
     [SerializeField] private float slideThresholdX = 100f;
+    [SerializeField] private bool canKeyboardInput = true;
+
     private struct MouseRecord
     {
         public float time;
@@ -18,7 +21,7 @@ public class SwipeInputController : MonoBehaviour, IPointerDownHandler, IPointer
     }
     private Queue<MouseRecord> records = new Queue<MouseRecord>();
     private int isSlided; // 0 : no, 1 : 왼쪽으로 했음, 2 : 오른쪽으로 했음
-    bool isPointerDownInvoked;
+    private bool isPointerDownInvoked;
     private RectTransform[] pageDotRects;
 
     private void Awake()
@@ -30,6 +33,19 @@ public class SwipeInputController : MonoBehaviour, IPointerDownHandler, IPointer
                 pageDotRects[i] = Instantiate(pageDotPrefab, pageDotsParent).GetComponent<RectTransform>();
         }
     }
+
+#if UNITY_STANDALONE
+    private void Update()
+    {
+        if (!canKeyboardInput)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+            OnLeftButton();
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+            OnRightButton();
+    }
+#endif
 
     public void OnPointerDown(PointerEventData eventData)
     {

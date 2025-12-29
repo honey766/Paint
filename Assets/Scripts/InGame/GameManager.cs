@@ -8,6 +8,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
+using UnityEngine.Localization.Settings;
 
 public class GameManager : SingletonBehaviour<GameManager>
 {
@@ -333,13 +334,14 @@ public class GameManager : SingletonBehaviour<GameManager>
         }
         isGaming = false;
 
-        string goToNextLevelText = "";
+        string key = "";
         if (level == stageSO.numOfLevelOfStage[stage - 1] || level == -stageSO.numOfLevelOfExtraStage[stage - 1])
-            goToNextLevelText = "다음 스테이지";
+            key = "NextStage";
         else if (level < 0)
-            goToNextLevelText = "다음 Ex단계";
+            key = "NextEXLevel";
         else
-            goToNextLevelText = "다음 단계";
+            key = "NextLevel";
+        string goToNextLevelText = LocalizationSettings.StringDatabase.GetLocalizedString("StringTable", key, LocalizationSettings.SelectedLocale);
 
         // 혹시 모를 중복을 방지
         GameClearCanvas curGameClearObj = FindAnyObjectByType<GameClearCanvas>();

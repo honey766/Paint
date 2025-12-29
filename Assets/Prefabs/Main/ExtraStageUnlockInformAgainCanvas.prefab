@@ -455,6 +455,7 @@ GameObject:
   - component: {fileID: 5376588949977284553}
   - component: {fileID: 1113048301368077828}
   - component: {fileID: 5548457290888031004}
+  - component: {fileID: 1792786029402503284}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -509,11 +510,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\n\uC815\uADDC \uC2A4\uD14C\uC774\uC9C0\uB97C \uBAA8\uB450 <color=#663333>3\uBCC4</color>\uB85C
-    \uD074\uB9AC\uC5B4\uD558\uBA74 \n\uD574\uB2F9 \uC2A4\uD14C\uC774\uC9C0\uC758
-    <color=#663333>\uC5D1\uC2A4\uD2B8\uB77C \uB808\uBCA8</color>\uC774 \n\uD574\uAE08\uB3FC\uC694.\n\n<color=#72787B><size=90%>\uC2A4\uD06C\uB864\uC744
-    \uC704\uC544\uB798\uB85C \uC6C0\uC9C1\uC5EC\uC11C \n\uC815\uADDC \uC2A4\uD14C\uC774\uC9C0\uB85C
-    \uC774\uB3D9\uD560 \uC218 \uC788\uC5B4\uC694.</size></color>"
+  m_text: "\n<size=110%><color=#663333>Extra Stage</color></size> Unlocked!\n<size=5>
+    </size>\nEarn <color=#663333>3 stars</color> on all levels in a Regular Stage
+    \nto unlock its Extra Level.\n\n<color=#72787B><size=90%>You can scroll up and
+    down</size></color>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8e65ac83cdfaad34b945d34234f3b33f, type: 2}
   m_sharedMaterial: {fileID: -5714282466922394333, guid: 8e65ac83cdfaad34b945d34234f3b33f, type: 2}
@@ -584,3 +584,43 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1792786029402503284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8904395262451362878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Components.LocalizeStringEvent
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:8300ed01294889b49a85ca02d4712d27
+    m_TableEntryReference:
+      m_KeyId: 669752029720576
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5548457290888031004}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 1
+  references:
+    version: 2
+    RefIds: []
