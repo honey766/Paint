@@ -64,6 +64,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     public bool hintLoadTaskCompleted { get; private set; }
 
     private int stage, level, star;
+    private float keyboardRestartNextFireTime;
 
     private void Awake()
     {
@@ -122,6 +123,18 @@ public class GameManager : SingletonBehaviour<GameManager>
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             ControlEscapeKey();
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            if (Time.time >= keyboardRestartNextFireTime)
+            {
+                keyboardRestartNextFireTime = Time.time + 0.1f;
+                Restart();
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.H))
+            ShowHint();
     }
 
     private void ControlEscapeKey()

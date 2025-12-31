@@ -137,6 +137,58 @@ MonoBehaviour:
     m_Key: NextEXLevel
     m_Metadata:
       m_Items: []
+  - m_Id: 703224177864704
+    m_Key: SettingsMoreInfo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703472673599488
+    m_Key: BGM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703483981443072
+    m_Key: SFX
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703510422335488
+    m_Key: MovementMethod
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703531528073216
+    m_Key: PrivacyPolicy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703549345476608
+    m_Key: Email
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703558879129600
+    m_Key: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 710820460867584
+    m_Key: MovementDelay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 716630377213952
+    m_Key: Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1168063606140928
+    m_Key: WantToQuit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1168102151794688
+    m_Key: Yes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1168103359754240
+    m_Key: No
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1174381603696640
+    m_Key: PurpleWarning
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

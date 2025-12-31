@@ -171,6 +171,59 @@ MonoBehaviour:
     m_Localized: Next EX Level
     m_Metadata:
       m_Items: []
+  - m_Id: 703224177864704
+    m_Localized: Transparent Puppy, Master of Sleeping
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703472673599488
+    m_Localized: BGM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703483981443072
+    m_Localized: SFX
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703558879129600
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703549345476608
+    m_Localized: Email
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703531528073216
+    m_Localized: Privacy Policy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703510422335488
+    m_Localized: Movement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 710820460867584
+    m_Localized: ' Delay'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 716630377213952
+    m_Localized: Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1168063606140928
+    m_Localized: Do you want to quit?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1168102151794688
+    m_Localized: Yes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1168103359754240
+    m_Localized: No
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1174381603696640
+    m_Localized: Fill only the area inside the <color=#A600FF>purple border</color>
+      with <color=#A600FF>purple</color>
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

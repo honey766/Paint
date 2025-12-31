@@ -60,10 +60,16 @@ public class MainManager : MonoBehaviour
             menu.GetComponent<Menu>().Resume();
             return;
         }
+
+        GameObject extraStageUnlockInformAgain = GameObject.Find("ExtraStageUnlockInformAgainCanvas(Clone)");
+        if (extraStageUnlockInformAgain != null)
+        {
+            Destroy(extraStageUnlockInformAgain);
+            return;
+        }
             
         if (card.activeSelf)
         {
-            // 메인 메뉴로 돌아가기
             // CardToMainMenu();
             OpenMenu();
         }

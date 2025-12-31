@@ -12,9 +12,20 @@ public class GameClearCanvas : MonoBehaviour
     [SerializeField] private GameObject[] visibleObjs;
     [SerializeField] private Image eyeButtonImg;
     [SerializeField] private Sprite eyeButtonVisibleSpr, eyeButtonInVisibleSpr;
-    
+    [SerializeField] private bool isGameClear = true;
+
     private bool canTouch;
     private bool isVisible; // UI가 보이는 상태인지
+
+    #if UNITY_STANDALONE
+    private void Update()
+    {
+        if (isGameClear && Input.GetKeyDown(KeyCode.N)) GoToNextLevel();
+        else if (Input.GetKeyDown(KeyCode.R)) Restart();
+        else if (Input.GetKeyDown(KeyCode.S)) SelectLevel();
+        else if (Input.GetKeyDown(KeyCode.M)) GoToMainMenu();
+    }
+    #endif
 
     public void Init(int star, string goToNextLevelText)
     {

@@ -30,6 +30,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4497f63efcee71241906aea74b52c554
+    m_Address: Assets/ScriptableObjects/Board/Stage2/Stage2-14.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 46179738982ca0e438ab863461cece1e
     m_Address: Assets/Sound/Bgm/Summer.ogg
     m_ReadOnly: 0
@@ -42,6 +47,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 83aa0e8674772d44b93dbd859b8db371
     m_Address: Assets/ScriptableObjects/Hint/Stage7/Hint7-11.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 847c8fcf944bfa5458d0e128505bb947
+    m_Address: Assets/ScriptableObjects/Hint/Stage2/Hint2-14.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

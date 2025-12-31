@@ -116,6 +116,9 @@ public class PlayerController : BlockData
 #if UNITY_STANDALONE   // Windows, macOS, Linux
     private void Update()
     {
+        if (!GameManager.Instance.isGaming)
+            return;
+            
         // 화살표 방향 입력 (좌우/상하 합쳐서 Vector2)
         Vector2 dir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
@@ -132,7 +135,7 @@ public class PlayerController : BlockData
             keyboardNextFireTime = 0f; // 키 뗐을 때 초기화
         }
 
-        if (Input.GetKeyDown(KeyCode.Backspace))
+        if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetKeyDown(KeyCode.Z))
         {
             if (Time.time >= keyboardRedoNextFireTime)
             {

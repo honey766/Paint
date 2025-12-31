@@ -172,6 +172,12 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
     {
         if (!canGetKeyboardInput)
             return;
+        GameObject menu = GameObject.Find("MainMenuCanvas(Clone)");
+        if (menu != null)
+            return;
+        GameObject extraStageUnlockInformAgain = GameObject.Find("ExtraStageUnlockInformAgainCanvas(Clone)");
+        if (extraStageUnlockInformAgain != null)
+            return;
         KeyboardAxisInput();
         CardSelectInput();
     }
@@ -180,7 +186,9 @@ public class CharacterSwiper : MonoBehaviour, IBeginDragHandler
         // 화살표 방향 입력 (좌우/상하 합쳐서 Vector2)
         Vector2 dir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-        if ((dir.x == 0 && dir.y != 0) || (dir.x != 0 && dir.y == 0)) // 방향키 눌림
+        // 엑스트라 스테이지 해금 조건
+        bool canVertical = PersistentDataManager.HaveWeInformedExtraUnlock();
+        if ((canVertical && dir.x == 0 && dir.y != 0) || (dir.x != 0 && dir.y == 0)) // 방향키 눌림
         {
             Vector2 inputVec = new Vector2(dir.x, dir.y);
             if (Time.time >= keyboardNextFireTime || lastKeyboardInput != inputVec)

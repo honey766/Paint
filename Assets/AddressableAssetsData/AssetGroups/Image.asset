@@ -20,33 +20,58 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 05abcf40a0bcf8e40864aeb96042d657
+    m_Address: Assets/Sprites/Main/back_img_1_en.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 11039c27c9eb44e49934354248b8e7d1
+    m_Address: Assets/Sprites/Main/back_img_4_en.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1f41d0c89ea058340b7d4dfc5be02193
+    m_Address: Assets/Sprites/Main/back_img_3_en.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 36efd3495488ef749885cefaef2093d7
+    m_Address: Assets/Sprites/Main/back_img_5_en.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4a1dc6e9f8d27d945b403a3d1fece1ae
     m_Address: Assets/Sprites/InGame/UI/ingame_back_img_7.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5739cfad4d4c36047a59b94289cbfb11
-    m_Address: Assets/Sprites/Main/back_img_3.png
+    m_Address: Assets/Sprites/Main/back_img_3_ko.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5964c91ae5a84434c946db701a5da713
-    m_Address: Assets/Sprites/Main/back_img_2.png
+    m_Address: Assets/Sprites/Main/back_img_2_ko.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6abbdad5caf260348a505afc1f6cf168
-    m_Address: Assets/Sprites/Main/back_img_6.png
+    m_Address: Assets/Sprites/Main/back_img_6_ko.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7c1862518db20a94dac512c4130bbcf1
-    m_Address: Assets/Sprites/Main/back_img_1.png
+    m_Address: Assets/Sprites/Main/back_img_1_ko.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8b33f73ed8291df42bf0bb73e1ea0c1e
+    m_Address: Assets/Sprites/Main/back_img_6_en.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 97370df5260e79b49a78aaa8c9970ba9
-    m_Address: Assets/Sprites/Main/back_img_7.png
+    m_Address: Assets/Sprites/Main/back_img_7_ko.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -61,17 +86,27 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: af65eda9c327afb4bb9ff64e1e67446f
-    m_Address: Assets/Sprites/Main/back_img_5.png
+    m_Address: Assets/Sprites/Main/back_img_5_ko.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b31373e878b14114683be557b1016468
-    m_Address: Assets/Sprites/Main/back_img_4.png
+    m_Address: Assets/Sprites/Main/back_img_4_ko.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ce8e066925a4f9a42bb4aa5cd7eadc11
+    m_Address: Assets/Sprites/Main/back_img_7_en.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dc2e239d1ba816549aab2cbf20298963
     m_Address: Assets/Sprites/InGame/UI/ingame_back_img_5.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e09d4425c3f87724dae4cf2d47810a9f
+    m_Address: Assets/Sprites/Main/back_img_2_en.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

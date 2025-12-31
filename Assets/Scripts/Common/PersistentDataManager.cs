@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.Localization.Settings;
 using System.Threading.Tasks;
 
 public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
@@ -348,6 +349,20 @@ public class PersistentDataManager : SingletonBehaviour<PersistentDataManager>
             return extraStageUnlockInformData[stageNum - 1];
         else
             return stageUnlockInformData[stageNum - 1];
+    }
+    #endregion
+
+    #region Language
+    public string GetCurLanguageCode()
+    {
+        if (PlayerPrefs.HasKey("curLanguageCode"))
+            return PlayerPrefs.GetString("curLanguageCode");
+        else
+            return LocalizationSettings.SelectedLocale.Identifier.Code;
+    }
+    public void SaveCurLanguageData(string code)
+    {
+        PlayerPrefs.SetString("curLanguageCode", code);
     }
     #endregion
 }

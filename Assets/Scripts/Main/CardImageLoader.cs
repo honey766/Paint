@@ -2,55 +2,94 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Localization;
 
 public class CardImageLoader : SingletonBehaviour<CardImageLoader>
 {
     [SerializeField] StageSO stageSO;
     public bool imageLoadingCompleted;
 
-    private List<Sprite> cards = new List<Sprite>(); // 로드된 Sprite를 저장할 리스트
-    private List<AsyncOperationHandle<Sprite>> loadHandles = new List<AsyncOperationHandle<Sprite>>(); // 핸들을 저장할 리스트 (해제용)
+    private List<Sprite> cards = new();
+    private List<AsyncOperationHandle<Sprite>> loadHandles = new();
 
     private async void Start()
     {
-        int stage = stageSO.numOfStage;
+        await LoadImages();
+    }
+
+    private void OnEnable()
+    {
+        LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
+    }
+
+    private void OnDisable()
+    {
+        LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
+    }
+
+    private void OnLocaleChanged(Locale newLocale)
+    {
+        ReloadImages();
+    }
+
+    private async void ReloadImages()
+    {
+        ReleaseImages();
+        await LoadImages();
+    }
+
+    private async System.Threading.Tasks.Task LoadImages()
+    {
         imageLoadingCompleted = false;
+        cards.Clear();
+        loadHandles.Clear();
+
+        int stage = stageSO.numOfStage;
+
+        string local = LocalizationSettings.SelectedLocale.Identifier.Code == "en"
+            ? "en"
+            : "ko";
 
         for (int i = 1; i <= stage; i++)
         {
-            string address = $"Assets/Sprites/Main/back_img_{i}.png";
+            string address = $"Assets/Sprites/Main/back_img_{i}_{local}.png";
 
             try
             {
-                AsyncOperationHandle<Sprite> newHandle = Addressables.LoadAssetAsync<Sprite>(address);
-                await newHandle.Task;
+                var handle = Addressables.LoadAssetAsync<Sprite>(address);
+                await handle.Task;
 
-                if (newHandle.Status == AsyncOperationStatus.Succeeded)
+                if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    // 1. 성공 시 결과 저장 및 핸들 저장
-                    cards.Add(newHandle.Result);
-                    loadHandles.Add(newHandle); // 해제 시 핸들 또는 Result를 사용합니다.
+                    cards.Add(handle.Result);
+                    loadHandles.Add(handle);
                 }
                 else
                 {
-                    Logger.LogError($"로드 실패: {address}");
-                    Addressables.Release(newHandle); 
+                    Addressables.Release(handle);
                     break;
                 }
             }
             catch (UnityEngine.AddressableAssets.InvalidKeyException)
             {
-                Logger.LogWarning($"키 없음: {address}. 연속 로드 종료.");
-                break; // 키가 없으면 로드 종료
-            }
-            catch (System.Exception ex)
-            {
-                Logger.LogError($"예상치 못한 오류: {ex.Message}");
                 break;
             }
         }
 
         imageLoadingCompleted = true;
+    }
+
+    private void ReleaseImages()
+    {
+        foreach (var handle in loadHandles)
+        {
+            if (handle.IsValid())
+                Addressables.Release(handle);
+        }
+
+        loadHandles.Clear();
+        cards.Clear();
     }
 
     public Sprite GetStageCard(int stage) => cards[stage - 1];
